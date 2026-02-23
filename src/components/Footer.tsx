@@ -92,9 +92,14 @@ const Footer = () => {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} LKS Liszczanka Liszki. Wszelkie prawa zastrzeżone.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Klasa okręgowa Kraków, grupa II
-          </p>
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+              Admin
+            </Link>
+            <p className="text-xs text-muted-foreground">
+              Klasa okręgowa Kraków, grupa II
+            </p>
+          </div>
         </div>
       </div>
     </footer>

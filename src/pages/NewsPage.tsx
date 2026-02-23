@@ -1,24 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, Tag } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
-const categories = ["Wszystkie", "Mecze", "Klub", "Młodzież"];
+const categoriesFilter = ["Wszystkie", "Mecze", "Klub", "Młodzież"];
 
-const allNews = [
-  { id: 1, title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym. Bramki dla naszej drużyny zdobyli: Kowalski (15', 67') oraz Nowak (45').", date: "2026-02-20", category: "Mecze" },
-  { id: 2, title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie. Zajęcia prowadzone przez wykwalifikowanych trenerów.", date: "2026-02-18", category: "Młodzież" },
-  { id: 3, title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", date: "2026-02-15", category: "Klub" },
-  { id: 4, title: "Przegrana na wyjeździe 0:2", excerpt: "Niestety przegraliśmy wyjazdowe spotkanie z Orlętami Ryczów. Drużyna walczyła dzielnie, ale nie zdołała przełamać defensywy rywala.", date: "2026-02-12", category: "Mecze" },
-  { id: 5, title: "Turniej halowy młodzików", excerpt: "Nasi najmłodsi piłkarze wzięli udział w turnieju halowym, zajmując drugie miejsce.", date: "2026-02-10", category: "Młodzież" },
-  { id: 6, title: "Zebranie zarządu klubu", excerpt: "Odbyło się coroczne zebranie zarządu klubu, na którym podsumowano sezon jesienny i przedstawiono plany na wiosnę.", date: "2026-02-08", category: "Klub" },
-];
+interface NewsPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  image_url: string | null;
+  created_at: string;
+}
 
 const NewsPage = () => {
   const [activeCategory, setActiveCategory] = useState("Wszystkie");
+  const [posts, setPosts] = useState<NewsPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    const { data } = await supabase
+      .from("news_posts")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false });
+    setPosts((data as NewsPost[]) || []);
+    setLoading(false);
+  };
 
   const filtered = activeCategory === "Wszystkie"
-    ? allNews
-    : allNews.filter((n) => n.category === activeCategory);
+    ? posts
+    : posts.filter((n) => n.category === activeCategory);
+
+  if (selectedPost) {
+    return (
+      <div className="pt-24 pb-16">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <ScrollAnimation>
+            <button
+              onClick={() => setSelectedPost(null)}
+              className="text-sm text-primary hover:text-primary/80 mb-6 inline-block"
+            >
+              ← Powrót do aktualności
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                {selectedPost.category}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {new Date(selectedPost.created_at).toLocaleDateString("pl-PL", {
+                  day: "numeric", month: "long", year: "numeric"
+                })}
+              </span>
+            </div>
+            <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-6">
+              {selectedPost.title}
+            </h1>
+            {selectedPost.image_url && (
+              <img
+                src={selectedPost.image_url}
+                alt={selectedPost.title}
+                className="w-full h-64 md:h-96 object-cover rounded-xl mb-6"
+              />
+            )}
+            <div className="prose prose-invert max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap">
+              {selectedPost.content}
+            </div>
+          </ScrollAnimation>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-24 pb-16">
@@ -30,7 +89,7 @@ const NewsPage = () => {
 
         <ScrollAnimation delay={0.1}>
           <div className="flex gap-2 mb-10 flex-wrap">
-            {categories.map((cat) => (
+            {categoriesFilter.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -46,24 +105,33 @@ const NewsPage = () => {
           </div>
         </ScrollAnimation>
 
-        <div className="space-y-6">
-          {filtered.map((item, i) => (
-            <ScrollAnimation key={item.id} delay={i * 0.05}>
-              <article className="glass-card rounded-xl p-6 hover-lift cursor-pointer">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                    <Tag className="w-3 h-3" /> {item.category}
-                  </span>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Calendar className="w-3 h-3" /> {item.date}
-                  </span>
-                </div>
-                <h2 className="font-heading text-xl font-bold text-foreground mb-2">{item.title}</h2>
-                <p className="text-sm text-muted-foreground">{item.excerpt}</p>
-              </article>
-            </ScrollAnimation>
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12 text-muted-foreground">Ładowanie aktualności...</div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">Brak aktualności w tej kategorii.</div>
+        ) : (
+          <div className="space-y-6">
+            {filtered.map((item, i) => (
+              <ScrollAnimation key={item.id} delay={i * 0.05}>
+                <article
+                  onClick={() => setSelectedPost(item)}
+                  className="glass-card rounded-xl p-6 hover-lift cursor-pointer"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                      <Tag className="w-3 h-3" /> {item.category}
+                    </span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Calendar className="w-3 h-3" /> {new Date(item.created_at).toLocaleDateString("pl-PL")}
+                    </span>
+                  </div>
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-2">{item.title}</h2>
+                  <p className="text-sm text-muted-foreground">{item.excerpt}</p>
+                </article>
+              </ScrollAnimation>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

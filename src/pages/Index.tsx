@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Trophy, ArrowRight, Facebook, Instagram, MapPin, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import CountdownTimer from "@/components/CountdownTimer";
 import heroImage from "@/assets/hero-stadium.jpg";
@@ -14,30 +16,11 @@ const nextMatch = {
   league: "Klasa okręgowa, grupa II",
 };
 
-const news = [
-  {
-    id: 1,
-    title: "Zwycięstwo w derbach gminy!",
-    excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.",
-    date: "2026-02-20",
-    category: "Mecze",
-  },
-  {
-    id: 2,
-    title: "Nabór do grup młodzieżowych",
-    excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.",
-    date: "2026-02-18",
-    category: "Młodzież",
-  },
-  {
-    id: 3,
-    title: "Nowy sponsor dołącza do klubu",
-    excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.",
-    date: "2026-02-15",
-    category: "Klub",
-  },
+const demoNews = [
+  { id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze" },
+  { id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież" },
+  { id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub" },
 ];
-
 const leagueTable = [
   { pos: 1, team: "Orlęta Ryczów", played: 18, points: 42 },
   { pos: 2, team: "Skała Nowa Huta", played: 18, points: 38 },
@@ -65,6 +48,23 @@ const lastResults = [
 ];
 
 const Index = () => {
+  const [news, setNews] = useState(demoNews);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      const { data } = await supabase
+        .from("news_posts")
+        .select("id, title, excerpt, category, created_at")
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (data && data.length > 0) {
+        setNews(data);
+      }
+    };
+    fetchNews();
+  }, []);
+
   return (
     <div>
       {/* Hero Section */}
@@ -239,7 +239,7 @@ const Index = () => {
                       <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
                         {item.category}
                       </span>
-                      <span className="text-xs text-muted-foreground">{item.date}</span>
+                      <span className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString("pl-PL")}</span>
                     </div>
                     <h3 className="font-heading text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                       {item.title}

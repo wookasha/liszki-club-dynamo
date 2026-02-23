@@ -12,6 +12,8 @@ import YouthPage from "./pages/YouthPage";
 import GalleryPage from "./pages/GalleryPage";
 import SponsorsPage from "./pages/SponsorsPage";
 import ContactPage from "./pages/ContactPage";
+import LoginPage from "./pages/LoginPage";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const App = () => (
             <Route path="/galeria" element={<GalleryPage />} />
             <Route path="/sponsorzy" element={<SponsorsPage />} />
             <Route path="/kontakt" element={<ContactPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
