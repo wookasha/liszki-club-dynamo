@@ -14,6 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
+      league_table: {
+        Row: {
+          created_at: string
+          drawn: number
+          goals_against: number
+          goals_for: number
+          id: string
+          is_own_team: boolean
+          lost: number
+          played: number
+          points: number
+          position: number
+          team: string
+          won: number
+        }
+        Insert: {
+          created_at?: string
+          drawn?: number
+          goals_against?: number
+          goals_for?: number
+          id?: string
+          is_own_team?: boolean
+          lost?: number
+          played?: number
+          points?: number
+          position: number
+          team: string
+          won?: number
+        }
+        Update: {
+          created_at?: string
+          drawn?: number
+          goals_against?: number
+          goals_for?: number
+          id?: string
+          is_own_team?: boolean
+          lost?: number
+          played?: number
+          points?: number
+          position?: number
+          team?: string
+          won?: number
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          away_team: string
+          created_at: string
+          home_team: string
+          id: string
+          is_played: boolean
+          league: string
+          match_date: string
+          score_away: number | null
+          score_home: number | null
+          venue: string
+        }
+        Insert: {
+          away_team: string
+          created_at?: string
+          home_team: string
+          id?: string
+          is_played?: boolean
+          league?: string
+          match_date: string
+          score_away?: number | null
+          score_home?: number | null
+          venue?: string
+        }
+        Update: {
+          away_team?: string
+          created_at?: string
+          home_team?: string
+          id?: string
+          is_played?: boolean
+          league?: string
+          match_date?: string
+          score_away?: number | null
+          score_home?: number | null
+          venue?: string
+        }
+        Relationships: []
+      }
       news_posts: {
         Row: {
           author_id: string | null

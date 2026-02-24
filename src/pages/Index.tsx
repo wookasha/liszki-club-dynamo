@@ -21,50 +21,55 @@ const demoNews = [
   { id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież" },
   { id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub" },
 ];
-const leagueTable = [
-  { pos: 1, team: "Orlęta Ryczów", played: 18, points: 42 },
-  { pos: 2, team: "Skała Nowa Huta", played: 18, points: 38 },
-  { pos: 3, team: "Liszczanka Liszki", played: 18, points: 35, highlight: true },
-  { pos: 4, team: "Wawel Kraków", played: 18, points: 33 },
-  { pos: 5, team: "Borek Kraków", played: 18, points: 30 },
-];
 
 const sponsors = [
-  "Gmina Liszki – Urząd",
-  "MIKI – lider zielonych zmian",
-  "PH Instal",
-  "Stomatologia Stupka",
-  "Centrum Medyczne Liszki",
-  "Entek – Hurtownia opakowań",
-  "Royal Ride – Wynajem Limuzyn",
-  "TransHandel",
-  "U Jędrusia Cieszy Smakiem",
+  "Gmina Liszki – Urząd", "MIKI – lider zielonych zmian", "PH Instal",
+  "Stomatologia Stupka", "Centrum Medyczne Liszki", "Entek – Hurtownia opakowań",
+  "Royal Ride – Wynajem Limuzyn", "TransHandel", "U Jędrusia Cieszy Smakiem",
 ];
 
-const lastResults = [
-  { home: "Liszczanka", away: "Orkan", score: "3:1", win: true },
-  { home: "Hutnik II", away: "Liszczanka", score: "0:2", win: true },
-  { home: "Liszczanka", away: "Skała", score: "1:1", win: false },
-];
+interface NextMatchData { date: string; home: string; away: string; venue: string; }
+interface LeagueRow { position: number; team: string; played: number; points: number; is_own_team: boolean; }
+interface LastResult { home: string; away: string; score_home: number; score_away: number; }
 
 const Index = () => {
   const [news, setNews] = useState(demoNews);
+  const [nextMatch, setNextMatch] = useState<NextMatchData | null>(null);
+  const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
+  const [lastResults, setLastResults] = useState<LastResult[]>([]);
 
   useEffect(() => {
-    const fetchNews = async () => {
-      const { data } = await supabase
-        .from("news_posts")
-        .select("id, title, excerpt, category, created_at")
-        .eq("published", true)
-        .order("created_at", { ascending: false })
-        .limit(3);
-      if (data && data.length > 0) {
-        setNews(data);
-      }
-    };
-    fetchNews();
-  }, []);
+    // Fetch news
+    supabase.from("news_posts").select("id, title, excerpt, category, created_at")
+      .eq("published", true).order("created_at", { ascending: false }).limit(3)
+      .then(({ data }) => { if (data && data.length > 0) setNews(data); });
 
+    // Fetch next match
+    supabase.from("matches").select("*")
+      .eq("is_played", false).order("match_date", { ascending: true }).limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const m = data[0] as any;
+          setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd" });
+        }
+      });
+
+    // Fetch last results
+    supabase.from("matches").select("*")
+      .eq("is_played", true).order("match_date", { ascending: false }).limit(3)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setLastResults((data as any[]).map((m) => ({ home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away })));
+        }
+      });
+
+    // Fetch league table (top 5)
+    supabase.from("league_table").select("*")
+      .order("position", { ascending: true }).limit(5)
+      .then(({ data }) => {
+        if (data && data.length > 0) setLeagueTable(data as LeagueRow[]);
+      });
+  }, []);
   return (
     <div>
       {/* Hero Section */}
@@ -118,6 +123,7 @@ const Index = () => {
           </motion.div>
 
           {/* Countdown */}
+          {nextMatch && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -133,6 +139,7 @@ const Index = () => {
               {nextMatch.home} vs {nextMatch.away} • {nextMatch.venue}
             </p>
           </motion.div>
+          )}
         </div>
 
         {/* Scroll indicator */}
@@ -146,12 +153,13 @@ const Index = () => {
       </section>
 
       {/* Next Match */}
+      {nextMatch && (
       <section className="py-16 bg-card/50">
         <div className="container mx-auto px-4">
           <ScrollAnimation>
             <div className="glass-card p-6 md:p-8 rounded-xl max-w-3xl mx-auto text-center">
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                {nextMatch.league}
+                Klasa okręgowa, grupa II
               </p>
               <div className="flex items-center justify-center gap-4 md:gap-8 my-6">
                 <div className="text-center">
@@ -163,22 +171,15 @@ const Index = () => {
                 <div>
                   <p className="font-heading text-3xl md:text-4xl font-bold text-muted-foreground">VS</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {new Date(nextMatch.date).toLocaleDateString("pl-PL", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {new Date(nextMatch.date).toLocaleDateString("pl-PL", { day: "numeric", month: "long", year: "numeric" })}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(nextMatch.date).toLocaleTimeString("pl-PL", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {new Date(nextMatch.date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border border-border flex items-center justify-center mx-auto mb-2">
-                    <span className="font-heading text-sm font-bold text-muted-foreground">WAW</span>
+                    <span className="font-heading text-sm font-bold text-muted-foreground">{nextMatch.away.substring(0, 3).toUpperCase()}</span>
                   </div>
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.away}</p>
                 </div>
@@ -191,26 +192,35 @@ const Index = () => {
           </ScrollAnimation>
         </div>
       </section>
+      )}
 
       {/* Last Results */}
+      {lastResults.length > 0 && (
       <section className="py-4 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-6 overflow-x-auto py-2 justify-center">
             <span className="text-xs text-muted-foreground uppercase tracking-wider shrink-0 font-medium">
               Ostatnie wyniki:
             </span>
-            {lastResults.map((r, i) => (
-              <div key={i} className="flex items-center gap-2 shrink-0 text-sm">
-                <span className="text-foreground font-medium">{r.home}</span>
-                <span className={`font-heading font-bold px-2 py-0.5 rounded ${r.win ? "bg-pitch-green/20 text-pitch-green" : "bg-muted text-muted-foreground"}`}>
-                  {r.score}
-                </span>
-                <span className="text-foreground font-medium">{r.away}</span>
-              </div>
-            ))}
+            {lastResults.map((r, i) => {
+              const liszczankaHome = r.home.includes("Liszczanka");
+              const lGoals = liszczankaHome ? r.score_home : r.score_away;
+              const oGoals = liszczankaHome ? r.score_away : r.score_home;
+              const win = lGoals > oGoals;
+              return (
+                <div key={i} className="flex items-center gap-2 shrink-0 text-sm">
+                  <span className="text-foreground font-medium">{r.home}</span>
+                  <span className={`font-heading font-bold px-2 py-0.5 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : "bg-muted text-muted-foreground"}`}>
+                    {r.score_home}:{r.score_away}
+                  </span>
+                  <span className="text-foreground font-medium">{r.away}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
+      )}
 
       {/* News */}
       <section className="py-16">
@@ -282,15 +292,13 @@ const Index = () => {
                 <tbody>
                   {leagueTable.map((row) => (
                     <tr
-                      key={row.pos}
+                      key={row.position}
                       className={`border-b border-border/50 last:border-0 ${
-                        row.highlight
-                          ? "bg-primary/10 border-l-2 border-l-primary"
-                          : ""
+                        row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""
                       }`}
                     >
-                      <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{row.pos}</td>
-                      <td className={`py-3 px-4 text-sm font-medium ${row.highlight ? "text-primary font-bold" : "text-foreground"}`}>
+                      <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{row.position}</td>
+                      <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
                         {row.team}
                       </td>
                       <td className="py-3 px-4 text-sm text-center text-muted-foreground">{row.played}</td>
