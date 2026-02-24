@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Eye, EyeOff, LogOut, Save, ArrowLeft, X } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, LogOut, Save, ArrowLeft, X, Upload, Image } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
 interface NewsPost {
@@ -24,6 +24,8 @@ const AdminPage = () => {
   const [editing, setEditing] = useState<NewsPost | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
     content: "",
@@ -117,16 +119,51 @@ const AdminPage = () => {
       image_url: post.image_url || "",
       published: post.published,
     });
+    setImagePreview(post.image_url || null);
   };
 
   const startCreate = () => {
     setCreating(true);
     setEditing(null);
     resetForm();
+    setImagePreview(null);
   };
 
   const resetForm = () => {
     setForm({ title: "", content: "", excerpt: "", category: "Klub", image_url: "", published: false });
+    setImagePreview(null);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("news-images")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      alert("Błąd uploadu: " + uploadError.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("news-images")
+      .getPublicUrl(fileName);
+
+    setForm((prev) => ({ ...prev, image_url: publicUrl }));
+    setImagePreview(publicUrl);
+    setUploading(false);
+  };
+
+  const removeImage = () => {
+    setForm((prev) => ({ ...prev, image_url: "" }));
+    setImagePreview(null);
   };
 
   const cancelEdit = () => {
@@ -207,16 +244,41 @@ const AdminPage = () => {
                       ))}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">URL zdjęcia (opcjonalnie)</label>
-                    <input
-                      type="url"
-                      value={form.image_url}
-                      onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                      placeholder="https://..."
-                    />
-                  </div>
+                </div>
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Zdjęcie</label>
+                  {imagePreview ? (
+                    <div className="relative inline-block">
+                      <img src={imagePreview} alt="Podgląd" className="h-40 rounded-lg object-cover border border-border" />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs hover:bg-destructive/80"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors bg-muted/50">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        disabled={uploading}
+                      />
+                      {uploading ? (
+                        <span className="text-sm text-muted-foreground">Przesyłanie...</span>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                          <span className="text-sm text-muted-foreground">Kliknij, aby dodać zdjęcie</span>
+                          <span className="text-xs text-muted-foreground/60 mt-1">JPG, PNG, WebP</span>
+                        </>
+                      )}
+                    </label>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">Krótki opis</label>
