@@ -70,6 +70,7 @@ export type Database = {
           match_date: string
           score_away: number | null
           score_home: number | null
+          scorers: Json | null
           venue: string
         }
         Insert: {
@@ -82,6 +83,7 @@ export type Database = {
           match_date: string
           score_away?: number | null
           score_home?: number | null
+          scorers?: Json | null
           venue?: string
         }
         Update: {
@@ -94,6 +96,7 @@ export type Database = {
           match_date?: string
           score_away?: number | null
           score_home?: number | null
+          scorers?: Json | null
           venue?: string
         }
         Relationships: []
