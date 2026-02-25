@@ -1,32 +1,48 @@
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
-const galleries = [
-  {
-    name: "Sezon 2025/2026",
-    photos: [
-      { id: 1, color: "from-primary/30 to-secondary/30", label: "Mecz z Orlętami" },
-      { id: 2, color: "from-secondary/30 to-pitch-green/30", label: "Trening drużyny" },
-      { id: 3, color: "from-pitch-green/30 to-primary/30", label: "Derbowe emocje" },
-      { id: 4, color: "from-primary/20 to-secondary/20", label: "Kibice Liszczanki" },
-      { id: 5, color: "from-secondary/20 to-primary/20", label: "Szatnia po meczu" },
-      { id: 6, color: "from-pitch-green/20 to-secondary/20", label: "Puchar gminy" },
-    ],
-  },
-  {
-    name: "Młodzież 2025",
-    photos: [
-      { id: 7, color: "from-primary/30 to-pitch-green/30", label: "Turniej młodzików" },
-      { id: 8, color: "from-secondary/30 to-primary/30", label: "Trening żaków" },
-      { id: 9, color: "from-pitch-green/30 to-secondary/30", label: "Orliki na boisku" },
-    ],
-  },
-];
+interface GalleryPhoto {
+  id: string;
+  title: string;
+  album: string;
+  image_url: string;
+  sort_order: number;
+}
 
 const GalleryPage = () => {
-  const [lightbox, setLightbox] = useState<{ label: string; color: string } | null>(null);
+  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState<GalleryPhoto | null>(null);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await supabase
+        .from("gallery_photos")
+        .select("id, title, album, image_url, sort_order")
+        .order("album")
+        .order("sort_order", { ascending: true });
+      setPhotos((data as GalleryPhoto[]) || []);
+      setLoading(false);
+    };
+    fetch();
+  }, []);
+
+  const grouped = photos.reduce<Record<string, GalleryPhoto[]>>((acc, p) => {
+    (acc[p.album] = acc[p.album] || []).push(p);
+    return acc;
+  }, {});
+
+  const allPhotos = Object.values(grouped).flat();
+  const currentIndex = lightbox ? allPhotos.findIndex(p => p.id === lightbox.id) : -1;
+
+  const navigate = (dir: -1 | 1) => {
+    if (currentIndex < 0) return;
+    const next = (currentIndex + dir + allPhotos.length) % allPhotos.length;
+    setLightbox(allPhotos[next]);
+  };
 
   return (
     <div className="pt-24 pb-16">
@@ -36,25 +52,31 @@ const GalleryPage = () => {
           <div className="section-heading-accent mb-10" />
         </ScrollAnimation>
 
-        {galleries.map((gallery) => (
-          <div key={gallery.name} className="mb-14">
-            <ScrollAnimation>
-              <h2 className="font-heading text-2xl font-bold text-foreground mb-6">{gallery.name}</h2>
-            </ScrollAnimation>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {gallery.photos.map((photo, i) => (
-                <ScrollAnimation key={photo.id} delay={i * 0.05}>
-                  <div
-                    onClick={() => setLightbox(photo)}
-                    className={`aspect-[4/3] bg-gradient-to-br ${photo.color} rounded-xl cursor-pointer hover-lift flex items-center justify-center border border-border/50`}
-                  >
-                    <span className="text-sm text-muted-foreground font-medium">{photo.label}</span>
-                  </div>
-                </ScrollAnimation>
-              ))}
+        {loading ? (
+          <p className="text-muted-foreground text-center py-12">Ładowanie galerii...</p>
+        ) : photos.length === 0 ? (
+          <p className="text-muted-foreground text-center py-12">Galeria jest pusta. Wkrótce pojawią się zdjęcia!</p>
+        ) : (
+          Object.entries(grouped).map(([album, items]) => (
+            <div key={album} className="mb-14">
+              <ScrollAnimation>
+                <h2 className="font-heading text-2xl font-bold text-foreground mb-6">{album}</h2>
+              </ScrollAnimation>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {items.map((photo, i) => (
+                  <ScrollAnimation key={photo.id} delay={i * 0.05}>
+                    <div
+                      onClick={() => setLightbox(photo)}
+                      className="aspect-[4/3] rounded-xl cursor-pointer hover-lift overflow-hidden border border-border/50"
+                    >
+                      <img src={photo.image_url} alt={photo.title} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  </ScrollAnimation>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
 
         {/* Lightbox */}
         <AnimatePresence>
@@ -66,20 +88,25 @@ const GalleryPage = () => {
               className="fixed inset-0 z-50 bg-background/95 flex items-center justify-center p-4"
               onClick={() => setLightbox(null)}
             >
-              <button
-                onClick={() => setLightbox(null)}
-                className="absolute top-6 right-6 text-foreground hover:text-primary transition-colors"
-              >
+              <button onClick={() => setLightbox(null)} className="absolute top-6 right-6 text-foreground hover:text-primary transition-colors z-10">
                 <X className="w-8 h-8" />
               </button>
+              <button onClick={(e) => { e.stopPropagation(); navigate(-1); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 text-foreground hover:text-primary transition-colors z-10">
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+              <button onClick={(e) => { e.stopPropagation(); navigate(1); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-foreground hover:text-primary transition-colors z-10">
+                <ChevronRight className="w-8 h-8" />
+              </button>
               <motion.div
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.9 }}
-                className={`w-full max-w-3xl aspect-video bg-gradient-to-br ${lightbox.color} rounded-2xl flex items-center justify-center border border-border`}
+                key={lightbox.id}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-4xl max-h-[85vh] flex flex-col items-center"
                 onClick={(e) => e.stopPropagation()}
               >
-                <p className="text-lg font-heading font-bold text-foreground">{lightbox.label}</p>
+                <img src={lightbox.image_url} alt={lightbox.title} className="max-w-full max-h-[80vh] object-contain rounded-xl" />
+                <p className="mt-3 text-sm font-heading font-bold text-foreground">{lightbox.title}</p>
               </motion.div>
             </motion.div>
           )}

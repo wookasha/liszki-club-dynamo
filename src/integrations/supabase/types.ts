@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      gallery_photos: {
+        Row: {
+          album: string
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          album?: string
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          album?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       league_table: {
         Row: {
           created_at: string
