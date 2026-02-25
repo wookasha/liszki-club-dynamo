@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Save, X, Home, MapPin } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, UserPlus, Minus } from "lucide-react";
+
+interface Scorer {
+  player: string;
+  goals: number;
+  team: "home" | "away";
+}
 
 interface Match {
   id: string;
@@ -8,10 +14,24 @@ interface Match {
   home_team: string;
   away_team: string;
   venue: string;
+  league: string;
   score_home: number | null;
   score_away: number | null;
   is_played: boolean;
+  scorers: Scorer[];
 }
+
+const defaultForm = {
+  match_date: "",
+  home_team: "Liszczanka Liszki",
+  away_team: "",
+  venue: "dom",
+  league: "Klasa okręgowa, grupa II",
+  score_home: "",
+  score_away: "",
+  is_played: false,
+  scorers: [] as Scorer[],
+};
 
 const AdminMatches = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -19,34 +39,40 @@ const AdminMatches = () => {
   const [editing, setEditing] = useState<Match | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
-    match_date: "", home_team: "Liszczanka Liszki", away_team: "", venue: "dom",
-    score_home: "", score_away: "", is_played: false,
-  });
+  const [form, setForm] = useState({ ...defaultForm });
 
   useEffect(() => { fetchMatches(); }, []);
 
   const fetchMatches = async () => {
-    const { data } = await supabase.from("matches").select("*").order("match_date", { ascending: false });
-    setMatches((data as Match[]) || []);
+    const { data, error } = await supabase.from("matches").select("*").order("match_date", { ascending: false });
+    if (error) console.error("Fetch matches error:", error);
+    setMatches((data as unknown as Match[]) || []);
     setLoading(false);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const payload = {
+    const payload: Record<string, unknown> = {
       match_date: form.match_date,
       home_team: form.home_team,
       away_team: form.away_team,
       venue: form.venue,
+      league: form.league,
       score_home: form.is_played && form.score_home !== "" ? Number(form.score_home) : null,
       score_away: form.is_played && form.score_away !== "" ? Number(form.score_away) : null,
       is_played: form.is_played,
+      scorers: form.is_played ? form.scorers : [],
     };
+
+    let error;
     if (editing) {
-      await supabase.from("matches").update(payload).eq("id", editing.id);
+      ({ error } = await supabase.from("matches").update(payload as any).eq("id", editing.id));
     } else {
-      await supabase.from("matches").insert(payload);
+      ({ error } = await supabase.from("matches").insert(payload as any));
+    }
+    if (error) {
+      console.error("Save match error:", error);
+      alert("Błąd zapisu: " + error.message);
     }
     setSaving(false);
     cancel();
@@ -60,26 +86,52 @@ const AdminMatches = () => {
   };
 
   const startEdit = (m: Match) => {
-    setEditing(m); setCreating(false);
+    setEditing(m);
+    setCreating(false);
     setForm({
       match_date: m.match_date.slice(0, 16),
-      home_team: m.home_team, away_team: m.away_team, venue: m.venue,
-      score_home: m.score_home?.toString() || "", score_away: m.score_away?.toString() || "",
+      home_team: m.home_team,
+      away_team: m.away_team,
+      venue: m.venue,
+      league: m.league || "Klasa okręgowa, grupa II",
+      score_home: m.score_home?.toString() || "",
+      score_away: m.score_away?.toString() || "",
       is_played: m.is_played,
+      scorers: (m.scorers as Scorer[]) || [],
     });
   };
 
   const cancel = () => {
-    setEditing(null); setCreating(false);
-    setForm({ match_date: "", home_team: "Liszczanka Liszki", away_team: "", venue: "dom", score_home: "", score_away: "", is_played: false });
+    setEditing(null);
+    setCreating(false);
+    setForm({ ...defaultForm, scorers: [] });
+  };
+
+  const addScorer = (team: "home" | "away") => {
+    setForm({
+      ...form,
+      scorers: [...form.scorers, { player: "", goals: 1, team }],
+    });
+  };
+
+  const updateScorer = (index: number, field: keyof Scorer, value: string | number) => {
+    const updated = [...form.scorers];
+    updated[index] = { ...updated[index], [field]: value };
+    setForm({ ...form, scorers: updated });
+  };
+
+  const removeScorer = (index: number) => {
+    setForm({ ...form, scorers: form.scorers.filter((_, i) => i !== index) });
   };
 
   const showForm = editing || creating;
 
+  const inputClass = "w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary";
+
   return (
     <div>
       {!showForm && (
-        <button onClick={() => { setCreating(true); cancel(); }} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors mb-6">
+        <button onClick={() => { setCreating(true); cancel(); setCreating(true); }} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors mb-6">
           <Plus className="w-4 h-4" /> Dodaj mecz
         </button>
       )}
@@ -93,40 +145,72 @@ const AdminMatches = () => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Data i godzina</label>
-              <input type="datetime-local" value={form.match_date} onChange={(e) => setForm({ ...form, match_date: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input type="datetime-local" value={form.match_date} onChange={(e) => setForm({ ...form, match_date: e.target.value })} className={inputClass} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gospodarz</label>
-                <input type="text" value={form.home_team} onChange={(e) => setForm({ ...form, home_team: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="text" value={form.home_team} onChange={(e) => setForm({ ...form, home_team: e.target.value })} className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gość</label>
-                <input type="text" value={form.away_team} onChange={(e) => setForm({ ...form, away_team: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="text" value={form.away_team} onChange={(e) => setForm({ ...form, away_team: e.target.value })} className={inputClass} />
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Miejsce</label>
-              <select value={form.venue} onChange={(e) => setForm({ ...form, venue: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="dom">Dom</option>
-                <option value="wyjazd">Wyjazd</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Miejsce</label>
+                <select value={form.venue} onChange={(e) => setForm({ ...form, venue: e.target.value })} className={inputClass}>
+                  <option value="dom">Dom</option>
+                  <option value="wyjazd">Wyjazd</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Liga</label>
+                <input type="text" value={form.league} onChange={(e) => setForm({ ...form, league: e.target.value })} className={inputClass} />
+              </div>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.is_played} onChange={(e) => setForm({ ...form, is_played: e.target.checked })} className="w-4 h-4 rounded" />
               <span className="text-sm font-medium text-foreground">Mecz rozegrany</span>
             </label>
             {form.is_played && (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Bramki gospodarz</label>
-                  <input type="number" min={0} value={form.score_home} onChange={(e) => setForm({ ...form, score_home: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Bramki gospodarz</label>
+                    <input type="number" min={0} value={form.score_home} onChange={(e) => setForm({ ...form, score_home: e.target.value })} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Bramki gość</label>
+                    <input type="number" min={0} value={form.score_away} onChange={(e) => setForm({ ...form, score_away: e.target.value })} className={inputClass} />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Bramki gość</label>
-                  <input type="number" min={0} value={form.score_away} onChange={(e) => setForm({ ...form, score_away: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+
+                {/* Scorers section */}
+                <div className="border border-border rounded-lg p-4 space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Strzelcy</h3>
+                  {form.scorers.map((scorer, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <select value={scorer.team} onChange={(e) => updateScorer(i, "team", e.target.value)} className="px-2 py-2 bg-muted border border-border rounded-md text-foreground text-xs w-24">
+                        <option value="home">Gosp.</option>
+                        <option value="away">Gość</option>
+                      </select>
+                      <input type="text" placeholder="Nazwisko" value={scorer.player} onChange={(e) => updateScorer(i, "player", e.target.value)} className="flex-1 px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm" />
+                      <input type="number" min={1} value={scorer.goals} onChange={(e) => updateScorer(i, "goals", Number(e.target.value))} className="w-16 px-2 py-2 bg-muted border border-border rounded-md text-foreground text-sm text-center" />
+                      <button onClick={() => removeScorer(i)} className="p-1.5 text-muted-foreground hover:text-destructive"><Minus className="w-4 h-4" /></button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2">
+                    <button onClick={() => addScorer("home")} className="flex items-center gap-1 px-3 py-1.5 text-xs bg-muted border border-border rounded-md text-foreground hover:bg-accent transition-colors">
+                      <UserPlus className="w-3 h-3" /> Strzelec gosp.
+                    </button>
+                    <button onClick={() => addScorer("away")} className="flex items-center gap-1 px-3 py-1.5 text-xs bg-muted border border-border rounded-md text-foreground hover:bg-accent transition-colors">
+                      <UserPlus className="w-3 h-3" /> Strzelec gość
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
             <button onClick={handleSave} disabled={saving || !form.match_date || !form.home_team || !form.away_team} className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
               <Save className="w-4 h-4" /> {saving ? "Zapisywanie..." : "Zapisz"}
@@ -137,27 +221,35 @@ const AdminMatches = () => {
 
       {loading ? <p className="text-muted-foreground text-center py-8">Ładowanie...</p> : matches.length === 0 ? <p className="text-muted-foreground text-center py-8">Brak meczów.</p> : (
         <div className="space-y-3">
-          {matches.map((m) => (
-            <div key={m.id} className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "short" })} {new Date(m.match_date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                  <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
-                    {m.venue === "dom" ? "Dom" : "Wyjazd"}
-                  </span>
+          {matches.map((m) => {
+            const scorers = (m.scorers as Scorer[]) || [];
+            return (
+              <div key={m.id} className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "short" })} {new Date(m.match_date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
+                      {m.venue === "dom" ? "Dom" : "Wyjazd"}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground">
+                    {m.home_team} {m.is_played ? <span className="font-heading font-bold text-primary">{m.score_home}:{m.score_away}</span> : "vs"} {m.away_team}
+                  </p>
+                  {m.is_played && scorers.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ⚽ {scorers.map(s => `${s.player}${s.goals > 1 ? ` (${s.goals})` : ""}`).join(", ")}
+                    </p>
+                  )}
                 </div>
-                <p className="text-sm font-medium text-foreground">
-                  {m.home_team} {m.is_played ? <span className="font-heading font-bold text-primary">{m.score_home}:{m.score_away}</span> : "vs"} {m.away_team}
-                </p>
+                <div className="flex gap-1 shrink-0">
+                  <button onClick={() => startEdit(m)} className="p-2 text-muted-foreground hover:text-secondary"><Edit className="w-4 h-4" /></button>
+                  <button onClick={() => handleDelete(m.id)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
+                </div>
               </div>
-              <div className="flex gap-1 shrink-0">
-                <button onClick={() => startEdit(m)} className="p-2 text-muted-foreground hover:text-secondary"><Edit className="w-4 h-4" /></button>
-                <button onClick={() => handleDelete(m.id)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
