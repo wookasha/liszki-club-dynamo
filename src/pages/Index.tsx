@@ -26,7 +26,7 @@ const demoNews = [
 interface SponsorData { id: string; name: string; logo_url: string | null; website_url: string | null; }
 
 interface NextMatchData { date: string; home: string; away: string; venue: string; }
-interface LeagueRow { position: number; team: string; played: number; points: number; is_own_team: boolean; }
+interface LeagueRow { position: number; team: string; played: number; points: number; is_own_team: boolean; logo_url: string | null; }
 interface LastResult { home: string; away: string; score_home: number; score_away: number; }
 
 const Index = () => {
@@ -307,7 +307,14 @@ const Index = () => {
                     >
                       <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{row.position}</td>
                       <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
-                        {row.team}
+                        <div className="flex items-center gap-2">
+                          {row.logo_url ? (
+                            <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-muted shrink-0" />
+                          )}
+                          {row.team}
+                        </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-center text-muted-foreground">{row.played}</td>
                       <td className="py-3 px-4 text-sm text-center font-bold text-foreground">{row.points}</td>
