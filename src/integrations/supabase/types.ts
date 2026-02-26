@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      gallery_albums: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          google_photos_url: string
+          id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          google_photos_url: string
+          id?: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          google_photos_url?: string
+          id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       gallery_photos: {
         Row: {
           album: string
