@@ -1,0 +1,1 @@
+ALTER TABLE public.matches ADD COLUMN stadium_address text NOT NULL DEFAULT '';
