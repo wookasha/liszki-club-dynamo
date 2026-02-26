@@ -1,255 +1,107 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, Upload, X, Image, FolderOpen } from "lucide-react";
+import { Plus, Trash2, Edit, Save, X, ExternalLink } from "lucide-react";
 
-interface GalleryPhoto {
+interface GalleryAlbum {
   id: string;
   title: string;
-  album: string;
-  image_url: string;
+  google_photos_url: string;
+  cover_image_url: string | null;
   sort_order: number;
-  created_at: string;
-}
-
-interface Match {
-  id: string;
-  home_team: string;
-  away_team: string;
-  match_date: string;
-  is_played: boolean;
 }
 
 const AdminGallery = () => {
-  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [selectedAlbum, setSelectedAlbum] = useState("");
-  const [customAlbum, setCustomAlbum] = useState(false);
-  const [customAlbumName, setCustomAlbumName] = useState("");
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [albums, setAlbums] = useState<string[]>([]);
+  const [editing, setEditing] = useState<GalleryAlbum | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ title: "", google_photos_url: "", cover_image_url: "", sort_order: 0 });
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchAlbums(); }, []);
 
-  const fetchData = async () => {
-    const [photosRes, matchesRes] = await Promise.all([
-      supabase.from("gallery_photos").select("*").order("album").order("sort_order", { ascending: true }),
-      supabase.from("matches").select("id, home_team, away_team, match_date, is_played").order("match_date", { ascending: false }),
-    ]);
-    const items = (photosRes.data as GalleryPhoto[]) || [];
-    setPhotos(items);
-    setMatches((matchesRes.data as Match[]) || []);
-    const uniqueAlbums = [...new Set(items.map(p => p.album))];
-    setAlbums(uniqueAlbums);
+  const fetchAlbums = async () => {
+    const { data } = await supabase.from("gallery_albums").select("*").order("sort_order", { ascending: true });
+    setAlbums((data as GalleryAlbum[]) || []);
     setLoading(false);
   };
 
-  const getMatchLabel = (m: Match) => {
-    const date = new Date(m.match_date).toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: "numeric" });
-    return `${m.home_team} vs ${m.away_team} (${date})`;
-  };
-
-  const handleFilesChange = (files: FileList | null) => {
-    if (!files) return;
-    const validFiles: File[] = [];
-    const previews: string[] = [];
-    Array.from(files).forEach(file => {
-      if (file.type.startsWith("image/")) {
-        validFiles.push(file);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          previews.push(e.target?.result as string);
-          if (previews.length === validFiles.length) {
-            setImageFiles(prev => [...prev, ...validFiles]);
-            setImagePreviews(prev => [...prev, ...previews]);
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-    if (validFiles.length === 0) alert("Wybierz pliki graficzne");
-  };
-
-  const removeFile = (index: number) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
-    setImagePreviews(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    handleFilesChange(e.dataTransfer.files);
-  };
-
-  const getAlbumName = (): string => {
-    if (customAlbum) return customAlbumName;
-    const match = matches.find(m => m.id === selectedAlbum);
-    return match ? getMatchLabel(match) : selectedAlbum;
-  };
-
   const handleSave = async () => {
-    const albumName = getAlbumName();
-    if (!albumName || imageFiles.length === 0) return;
-    setUploading(true);
-
-    const currentCount = photos.filter(p => p.album === albumName).length;
-    let success = 0;
-
-    for (let i = 0; i < imageFiles.length; i++) {
-      const file = imageFiles[i];
-      const ext = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage.from("gallery-images").upload(fileName, file);
-      if (uploadError) {
-        console.error("Upload error:", uploadError.message);
-        continue;
-      }
-
-      const { data: urlData } = supabase.storage.from("gallery-images").getPublicUrl(fileName);
-
-      const { error } = await supabase.from("gallery_photos").insert({
-        title: albumName,
-        album: albumName,
-        image_url: urlData.publicUrl,
-        sort_order: currentCount + i,
-      } as any);
-
-      if (!error) success++;
-    }
-
-    if (success > 0) {
-      cancel();
-      fetchData();
+    if (!form.title || !form.google_photos_url) return;
+    setSaving(true);
+    const payload = {
+      title: form.title,
+      google_photos_url: form.google_photos_url,
+      cover_image_url: form.cover_image_url || null,
+      sort_order: form.sort_order,
+    };
+    if (editing) {
+      await supabase.from("gallery_albums").update(payload).eq("id", editing.id);
     } else {
-      alert("Nie udało się dodać zdjęć");
+      await supabase.from("gallery_albums").insert(payload);
     }
-    setUploading(false);
+    setSaving(false);
+    cancel();
+    fetchAlbums();
   };
 
-  const handleDelete = async (photo: GalleryPhoto) => {
-    if (!confirm(`Usuń to zdjęcie?`)) return;
-    const path = photo.image_url.split("/gallery-images/")[1];
-    if (path) await supabase.storage.from("gallery-images").remove([path]);
-    await supabase.from("gallery_photos").delete().eq("id", photo.id);
-    fetchData();
+  const handleDelete = async (id: string) => {
+    if (!confirm("Czy na pewno chcesz usunąć ten album?")) return;
+    await supabase.from("gallery_albums").delete().eq("id", id);
+    fetchAlbums();
   };
 
-  const handleDeleteAlbum = async (album: string) => {
-    const albumPhotos = photos.filter(p => p.album === album);
-    if (!confirm(`Usuń cały album "${album}" (${albumPhotos.length} zdjęć)?`)) return;
-    for (const photo of albumPhotos) {
-      const path = photo.image_url.split("/gallery-images/")[1];
-      if (path) await supabase.storage.from("gallery-images").remove([path]);
-      await supabase.from("gallery_photos").delete().eq("id", photo.id);
-    }
-    fetchData();
+  const startEdit = (album: GalleryAlbum) => {
+    setEditing(album);
+    setForm({ title: album.title, google_photos_url: album.google_photos_url, cover_image_url: album.cover_image_url || "", sort_order: album.sort_order });
+    setShowForm(true);
   };
 
   const cancel = () => {
     setShowForm(false);
-    setSelectedAlbum("");
-    setCustomAlbum(false);
-    setCustomAlbumName("");
-    setImageFiles([]);
-    setImagePreviews([]);
+    setEditing(null);
+    setForm({ title: "", google_photos_url: "", cover_image_url: "", sort_order: 0 });
   };
 
   const inputClass = "w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary";
-
-  const grouped = photos.reduce<Record<string, GalleryPhoto[]>>((acc, p) => {
-    (acc[p.album] = acc[p.album] || []).push(p);
-    return acc;
-  }, {});
 
   return (
     <div>
       {!showForm && (
         <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors mb-6">
-          <Plus className="w-4 h-4" /> Dodaj zdjęcia
+          <Plus className="w-4 h-4" /> Dodaj album
         </button>
       )}
 
       {showForm && (
         <div className="glass-card rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-heading text-xl font-bold text-foreground">Dodaj zdjęcia do albumu</h2>
+            <h2 className="font-heading text-xl font-bold text-foreground">{editing ? "Edytuj album" : "Nowy album"}</h2>
             <button onClick={cancel} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
           </div>
           <div className="space-y-4">
-            {/* Album selection */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Album (mecz)</label>
-              {!customAlbum ? (
-                <div className="space-y-2">
-                  <select
-                    value={selectedAlbum}
-                    onChange={(e) => setSelectedAlbum(e.target.value)}
-                    className={inputClass}
-                  >
-                    <option value="">— Wybierz mecz —</option>
-                    {matches.map(m => (
-                      <option key={m.id} value={m.id}>{getMatchLabel(m)}</option>
-                    ))}
-                    {albums.filter(a => !matches.some(m => getMatchLabel(m) === a)).map(a => (
-                      <option key={a} value={a}>{a}</option>
-                    ))}
-                  </select>
-                  <button onClick={() => setCustomAlbum(true)} className="text-xs text-primary hover:text-primary/80 transition-colors">
-                    + Własna nazwa albumu
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <input type="text" value={customAlbumName} onChange={(e) => setCustomAlbumName(e.target.value)} placeholder="Nazwa albumu" className={`${inputClass} flex-1`} />
-                  <button onClick={() => { setCustomAlbum(false); setCustomAlbumName(""); }} className="px-3 py-2 bg-muted border border-border rounded-md text-muted-foreground text-sm hover:text-foreground transition-colors">
-                    Anuluj
-                  </button>
-                </div>
+              <label className="block text-sm font-medium text-foreground mb-1">Nazwa albumu</label>
+              <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="np. Mecz z Borkiem 15.03.2026" className={inputClass} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Link do albumu Google Photos</label>
+              <input type="url" value={form.google_photos_url} onChange={(e) => setForm({ ...form, google_photos_url: e.target.value })} placeholder="https://photos.google.com/share/..." className={inputClass} />
+              <p className="text-xs text-muted-foreground mt-1">Wklej link do udostępnionego albumu z Google Photos</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Zdjęcie okładkowe (opcjonalne, URL)</label>
+              <input type="url" value={form.cover_image_url} onChange={(e) => setForm({ ...form, cover_image_url: e.target.value })} placeholder="https://..." className={inputClass} />
+              {form.cover_image_url && (
+                <img src={form.cover_image_url} alt="Okładka" className="mt-2 h-32 rounded-lg object-cover border border-border" />
               )}
             </div>
-
-            {/* Multi-file upload */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Zdjęcia (można wybrać wiele)</label>
-              <div
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById("gallery-multi-upload")?.click()}
-                className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
-              >
-                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Przeciągnij lub kliknij aby wybrać zdjęcia</p>
-                <p className="text-xs text-muted-foreground mt-1">Możesz wybrać wiele plików naraz</p>
-                <input id="gallery-multi-upload" type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFilesChange(e.target.files)} />
-              </div>
-
-              {imagePreviews.length > 0 && (
-                <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                  {imagePreviews.map((preview, i) => (
-                    <div key={i} className="relative rounded-lg overflow-hidden border border-border aspect-square">
-                      <img src={preview} alt={`Podgląd ${i + 1}`} className="w-full h-full object-cover" />
-                      <button
-                        onClick={(e) => { e.stopPropagation(); removeFile(i); }}
-                        className="absolute top-1 right-1 p-1 bg-background/80 rounded-full text-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <label className="block text-sm font-medium text-foreground mb-1">Kolejność</label>
+              <input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} className={inputClass} />
             </div>
-
-            <button
-              onClick={handleSave}
-              disabled={uploading || imageFiles.length === 0 || (!selectedAlbum && !customAlbumName)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
-              <Upload className="w-4 h-4" />
-              {uploading ? "Przesyłanie..." : `Zapisz (${imageFiles.length} ${imageFiles.length === 1 ? "zdjęcie" : imageFiles.length < 5 ? "zdjęcia" : "zdjęć"})`}
+            <button onClick={handleSave} disabled={saving || !form.title || !form.google_photos_url} className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
+              <Save className="w-4 h-4" /> {saving ? "Zapisywanie..." : "Zapisz"}
             </button>
           </div>
         </div>
@@ -257,35 +109,34 @@ const AdminGallery = () => {
 
       {loading ? (
         <p className="text-muted-foreground text-center py-8">Ładowanie...</p>
-      ) : photos.length === 0 ? (
-        <p className="text-muted-foreground text-center py-8">Brak zdjęć w galerii.</p>
+      ) : albums.length === 0 ? (
+        <p className="text-muted-foreground text-center py-8">Brak albumów.</p>
       ) : (
-        Object.entries(grouped).map(([album, items]) => (
-          <div key={album} className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-heading text-lg font-bold text-foreground flex items-center gap-2">
-                <FolderOpen className="w-5 h-5 text-primary" />
-                {album}
-                <span className="text-sm font-normal text-muted-foreground">({items.length})</span>
-              </h3>
-              <button onClick={() => handleDeleteAlbum(album)} className="text-xs text-destructive hover:text-destructive/80 transition-colors">
-                Usuń album
-              </button>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {items.map((photo) => (
-                <div key={photo.id} className="group relative rounded-lg overflow-hidden border border-border aspect-square">
-                  <img src={photo.image_url} alt={photo.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-background/0 group-hover:bg-background/60 transition-colors flex items-center justify-center">
-                    <button onClick={() => handleDelete(photo)} className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-destructive hover:text-destructive/80">
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+        <div className="space-y-3">
+          {albums.map((album) => (
+            <div key={album.id} className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                {album.cover_image_url ? (
+                  <img src={album.cover_image_url} alt={album.title} className="w-16 h-12 rounded-lg object-cover border border-border shrink-0" />
+                ) : (
+                  <div className="w-16 h-12 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0">
+                    <ExternalLink className="w-5 h-5 text-muted-foreground" />
                   </div>
+                )}
+                <div className="min-w-0">
+                  <h3 className="font-heading text-sm font-bold text-foreground truncate">{album.title}</h3>
+                  <a href={album.google_photos_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:text-primary/80 truncate block">
+                    Google Photos ↗
+                  </a>
                 </div>
-              ))}
+              </div>
+              <div className="flex gap-1 shrink-0">
+                <button onClick={() => startEdit(album)} className="p-2 text-muted-foreground hover:text-secondary"><Edit className="w-4 h-4" /></button>
+                <button onClick={() => handleDelete(album.id)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </div>
   );
