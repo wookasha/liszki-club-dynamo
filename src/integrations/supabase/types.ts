@@ -49,6 +49,7 @@ export type Database = {
           goals_for: number
           id: string
           is_own_team: boolean
+          logo_url: string | null
           lost: number
           played: number
           points: number
@@ -63,6 +64,7 @@ export type Database = {
           goals_for?: number
           id?: string
           is_own_team?: boolean
+          logo_url?: string | null
           lost?: number
           played?: number
           points?: number
@@ -77,6 +79,7 @@ export type Database = {
           goals_for?: number
           id?: string
           is_own_team?: boolean
+          logo_url?: string | null
           lost?: number
           played?: number
           points?: number

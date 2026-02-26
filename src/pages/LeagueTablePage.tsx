@@ -14,7 +14,18 @@ interface LeagueRow {
   goals_against: number;
   points: number;
   is_own_team: boolean;
+  logo_url: string | null;
 }
+
+const TeamLogo = ({ url, name }: { url: string | null; name: string }) => (
+  url ? (
+    <img src={url} alt={name} className="w-6 h-6 object-contain" />
+  ) : (
+    <div className="w-6 h-6 rounded-sm bg-muted border border-border flex items-center justify-center">
+      <span className="text-[8px] font-bold text-muted-foreground">{name.substring(0, 2).toUpperCase()}</span>
+    </div>
+  )
+);
 
 const LeagueTablePage = () => {
   const [table, setTable] = useState<LeagueRow[]>([]);
@@ -48,8 +59,8 @@ const LeagueTablePage = () => {
               <table className="w-full min-w-[600px]">
                 <thead>
                   <tr className="border-b border-border">
-                    {["#", "Drużyna", "M", "W", "R", "P", "Bz", "Bs", "Pkt"].map((h) => (
-                      <th key={h} className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center first:text-left">{h}</th>
+                    {["#", "", "Drużyna", "M", "W", "R", "P", "Bz", "Bs", "Pkt"].map((h, i) => (
+                      <th key={`${h}-${i}`} className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center first:text-left">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -57,6 +68,9 @@ const LeagueTablePage = () => {
                   {table.map((row) => (
                     <tr key={row.id} className={`border-b border-border/50 last:border-0 transition-colors hover:bg-muted/30 ${row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""}`}>
                       <td className="py-3 px-3 text-sm font-medium text-muted-foreground">{row.position}</td>
+                      <td className="py-3 px-2">
+                        <TeamLogo url={row.logo_url} name={row.team} />
+                      </td>
                       <td className={`py-3 px-3 text-sm font-medium text-left ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>{row.team}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.played}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.won}</td>
