@@ -35,13 +35,19 @@ const defaultForm = {
 
 const AdminMatches = () => {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [teams, setTeams] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Match | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...defaultForm });
 
-  useEffect(() => { fetchMatches(); }, []);
+  useEffect(() => { fetchMatches(); fetchTeams(); }, []);
+
+  const fetchTeams = async () => {
+    const { data } = await supabase.from("league_table").select("team").order("position", { ascending: true });
+    setTeams((data || []).map((r: any) => r.team));
+  };
 
   const fetchMatches = async () => {
     const { data, error } = await supabase.from("matches").select("*").order("match_date", { ascending: false });
@@ -150,11 +156,20 @@ const AdminMatches = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gospodarz</label>
-                <input type="text" value={form.home_team} onChange={(e) => setForm({ ...form, home_team: e.target.value })} className={inputClass} />
+                <select value={form.home_team} onChange={(e) => setForm({ ...form, home_team: e.target.value })} className={inputClass}>
+                  {teams.length > 0 ? teams.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  )) : <option value={form.home_team}>{form.home_team}</option>}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gość</label>
-                <input type="text" value={form.away_team} onChange={(e) => setForm({ ...form, away_team: e.target.value })} className={inputClass} />
+                <select value={form.away_team} onChange={(e) => setForm({ ...form, away_team: e.target.value })} className={inputClass}>
+                  <option value="">Wybierz drużynę</option>
+                  {teams.filter(t => t !== form.home_team).map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
