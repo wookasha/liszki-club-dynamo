@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Trophy, ArrowRight, Facebook, Instagram, MapPin, ChevronRight } from "lucide-react";
+import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
@@ -389,7 +389,7 @@ const Index = () => {
             </p>
             <div className="flex justify-center gap-4">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/LiszczankaLiszki"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-6 py-4 glass-card rounded-xl hover-lift"
@@ -401,15 +401,15 @@ const Index = () => {
                 </div>
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.youtube.com/@liszczankaliszki8483"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-6 py-4 glass-card rounded-xl hover-lift"
               >
-                <Instagram className="w-6 h-6 text-primary" />
+                <Youtube className="w-6 h-6 text-primary" />
                 <div className="text-left">
-                  <p className="text-sm font-bold text-foreground">Instagram</p>
-                  <p className="text-xs text-muted-foreground">Zobacz zdjęcia</p>
+                  <p className="text-sm font-bold text-foreground">YouTube</p>
+                  <p className="text-xs text-muted-foreground">Zobacz filmy</p>
                 </div>
               </a>
             </div>

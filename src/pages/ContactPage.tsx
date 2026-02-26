@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Mail, Phone, Facebook, Instagram, CheckCircle, Send } from "lucide-react";
+import { MapPin, Mail, Phone, Facebook, Youtube, CheckCircle, Send } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
 const ContactPage = () => {
@@ -49,8 +49,8 @@ const ContactPage = () => {
                   <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-muted rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors text-sm">
                     <Facebook className="w-4 h-4" /> Facebook
                   </a>
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-muted rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors text-sm">
-                    <Instagram className="w-4 h-4" /> Instagram
+                  <a href="https://www.youtube.com/@liszczankaliszki8483" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-muted rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors text-sm">
+                    <Youtube className="w-4 h-4" /> YouTube
                   </a>
                 </div>
               </div>
