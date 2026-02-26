@@ -23,11 +23,7 @@ const demoNews = [
   { id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null },
 ];
 
-const sponsors = [
-  "Gmina Liszki – Urząd", "MIKI – lider zielonych zmian", "PH Instal",
-  "Stomatologia Stupka", "Centrum Medyczne Liszki", "Entek – Hurtownia opakowań",
-  "Royal Ride – Wynajem Limuzyn", "TransHandel", "U Jędrusia Cieszy Smakiem",
-];
+interface SponsorData { id: string; name: string; logo_url: string | null; website_url: string | null; }
 
 interface NextMatchData { date: string; home: string; away: string; venue: string; }
 interface LeagueRow { position: number; team: string; played: number; points: number; is_own_team: boolean; }
@@ -38,6 +34,7 @@ const Index = () => {
   const [nextMatch, setNextMatch] = useState<NextMatchData | null>(null);
   const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
   const [lastResults, setLastResults] = useState<LastResult[]>([]);
+  const [sponsors, setSponsors] = useState<SponsorData[]>([]);
 
   useEffect(() => {
     // Fetch news
@@ -70,6 +67,10 @@ const Index = () => {
       .then(({ data }) => {
         if (data && data.length > 0) setLeagueTable(data as LeagueRow[]);
       });
+
+    // Fetch sponsors
+    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true })
+      .then(({ data }) => { if (data) setSponsors(data as SponsorData[]); });
   }, []);
   return (
     <div>
@@ -333,11 +334,25 @@ const Index = () => {
           </ScrollAnimation>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {sponsors.map((name, i) => (
-              <ScrollAnimation key={name} delay={i * 0.05}>
-                <div className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
-                  <p className="text-xs md:text-sm font-medium text-muted-foreground">{name}</p>
-                </div>
+            {sponsors.map((sponsor, i) => (
+              <ScrollAnimation key={sponsor.id} delay={i * 0.05}>
+                {sponsor.website_url ? (
+                  <a href={sponsor.website_url} target="_blank" rel="noopener noreferrer" className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
+                    {sponsor.logo_url ? (
+                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
+                    ) : (
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground">{sponsor.name}</p>
+                    )}
+                  </a>
+                ) : (
+                  <div className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
+                    {sponsor.logo_url ? (
+                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
+                    ) : (
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground">{sponsor.name}</p>
+                    )}
+                  </div>
+                )}
               </ScrollAnimation>
             ))}
           </div>
