@@ -143,8 +143,9 @@ const SponsorsPage = () => {
                     )}
                   </div>
                 );
+                const href = sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`;
                 return sponsor.website_url ? (
-                  <a key={sponsor.id} href={sponsor.website_url} target="_blank" rel="noopener noreferrer">
+                  <a key={sponsor.id} href={href} target="_blank" rel="noopener noreferrer">
                     {content}
                   </a>
                 ) : (
