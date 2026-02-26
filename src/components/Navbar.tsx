@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import clubLogo from "@/assets/club-logo.png";
 
 const navLinks = [
 { href: "/", label: "Strona główna" },
@@ -41,8 +42,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-muted border-2 border-primary/50 flex items-center justify-center overflow-hidden group-hover:border-primary transition-colors">
-              <span className="text-xs font-heading font-bold text-primary">LKS</span>
+            <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center overflow-hidden">
+              <img src={clubLogo} alt="LKS Liszczanka Liszki" className="w-full h-full object-contain" />
             </div>
             <div className="hidden sm:block">
               <p className="font-heading text-lg md:text-xl font-bold text-foreground leading-none">
