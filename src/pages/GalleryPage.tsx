@@ -11,6 +11,31 @@ interface GalleryAlbum {
   sort_order: number;
 }
 
+const CoverImage = ({ url, title }: { url: string | null; title: string }) => {
+  const [error, setError] = useState(false);
+
+  if (!url || error) {
+    return (
+      <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+        <Image className="w-16 h-16 text-muted-foreground/30" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="aspect-[4/3] overflow-hidden">
+      <img
+        src={url}
+        alt={title}
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        onError={() => setError(true)}
+      />
+    </div>
+  );
+};
+
 const GalleryPage = () => {
   const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,20 +67,7 @@ const GalleryPage = () => {
                   rel="noopener noreferrer"
                   className="glass-card rounded-xl overflow-hidden hover-lift group block"
                 >
-                  {album.cover_image_url ? (
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <img
-                        src={album.cover_image_url}
-                        alt={album.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-                  ) : (
-                    <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                      <Image className="w-16 h-16 text-muted-foreground/30" />
-                    </div>
-                  )}
+                  <CoverImage url={album.cover_image_url} title={album.title} />
                   <div className="p-5 flex items-center justify-between">
                     <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                       {album.title}
