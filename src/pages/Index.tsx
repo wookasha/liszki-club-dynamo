@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import CountdownTimer from "@/components/CountdownTimer";
 import heroImage from "@/assets/hero-stadium.jpg";
+import clubLogo from "@/assets/club-logo.png";
 
 // Demo data
 const nextMatch = {
@@ -87,9 +88,9 @@ const Index = () => {
             transition={{ duration: 0.8 }}
             className="max-w-4xl mx-auto"
           >
-            {/* Club badge placeholder */}
-            <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 rounded-full bg-muted border-2 border-primary/50 flex items-center justify-center">
-              <span className="font-heading text-xl md:text-2xl font-bold text-primary">HERB</span>
+            {/* Club badge */}
+            <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6">
+              <img src={clubLogo} alt="LKS Liszczanka Liszki" className="w-full h-full object-contain" />
             </div>
 
             <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-tight">
