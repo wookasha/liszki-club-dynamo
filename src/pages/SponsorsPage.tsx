@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle, Star, Award, Shield, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
+
+interface Sponsor {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  website_url: string | null;
+}
 
 const packages = [
   {
@@ -26,21 +34,15 @@ const packages = [
   },
 ];
 
-const currentSponsors = [
-  "Gmina Liszki – Urząd",
-  "MIKI – lider zielonych zmian",
-  "PH Instal",
-  "Stomatologia Stupka",
-  "Centrum Medyczne Liszki",
-  "Entek – Hurtownia opakowań, środków czyszczących",
-  "Royal Ride – Wynajem Limuzyn",
-  "TransHandel",
-  "U Jędrusia Cieszy Smakiem",
-];
-
 const SponsorsPage = () => {
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [formData, setFormData] = useState({ name: "", company: "", email: "", phone: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true })
+      .then(({ data }) => setSponsors((data as Sponsor[]) || []));
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,9 +62,7 @@ const SponsorsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {packages.map((pkg, i) => (
             <ScrollAnimation key={pkg.name} delay={i * 0.1}>
-              <div className={`glass-card rounded-xl p-6 relative hover-lift ${
-                pkg.popular ? "border-primary ring-1 ring-primary/50" : ""
-              }`}>
+              <div className={`glass-card rounded-xl p-6 relative hover-lift ${pkg.popular ? "border-primary ring-1 ring-primary/50" : ""}`}>
                 {pkg.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold uppercase rounded-full">
                     Najpopularniejszy
@@ -129,16 +129,31 @@ const SponsorsPage = () => {
         </ScrollAnimation>
 
         {/* Current Sponsors */}
-        <ScrollAnimation>
-          <h2 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">Nasi partnerzy</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            {currentSponsors.map((name) => (
-              <div key={name} className="glass-card rounded-lg p-4 text-center hover-lift">
-                <p className="text-sm font-medium text-muted-foreground">{name}</p>
-              </div>
-            ))}
-          </div>
-        </ScrollAnimation>
+        {sponsors.length > 0 && (
+          <ScrollAnimation>
+            <h2 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">Nasi partnerzy</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              {sponsors.map((sponsor) => {
+                const content = (
+                  <div className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift min-h-[100px] flex items-center justify-center">
+                    {sponsor.logo_url ? (
+                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-16 max-w-full object-contain" />
+                    ) : (
+                      <p className="text-sm font-medium text-muted-foreground">{sponsor.name}</p>
+                    )}
+                  </div>
+                );
+                return sponsor.website_url ? (
+                  <a key={sponsor.id} href={sponsor.website_url} target="_blank" rel="noopener noreferrer">
+                    {content}
+                  </a>
+                ) : (
+                  <div key={sponsor.id}>{content}</div>
+                );
+              })}
+            </div>
+          </ScrollAnimation>
+        )}
       </div>
     </div>
   );

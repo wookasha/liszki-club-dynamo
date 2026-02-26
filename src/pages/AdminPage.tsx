@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon } from "lucide-react";
+import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
 import AdminLeague from "@/components/admin/AdminLeague";
 import AdminGallery from "@/components/admin/AdminGallery";
+import AdminSponsors from "@/components/admin/AdminSponsors";
 
 const tabs = [
   { id: "news", label: "Aktualności", icon: Newspaper },
   { id: "matches", label: "Terminarz", icon: Calendar },
   { id: "league", label: "Tabela", icon: Trophy },
   { id: "gallery", label: "Galeria", icon: ImageIcon },
+  { id: "sponsors", label: "Sponsorzy", icon: Handshake },
 ] as const;
 
 type TabId = typeof tabs[number]["id"];
@@ -78,6 +80,7 @@ const AdminPage = () => {
         {activeTab === "matches" && <AdminMatches />}
         {activeTab === "league" && <AdminLeague />}
         {activeTab === "gallery" && <AdminGallery />}
+        {activeTab === "sponsors" && <AdminSponsors />}
       </div>
     </div>
   );
