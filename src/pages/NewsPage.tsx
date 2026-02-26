@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Calendar, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
@@ -16,6 +17,8 @@ interface NewsPost {
 }
 
 const NewsPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("Wszystkie");
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,18 @@ const NewsPage = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    if (id && posts.length > 0) {
+      const post = posts.find((p) => p.id === id);
+      if (post) setSelectedPost(post);
+      else {
+        // Fetch single post by ID if not in list
+        supabase.from("news_posts").select("*").eq("id", id).single()
+          .then(({ data }) => { if (data) setSelectedPost(data as NewsPost); });
+      }
+    }
+  }, [id, posts]);
 
   const fetchPosts = async () => {
     const { data } = await supabase
@@ -45,7 +60,7 @@ const NewsPage = () => {
         <div className="container mx-auto px-4 max-w-3xl">
           <ScrollAnimation>
             <button
-              onClick={() => setSelectedPost(null)}
+              onClick={() => { setSelectedPost(null); navigate("/aktualnosci"); }}
               className="text-sm text-primary hover:text-primary/80 mb-6 inline-block"
             >
               ← Powrót do aktualności
@@ -113,8 +128,8 @@ const NewsPage = () => {
           <div className="space-y-6">
             {filtered.map((item, i) => (
               <ScrollAnimation key={item.id} delay={i * 0.05}>
-                <article
-                  onClick={() => setSelectedPost(item)}
+                 <article
+                  onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.id}`); }}
                   className="glass-card rounded-xl p-6 hover-lift cursor-pointer"
                 >
                   <div className="flex items-center gap-3 mb-3">
