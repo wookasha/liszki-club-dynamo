@@ -130,18 +130,31 @@ const NewsPage = () => {
               <ScrollAnimation key={item.id} delay={i * 0.05}>
                  <article
                   onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.id}`); }}
-                  className="glass-card rounded-xl p-6 hover-lift cursor-pointer"
+                  className="glass-card rounded-xl overflow-hidden hover-lift cursor-pointer flex flex-col sm:flex-row"
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                      <Tag className="w-3 h-3" /> {item.category}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar className="w-3 h-3" /> {new Date(item.created_at).toLocaleDateString("pl-PL")}
-                    </span>
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      className="w-full sm:w-48 md:w-56 h-44 sm:h-auto object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-full sm:w-48 md:w-56 h-44 sm:h-auto bg-muted shrink-0 flex items-center justify-center">
+                      <Tag className="w-8 h-8 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  <div className="p-5 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                        <Tag className="w-3 h-3" /> {item.category}
+                      </span>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar className="w-3 h-3" /> {new Date(item.created_at).toLocaleDateString("pl-PL")}
+                      </span>
+                    </div>
+                    <h2 className="font-heading text-xl font-bold text-foreground mb-2">{item.title}</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{item.excerpt}</p>
                   </div>
-                  <h2 className="font-heading text-xl font-bold text-foreground mb-2">{item.title}</h2>
-                  <p className="text-sm text-muted-foreground">{item.excerpt}</p>
                 </article>
               </ScrollAnimation>
             ))}
