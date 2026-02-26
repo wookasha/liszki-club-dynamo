@@ -15,6 +15,7 @@ interface Match {
   away_team: string;
   venue: string;
   league: string;
+  stadium_address: string;
   score_home: number | null;
   score_away: number | null;
   is_played: boolean;
@@ -27,6 +28,7 @@ const defaultForm = {
   away_team: "",
   venue: "dom",
   league: "Klasa okręgowa, grupa II",
+  stadium_address: "",
   score_home: "",
   score_away: "",
   is_played: false,
@@ -64,6 +66,7 @@ const AdminMatches = () => {
       away_team: form.away_team,
       venue: form.venue,
       league: form.league,
+      stadium_address: form.stadium_address,
       score_home: form.is_played && form.score_home !== "" ? Number(form.score_home) : null,
       score_away: form.is_played && form.score_away !== "" ? Number(form.score_away) : null,
       is_played: form.is_played,
@@ -100,6 +103,7 @@ const AdminMatches = () => {
       away_team: m.away_team,
       venue: m.venue,
       league: m.league || "Klasa okręgowa, grupa II",
+      stadium_address: m.stadium_address || "",
       score_home: m.score_home?.toString() || "",
       score_away: m.score_away?.toString() || "",
       is_played: m.is_played,
@@ -184,6 +188,10 @@ const AdminMatches = () => {
                 <label className="block text-sm font-medium text-foreground mb-1">Liga</label>
                 <input type="text" value={form.league} onChange={(e) => setForm({ ...form, league: e.target.value })} className={inputClass} />
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Adres boiska</label>
+              <input type="text" placeholder="np. ul. Księdza Bascika 24, 32-060 Liszki" value={form.stadium_address} onChange={(e) => setForm({ ...form, stadium_address: e.target.value })} className={inputClass} />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.is_played} onChange={(e) => setForm({ ...form, is_played: e.target.checked })} className="w-4 h-4 rounded" />

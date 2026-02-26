@@ -9,6 +9,7 @@ interface Match {
   home_team: string;
   away_team: string;
   venue: string;
+  stadium_address: string;
   score_home: number | null;
   score_away: number | null;
   is_played: boolean;
@@ -93,6 +94,11 @@ const SchedulePage = () => {
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
                           {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
                         </span>
+                        {m.stadium_address && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                            <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
+                          </p>
+                        )}
                       </div>
                     </ScrollAnimation>
                   ))}
@@ -134,6 +140,11 @@ const SchedulePage = () => {
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
                             {m.venue === "dom" ? "Dom" : "Wyjazd"}
                           </span>
+                          {m.stadium_address && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                              <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
+                            </p>
+                          )}
                         </div>
                       </ScrollAnimation>
                     );

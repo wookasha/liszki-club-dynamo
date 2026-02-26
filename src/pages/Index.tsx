@@ -25,7 +25,7 @@ const demoNews = [
 
 interface SponsorData { id: string; name: string; logo_url: string | null; website_url: string | null; }
 
-interface NextMatchData { date: string; home: string; away: string; venue: string; }
+interface NextMatchData { date: string; home: string; away: string; venue: string; stadium_address: string; }
 interface LeagueRow { position: number; team: string; played: number; points: number; is_own_team: boolean; logo_url: string | null; }
 interface LastResult { home: string; away: string; score_home: number; score_away: number; }
 
@@ -48,7 +48,7 @@ const Index = () => {
       .then(({ data }) => {
         if (data && data.length > 0) {
           const m = data[0] as any;
-          setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd" });
+          setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd", stadium_address: m.stadium_address || "" });
         }
       });
 
@@ -186,9 +186,14 @@ const Index = () => {
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.away}</p>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                {nextMatch.venue}
+              <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {nextMatch.venue}
+                </div>
+                {nextMatch.stadium_address && (
+                  <p className="text-xs text-muted-foreground">{nextMatch.stadium_address}</p>
+                )}
               </div>
             </div>
           </ScrollAnimation>
