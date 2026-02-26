@@ -18,9 +18,9 @@ const nextMatch = {
 };
 
 const demoNews = [
-  { id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze" },
-  { id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież" },
-  { id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub" },
+  { id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
+  { id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
+  { id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null },
 ];
 
 const sponsors = [
@@ -41,7 +41,7 @@ const Index = () => {
 
   useEffect(() => {
     // Fetch news
-    supabase.from("news_posts").select("id, title, excerpt, category, created_at")
+    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url")
       .eq("published", true).order("created_at", { ascending: false }).limit(3)
       .then(({ data }) => { if (data && data.length > 0) setNews(data); });
 
@@ -242,9 +242,15 @@ const Index = () => {
             {news.map((item, i) => (
               <ScrollAnimation key={item.id} delay={i * 0.1}>
                 <article className="glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer">
-                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                    <Calendar className="w-12 h-12 text-muted-foreground/30" />
-                  </div>
+                  {item.image_url ? (
+                    <div className="h-48 overflow-hidden">
+                      <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                      <Calendar className="w-12 h-12 text-muted-foreground/30" />
+                    </div>
+                  )}
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
