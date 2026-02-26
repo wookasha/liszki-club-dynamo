@@ -35,6 +35,7 @@ const Index = () => {
   const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
   const [lastResults, setLastResults] = useState<LastResult[]>([]);
   const [sponsors, setSponsors] = useState<SponsorData[]>([]);
+  const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({});
 
   useEffect(() => {
     // Fetch news
@@ -61,11 +62,16 @@ const Index = () => {
         }
       });
 
-    // Fetch league table (top 5)
+    // Fetch league table (top 5) + logos
     supabase.from("league_table").select("*")
-      .order("position", { ascending: true }).limit(5)
+      .order("position", { ascending: true })
       .then(({ data }) => {
-        if (data && data.length > 0) setLeagueTable(data as LeagueRow[]);
+        if (data && data.length > 0) {
+          setLeagueTable(data.slice(0, 5) as LeagueRow[]);
+          const logoMap: Record<string, string | null> = {};
+          (data as any[]).forEach((r) => { logoMap[r.team] = r.logo_url; });
+          setTeamLogos(logoMap);
+        }
       });
 
     // Fetch sponsors
@@ -165,9 +171,13 @@ const Index = () => {
               </p>
               <div className="flex items-center justify-center gap-4 md:gap-8 my-6">
                 <div className="text-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-2">
-                    <span className="font-heading text-sm font-bold text-primary">LKS</span>
-                  </div>
+                  {teamLogos[nextMatch.home] ? (
+                    <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" />
+                  ) : (
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-2">
+                      <span className="font-heading text-sm font-bold text-primary">{nextMatch.home.substring(0, 3).toUpperCase()}</span>
+                    </div>
+                  )}
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.home}</p>
                 </div>
                 <div>
@@ -180,9 +190,13 @@ const Index = () => {
                   </p>
                 </div>
                 <div className="text-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border border-border flex items-center justify-center mx-auto mb-2">
-                    <span className="font-heading text-sm font-bold text-muted-foreground">{nextMatch.away.substring(0, 3).toUpperCase()}</span>
-                  </div>
+                  {teamLogos[nextMatch.away] ? (
+                    <img src={teamLogos[nextMatch.away]!} alt={nextMatch.away} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" />
+                  ) : (
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border border-border flex items-center justify-center mx-auto mb-2">
+                      <span className="font-heading text-sm font-bold text-muted-foreground">{nextMatch.away.substring(0, 3).toUpperCase()}</span>
+                    </div>
+                  )}
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.away}</p>
                 </div>
               </div>
