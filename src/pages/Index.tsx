@@ -337,7 +337,7 @@ const Index = () => {
             {sponsors.map((sponsor, i) => (
               <ScrollAnimation key={sponsor.id} delay={i * 0.05}>
                 {sponsor.website_url ? (
-                  <a href={sponsor.website_url} target="_blank" rel="noopener noreferrer" className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
+                  <a href={sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`} target="_blank" rel="noopener noreferrer" className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
                     {sponsor.logo_url ? (
                       <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
                     ) : (
