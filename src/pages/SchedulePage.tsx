@@ -14,17 +14,38 @@ interface Match {
   is_played: boolean;
 }
 
+interface TeamLogoMap {
+  [team: string]: string | null;
+}
+
+const TeamLogo = ({ url, name, size = "w-8 h-8" }: { url: string | null; name: string; size?: string }) => (
+  url ? (
+    <img src={url} alt={name} className={`${size} object-contain`} />
+  ) : (
+    <div className={`${size} rounded-full bg-muted border border-border flex items-center justify-center`}>
+      <span className="text-[9px] font-bold text-muted-foreground">{name.substring(0, 3).toUpperCase()}</span>
+    </div>
+  )
+);
+
 const SchedulePage = () => {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [logos, setLogos] = useState<TeamLogoMap>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.from("matches").select("*").order("match_date", { ascending: true });
-      setMatches((data as Match[]) || []);
+    const fetchData = async () => {
+      const [matchesRes, leagueRes] = await Promise.all([
+        supabase.from("matches").select("*").order("match_date", { ascending: true }),
+        supabase.from("league_table").select("team, logo_url"),
+      ]);
+      setMatches((matchesRes.data as Match[]) || []);
+      const logoMap: TeamLogoMap = {};
+      ((leagueRes.data as any[]) || []).forEach((r: any) => { logoMap[r.team] = r.logo_url; });
+      setLogos(logoMap);
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, []);
 
   const upcoming = matches.filter((m) => !m.is_played);
@@ -59,9 +80,15 @@ const SchedulePage = () => {
                           <span>{new Date(m.match_date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}</span>
                         </div>
                         <div className="flex items-center gap-4 text-center">
-                          <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
+                          <div className="flex items-center gap-2">
+                            <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
+                            <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
+                          </div>
                           <span className="font-heading text-xl text-muted-foreground">vs</span>
-                          <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
+                            <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
+                          </div>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
                           {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
@@ -92,11 +119,17 @@ const SchedulePage = () => {
                             {new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}
                           </div>
                           <div className="flex items-center gap-4 text-center">
-                            <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
+                            <div className="flex items-center gap-2">
+                              <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
+                              <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
+                            </div>
                             <span className={`font-heading text-xl font-bold px-3 py-1 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"}`}>
                               {m.score_home}:{m.score_away}
                             </span>
-                            <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
+                            <div className="flex items-center gap-2">
+                              <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
+                              <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
+                            </div>
                           </div>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
                             {m.venue === "dom" ? "Dom" : "Wyjazd"}
