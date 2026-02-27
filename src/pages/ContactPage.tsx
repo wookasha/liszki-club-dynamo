@@ -5,13 +5,29 @@ import ScrollAnimation from "@/components/ScrollAnimation";
 const ContactPage = () => {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(formData.subject);
-    const body = encodeURIComponent(`Imię i nazwisko: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
-    window.location.href = `mailto:liszczanka.liszki@gmail.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    setSending(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+          body: JSON.stringify({ type: "contact", data: formData }),
+        }
+      );
+      if (!res.ok) throw new Error("Błąd wysyłki");
+      setSubmitted(true);
+    } catch {
+      setError("Nie udało się wysłać wiadomości. Spróbuj ponownie.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -101,8 +117,9 @@ const ContactPage = () => {
                   <label className="block text-sm font-medium text-foreground mb-1">Wiadomość</label>
                   <textarea rows={5} required value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
                 </div>
-                <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-                  <Send className="w-4 h-4" /> Wyślij wiadomość
+                {error && <p className="text-destructive text-sm">{error}</p>}
+                <button type="submit" disabled={sending} className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
+                  <Send className="w-4 h-4" /> {sending ? "Wysyłanie..." : "Wyślij wiadomość"}
                 </button>
               </form>
             )}

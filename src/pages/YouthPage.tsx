@@ -18,6 +18,8 @@ const YouthPage = () => {
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ childName: "", age: "", parentName: "", phone: "", email: "", group: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -28,12 +30,26 @@ const YouthPage = () => {
     fetchGroups();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Zgłoszenie na trening - ${formData.childName}`);
-    const body = encodeURIComponent(`Imię dziecka: ${formData.childName}\nWiek: ${formData.age}\nRodzic: ${formData.parentName}\nTelefon: ${formData.phone}\nEmail: ${formData.email}\nGrupa: ${formData.group}`);
-    window.location.href = `mailto:liszczanka.liszki@gmail.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    setSending(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+          body: JSON.stringify({ type: "youth", data: formData }),
+        }
+      );
+      if (!res.ok) throw new Error("Błąd wysyłki");
+      setSubmitted(true);
+    } catch {
+      setError("Nie udało się wysłać zgłoszenia. Spróbuj ponownie.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -115,8 +131,9 @@ const YouthPage = () => {
                     ))}
                   </select>
                 </div>
-                <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors">
-                  Wyślij zgłoszenie
+                {error && <p className="text-destructive text-sm">{error}</p>}
+                <button type="submit" disabled={sending} className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
+                  {sending ? "Wysyłanie..." : "Wyślij zgłoszenie"}
                 </button>
               </form>
             )}
