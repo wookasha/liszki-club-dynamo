@@ -58,7 +58,7 @@ const YouthPage = () => {
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> {g.schedule}</p>
                     <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {g.location}</p>
-                    <p className="flex items-center gap-2"><User className="w-4 h-4" /> {g.coach}</p>
+                    <p className="flex items-center gap-2 text-pitch-green font-medium"><User className="w-4 h-4" /> Trener: {g.coach}</p>
                   </div>
                 </div>
               </ScrollAnimation>
