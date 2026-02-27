@@ -76,7 +76,7 @@ const GalleryPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {albums.map((album, i) => {
               const coverUrl = album.cover_image_url || (album.photo_count > 0
-                ? `${R2_BASE}/${album.r2_folder_path}/1.webp`
+                ? `${R2_BASE}/${album.r2_folder_path}/photo_1.webp`
                 : null);
 
               return (
