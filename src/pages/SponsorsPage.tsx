@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CheckCircle, Star, Award, Shield, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
+import PrivacyClause from "@/components/PrivacyClause";
 
 interface Sponsor {
   id: string;
@@ -48,6 +49,7 @@ const packages = [
 const SponsorsPage = () => {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [formData, setFormData] = useState({ name: "", company: "", email: "", phone: "", message: "" });
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -164,9 +166,11 @@ const SponsorsPage = () => {
                     className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   />
                 </div>
+                <PrivacyClause accepted={privacyAccepted} onChange={setPrivacyAccepted} />
                 <button
                   type="submit"
-                  className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                  disabled={!privacyAccepted}
+                  className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   Wyślij zapytanie <ArrowRight className="w-4 h-4" />
                 </button>
