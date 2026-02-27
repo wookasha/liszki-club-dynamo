@@ -60,8 +60,17 @@ const AdminMatches = () => {
 
   const handleSave = async () => {
     setSaving(true);
+    // Append local timezone offset so Supabase stores the intended local time
+    const localDate = new Date(form.match_date);
+    const tzOffset = -localDate.getTimezoneOffset();
+    const sign = tzOffset >= 0 ? '+' : '-';
+    const absOffset = Math.abs(tzOffset);
+    const tzHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+    const tzMinutes = String(absOffset % 60).padStart(2, '0');
+    const matchDateWithTz = `${form.match_date}:00${sign}${tzHours}:${tzMinutes}`;
+
     const payload: Record<string, unknown> = {
-      match_date: form.match_date,
+      match_date: matchDateWithTz,
       home_team: form.home_team,
       away_team: form.away_team,
       venue: form.venue,
