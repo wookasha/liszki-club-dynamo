@@ -30,6 +30,9 @@ const YouthPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const subject = encodeURIComponent(`Zgłoszenie na trening - ${formData.childName}`);
+    const body = encodeURIComponent(`Imię dziecka: ${formData.childName}\nWiek: ${formData.age}\nRodzic: ${formData.parentName}\nTelefon: ${formData.phone}\nEmail: ${formData.email}\nGrupa: ${formData.group}`);
+    window.location.href = `mailto:liszczanka.liszki@gmail.com?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 

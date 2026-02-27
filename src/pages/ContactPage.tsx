@@ -8,6 +8,9 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const subject = encodeURIComponent(formData.subject);
+    const body = encodeURIComponent(`Imię i nazwisko: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
+    window.location.href = `mailto:liszczanka.liszki@gmail.com?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 
@@ -37,7 +40,7 @@ const ContactPage = () => {
                     <Mail className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-foreground">Email</p>
-                      <p className="text-sm text-muted-foreground">kontakt@liszczanka.pl</p>
+                      <a href="mailto:liszczanka.liszki@gmail.com" className="text-sm text-muted-foreground hover:text-primary transition-colors">liszczanka.liszki@gmail.com</a>
                     </div>
                   </li>
                 </ul>
