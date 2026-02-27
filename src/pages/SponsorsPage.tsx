@@ -22,14 +22,25 @@ const packages = [
     name: "Srebrny",
     price: "1 500 zł / sezon",
     icon: Award,
-    features: ["Logo na stronie klubu", "Baner na stadionie", "Podziękowanie w social media", "Logo na materiałach klubowych"],
+    features: [
+      "Logo na stronie klubu",
+      "Baner na stadionie",
+      "Podziękowanie w social media",
+      "Logo na materiałach klubowych",
+    ],
     popular: false,
   },
   {
     name: "Złoty",
     price: "3 000 zł / sezon",
     icon: Star,
-    features: ["Logo na stronie klubu", "Baner na stadionie", "Logo na koszulkach", "Post sponsorski co miesiąc", "VIP na meczach", "Logo na materiałach klubowych"],
+    features: [
+      "Logo na stronie klubu",
+      "Baner na stadionie",
+      "Logo na koszulkach",
+      "Post sponsorski dwa razy w roku",
+      "Logo na materiałach klubowych",
+    ],
     popular: true,
   },
 ];
@@ -40,7 +51,10 @@ const SponsorsPage = () => {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true })
+    supabase
+      .from("sponsors")
+      .select("id, name, logo_url, website_url")
+      .order("sort_order", { ascending: true })
       .then(({ data }) => setSponsors((data as Sponsor[]) || []));
   }, []);
 
@@ -62,7 +76,9 @@ const SponsorsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {packages.map((pkg, i) => (
             <ScrollAnimation key={pkg.name} delay={i * 0.1}>
-              <div className={`glass-card rounded-xl p-6 relative hover-lift ${pkg.popular ? "border-primary ring-1 ring-primary/50" : ""}`}>
+              <div
+                className={`glass-card rounded-xl p-6 relative hover-lift ${pkg.popular ? "border-primary ring-1 ring-primary/50" : ""}`}
+              >
                 {pkg.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold uppercase rounded-full">
                     Najpopularniejszy
@@ -99,28 +115,59 @@ const SponsorsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Imię i nazwisko</label>
-                    <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Firma</label>
-                    <input type="text" required value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <input
+                      type="text"
+                      required
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Email</label>
-                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Telefon</label>
-                    <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">Wiadomość</label>
-                  <textarea rows={4} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
+                  <textarea
+                    rows={4}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  />
                 </div>
-                <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                >
                   Wyślij zapytanie <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
@@ -143,7 +190,9 @@ const SponsorsPage = () => {
                     )}
                   </div>
                 );
-                const href = sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`;
+                const href = sponsor.website_url.startsWith("http")
+                  ? sponsor.website_url
+                  : `https://${sponsor.website_url}`;
                 return sponsor.website_url ? (
                   <a key={sponsor.id} href={href} target="_blank" rel="noopener noreferrer">
                     {content}
