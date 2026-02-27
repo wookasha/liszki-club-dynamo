@@ -65,9 +65,9 @@ const LeagueTablePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {table.map((row) => (
+                  {table.map((row, index) => (
                     <tr key={row.id} className={`border-b border-border/50 last:border-0 transition-colors hover:bg-muted/30 ${row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""}`}>
-                      <td className="py-3 px-3 text-sm font-medium text-muted-foreground">{row.position}</td>
+                      <td className="py-3 px-3 text-sm font-medium text-muted-foreground">{index + 1}</td>
                       <td className="py-3 px-2">
                         <TeamLogo url={row.logo_url} name={row.team} />
                       </td>
