@@ -77,7 +77,7 @@ const ContactPage = () => {
               {/* Google Map */}
               <div className="glass-card rounded-xl overflow-hidden h-64">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2564.8!2d19.78!3d50.02!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTDCsDAxJzEyLjAiTiAxOcKwNDYnNDguMCJF!5e0!3m2!1spl!2spl!4v1600000000000"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500!2d19.765381941533445!3d50.041477070374306!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTDCsDAyJzI5LjMiTiAxOcKwNDUnNTUuNCJF!5e0!3m2!1spl!2spl!4v1600000000000"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
