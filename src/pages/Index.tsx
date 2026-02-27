@@ -335,14 +335,14 @@ const Index = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {leagueTable.map((row) => (
+                  {leagueTable.map((row, index) => (
                     <tr
                       key={row.position}
                       className={`border-b border-border/50 last:border-0 ${
                         row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""
                       }`}
                     >
-                      <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{row.position}</td>
+                      <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{index + 1}</td>
                       <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
                         <div className="flex items-center gap-2">
                           {row.logo_url ? (
