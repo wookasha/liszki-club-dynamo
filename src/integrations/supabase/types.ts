@@ -18,24 +18,30 @@ export type Database = {
         Row: {
           cover_image_url: string | null
           created_at: string
-          google_photos_url: string
+          google_photos_url: string | null
           id: string
+          photo_count: number
+          r2_folder_path: string
           sort_order: number
           title: string
         }
         Insert: {
           cover_image_url?: string | null
           created_at?: string
-          google_photos_url: string
+          google_photos_url?: string | null
           id?: string
+          photo_count?: number
+          r2_folder_path?: string
           sort_order?: number
           title: string
         }
         Update: {
           cover_image_url?: string | null
           created_at?: string
-          google_photos_url?: string
+          google_photos_url?: string | null
           id?: string
+          photo_count?: number
+          r2_folder_path?: string
           sort_order?: number
           title?: string
         }

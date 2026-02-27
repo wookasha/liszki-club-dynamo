@@ -11,6 +11,7 @@ import SchedulePage from "./pages/SchedulePage";
 import LeagueTablePage from "./pages/LeagueTablePage";
 import YouthPage from "./pages/YouthPage";
 import GalleryPage from "./pages/GalleryPage";
+import GalleryAlbumPage from "./pages/GalleryAlbumPage";
 import SponsorsPage from "./pages/SponsorsPage";
 import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/tabela" element={<LeagueTablePage />} />
             <Route path="/mlodziez" element={<YouthPage />} />
             <Route path="/galeria" element={<GalleryPage />} />
+            <Route path="/galeria/:id" element={<GalleryAlbumPage />} />
             <Route path="/sponsorzy" element={<SponsorsPage />} />
             <Route path="/kontakt" element={<ContactPage />} />
             <Route path="/login" element={<LoginPage />} />
