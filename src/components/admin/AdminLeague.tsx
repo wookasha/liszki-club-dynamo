@@ -180,7 +180,7 @@ const AdminLeague = () => {
                 <tr key={row.id} className={`border-b border-border/50 last:border-0 ${row.is_own_team ? "bg-primary/10" : ""}`}>
                   <td className="py-2 px-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <span>{row.position}</span>
+                      <span>{i + 1}</span>
                       <div className="flex flex-col">
                         <button onClick={() => moveRow(i, "up")} disabled={i === 0} className="text-muted-foreground hover:text-foreground disabled:opacity-20"><ArrowUp className="w-3 h-3" /></button>
                         <button onClick={() => moveRow(i, "down")} disabled={i === rows.length - 1} className="text-muted-foreground hover:text-foreground disabled:opacity-20"><ArrowDown className="w-3 h-3" /></button>
