@@ -1,17 +1,32 @@
-import { useState } from "react";
-import { Users, Clock, MapPin, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Users, Clock, MapPin, CheckCircle, User } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
-const groups = [
-  { name: "Żaki", ages: "4-6 lat", schedule: "Wtorek i Czwartek 16:00-17:00", spots: 5 },
-  { name: "Orliki", ages: "7-8 lat", schedule: "Poniedziałek i Środa 16:00-17:30", spots: 3 },
-  { name: "Młodziki", ages: "9-10 lat", schedule: "Wtorek i Piątek 16:30-18:00", spots: 8 },
-  { name: "Trampkarze", ages: "11-12 lat", schedule: "Poniedziałek, Środa, Piątek 17:00-18:30", spots: 4 },
-];
+interface YouthGroup {
+  id: string;
+  name: string;
+  ages: string;
+  schedule: string;
+  location: string;
+  coach: string;
+  sort_order: number;
+}
 
 const YouthPage = () => {
+  const [groups, setGroups] = useState<YouthGroup[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ childName: "", age: "", parentName: "", phone: "", email: "", group: "" });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const { data } = await supabase.from("youth_groups").select("*").order("sort_order");
+      if (data) setGroups(data);
+      setLoading(false);
+    };
+    fetchGroups();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,24 +43,28 @@ const YouthPage = () => {
         </ScrollAnimation>
 
         {/* Age Groups */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {groups.map((g, i) => (
-            <ScrollAnimation key={g.name} delay={i * 0.1}>
-              <div className="glass-card rounded-xl p-6 hover-lift">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-primary" />
+        {loading ? (
+          <p className="text-muted-foreground text-sm mb-16">Ładowanie grup...</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {groups.map((g, i) => (
+              <ScrollAnimation key={g.id} delay={i * 0.1}>
+                <div className="glass-card rounded-xl p-6 hover-lift">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <Users className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-heading text-xl font-bold text-foreground mb-1">{g.name}</h3>
+                  <p className="text-sm text-primary font-medium mb-3">{g.ages}</p>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> {g.schedule}</p>
+                    <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {g.location}</p>
+                    <p className="flex items-center gap-2"><User className="w-4 h-4" /> {g.coach}</p>
+                  </div>
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-1">{g.name}</h3>
-                <p className="text-sm text-primary font-medium mb-3">{g.ages}</p>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> {g.schedule}</p>
-                  <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Stadion w Liszkach</p>
-                </div>
-                <p className="mt-4 text-xs font-medium text-pitch-green">Wolne miejsca: {g.spots}</p>
-              </div>
-            </ScrollAnimation>
-          ))}
-        </div>
+              </ScrollAnimation>
+            ))}
+          </div>
+        )}
 
         {/* Registration Form */}
         <ScrollAnimation>
@@ -63,77 +82,37 @@ const YouthPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Imię i nazwisko dziecka</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.childName}
-                      onChange={(e) => setFormData({ ...formData, childName: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="text" required value={formData.childName} onChange={(e) => setFormData({ ...formData, childName: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Wiek dziecka</label>
-                    <input
-                      type="number"
-                      min={4}
-                      max={12}
-                      required
-                      value={formData.age}
-                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="number" min={4} max={12} required value={formData.age} onChange={(e) => setFormData({ ...formData, age: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">Imię i nazwisko rodzica</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.parentName}
-                    onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input type="text" required value={formData.parentName} onChange={(e) => setFormData({ ...formData, parentName: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Telefon</label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="tel" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Email</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">Preferowana grupa</label>
-                  <select
-                    required
-                    value={formData.group}
-                    onChange={(e) => setFormData({ ...formData, group: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
+                  <select required value={formData.group} onChange={(e) => setFormData({ ...formData, group: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                     <option value="">Wybierz grupę...</option>
                     {groups.map((g) => (
-                      <option key={g.name} value={g.name}>{g.name} ({g.ages})</option>
+                      <option key={g.id} value={g.name}>{g.name} ({g.ages})</option>
                     ))}
                   </select>
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors"
-                >
+                <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors">
                   Wyślij zgłoszenie
                 </button>
               </form>

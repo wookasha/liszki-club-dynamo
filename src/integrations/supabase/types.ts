@@ -280,6 +280,39 @@ export type Database = {
         }
         Relationships: []
       }
+      youth_groups: {
+        Row: {
+          ages: string
+          coach: string
+          created_at: string
+          id: string
+          location: string
+          name: string
+          schedule: string
+          sort_order: number
+        }
+        Insert: {
+          ages?: string
+          coach?: string
+          created_at?: string
+          id?: string
+          location?: string
+          name: string
+          schedule?: string
+          sort_order?: number
+        }
+        Update: {
+          ages?: string
+          coach?: string
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          schedule?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
