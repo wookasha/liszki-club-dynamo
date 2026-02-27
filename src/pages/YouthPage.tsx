@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, Clock, MapPin, CheckCircle, User } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
+import PrivacyClause from "@/components/PrivacyClause";
 
 interface YouthGroup {
   id: string;
@@ -17,6 +18,7 @@ const YouthPage = () => {
   const [groups, setGroups] = useState<YouthGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ childName: "", age: "", parentName: "", phone: "", email: "", group: "" });
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -128,8 +130,9 @@ const YouthPage = () => {
                     ))}
                   </select>
                 </div>
+                <PrivacyClause accepted={privacyAccepted} onChange={setPrivacyAccepted} />
                 {error && <p className="text-destructive text-sm">{error}</p>}
-                <button type="submit" disabled={sending} className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
+                <button type="submit" disabled={sending || !privacyAccepted} className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
                   {sending ? "Wysyłanie..." : "Wyślij zgłoszenie"}
                 </button>
               </form>
