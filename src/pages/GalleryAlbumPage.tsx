@@ -35,8 +35,7 @@ const GalleryAlbumPage = () => {
 
   const getPhotoUrl = (index: number) => {
     if (!album) return "";
-    const num = String(index + 1).padStart(3, "0");
-    return `${R2_BASE}/${album.r2_folder_path}/photo_${num}.jpg`;
+    return `${R2_BASE}/${album.r2_folder_path}/photo_${index + 1}.jpg`;
   };
 
   const handleKeyDown = useCallback(
