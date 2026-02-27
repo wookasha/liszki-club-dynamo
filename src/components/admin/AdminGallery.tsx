@@ -74,7 +74,7 @@ const AdminGallery = () => {
   };
 
   const previewUrl = form.r2_folder_path && form.photo_count > 0
-    ? `${R2_BASE}/${form.r2_folder_path}/photo_1.jpg`
+    ? `${R2_BASE}/${form.r2_folder_path}/1.webp`
     : null;
 
   const inputClass = "w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary";
@@ -102,7 +102,7 @@ const AdminGallery = () => {
               <label className="block text-sm font-medium text-foreground mb-1">Ścieżka folderu w R2</label>
               <input type="text" value={form.r2_folder_path} onChange={(e) => setForm({ ...form, r2_folder_path: e.target.value })} placeholder="np. galeria/mecz-borek-2026" className={inputClass} />
               <p className="text-xs text-muted-foreground mt-1">
-                Folder w R2 ze zdjęciami. Zdjęcia muszą mieć nazwy: photo_1.jpg, photo_2.jpg, ...
+                Folder w R2 ze zdjęciami. Zdjęcia muszą mieć nazwy: 1.webp, 2.webp, ...
               </p>
             </div>
             <div>
@@ -140,7 +140,7 @@ const AdminGallery = () => {
       ) : (
         <div className="space-y-3">
           {albums.map((album) => {
-            const thumb = album.cover_image_url || (album.photo_count > 0 ? `${R2_BASE}/${album.r2_folder_path}/photo_1.jpg` : null);
+            const thumb = album.cover_image_url || (album.photo_count > 0 ? `${R2_BASE}/${album.r2_folder_path}/1.webp` : null);
             return (
               <div key={album.id} className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
