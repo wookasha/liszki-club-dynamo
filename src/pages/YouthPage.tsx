@@ -35,14 +35,11 @@ const YouthPage = () => {
     setSending(true);
     setError("");
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-          body: JSON.stringify({ type: "youth", data: formData }),
-        }
-      );
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "youth", data: formData }),
+      });
       if (!res.ok) throw new Error("Błąd wysyłki");
       setSubmitted(true);
     } catch {
