@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, Save, X, Upload, ExternalLink, GripVertical } from "lucide-react";
+import { Plus, Trash2, Save, X, Upload, ExternalLink, Pencil, ArrowUp, ArrowDown } from "lucide-react";
 
 interface Sponsor {
   id: string;
@@ -83,6 +83,22 @@ const AdminSponsors = () => {
     fetchSponsors();
   };
 
+  const moveSponsor = async (index: number, direction: "up" | "down") => {
+    const newSponsors = [...sponsors];
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= newSponsors.length) return;
+
+    const tempOrder = newSponsors[index].sort_order;
+    newSponsors[index].sort_order = newSponsors[swapIndex].sort_order;
+    newSponsors[swapIndex].sort_order = tempOrder;
+
+    await Promise.all([
+      supabase.from("sponsors").update({ sort_order: newSponsors[index].sort_order } as any).eq("id", newSponsors[index].id),
+      supabase.from("sponsors").update({ sort_order: newSponsors[swapIndex].sort_order } as any).eq("id", newSponsors[swapIndex].id),
+    ]);
+    fetchSponsors();
+  };
+
   const startEdit = (sponsor: Sponsor) => {
     setEditingId(sponsor.id);
     setForm({ name: sponsor.name, website_url: sponsor.website_url || "" });
@@ -155,9 +171,17 @@ const AdminSponsors = () => {
       ) : sponsors.length === 0 ? (
         <p className="text-muted-foreground text-center py-8">Brak sponsorów. Dodaj pierwszego!</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {sponsors.map((sponsor) => (
+        <div className="grid grid-cols-1 gap-3">
+          {sponsors.map((sponsor, index) => (
             <div key={sponsor.id} className="glass-card rounded-xl p-4 flex items-center gap-4 group">
+              <div className="flex flex-col gap-1 shrink-0">
+                <button onClick={() => moveSponsor(index, "up")} disabled={index === 0} className="p-1 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30">
+                  <ArrowUp className="w-4 h-4" />
+                </button>
+                <button onClick={() => moveSponsor(index, "down")} disabled={index === sponsors.length - 1} className="p-1 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30">
+                  <ArrowDown className="w-4 h-4" />
+                </button>
+              </div>
               <div className="w-16 h-16 shrink-0 rounded-lg bg-muted border border-border flex items-center justify-center overflow-hidden p-1">
                 {sponsor.logo_url ? (
                   <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain" />
@@ -175,7 +199,7 @@ const AdminSponsors = () => {
               </div>
               <div className="flex gap-1 shrink-0">
                 <button onClick={() => startEdit(sponsor)} className="p-2 text-muted-foreground hover:text-secondary transition-colors">
-                  <Save className="w-4 h-4" />
+                  <Pencil className="w-4 h-4" />
                 </button>
                 <button onClick={() => handleDelete(sponsor)} className="p-2 text-muted-foreground hover:text-destructive transition-colors">
                   <Trash2 className="w-4 h-4" />
