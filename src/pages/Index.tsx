@@ -188,7 +188,10 @@ const Index = () => {
                     {new Date(nextMatch.date).toLocaleDateString("pl-PL", { day: "numeric", month: "long", year: "numeric" })}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(nextMatch.date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
+                    {(() => {
+                      const d = new Date(nextMatch.date);
+                      return d.getHours() === 0 && d.getMinutes() === 0 ? "TBD" : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+                    })()}
                   </p>
                 </div>
                 <div className="text-center">
