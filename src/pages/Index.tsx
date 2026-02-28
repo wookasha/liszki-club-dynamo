@@ -223,7 +223,7 @@ const Index = () => {
       {/* Last Results - Carousel */}
       {lastResults.length > 0 && (
       <section className="py-4 border-b border-border overflow-hidden">
-        <div className="container mx-auto px-4 max-w-3xl">
+        <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
             <span className="text-xs text-muted-foreground uppercase tracking-wider shrink-0 font-medium">
               Ostatnie wyniki:
