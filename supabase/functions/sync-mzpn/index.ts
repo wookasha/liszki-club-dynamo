@@ -367,15 +367,20 @@ Deno.serve(async (req) => {
         matchRows = parseSchedule(schedText);
       }
 
-      console.log(`Parsed ${matchRows.length} matches`);
+      // Filter only Liszczanka matches
+      const ownMatches = matchRows.filter(
+        (m) => m.home_team.toUpperCase().includes(OWN_TEAM_KEYWORD) || m.away_team.toUpperCase().includes(OWN_TEAM_KEYWORD)
+      );
 
-      if (matchRows.length > 0) {
+      console.log(`Parsed ${matchRows.length} matches, ${ownMatches.length} Liszczanka matches`);
+
+      if (ownMatches.length > 0) {
         // Delete all existing matches and insert fresh
         await supabase.from("matches").delete().neq("id", "00000000-0000-0000-0000-000000000000");
 
         // Insert in batches of 50
-        for (let b = 0; b < matchRows.length; b += 50) {
-          const batch = matchRows.slice(b, b + 50).map((m) => ({
+        for (let b = 0; b < ownMatches.length; b += 50) {
+          const batch = ownMatches.slice(b, b + 50).map((m) => ({
             match_date: m.match_date,
             home_team: m.home_team,
             away_team: m.away_team,
@@ -392,9 +397,9 @@ Deno.serve(async (req) => {
         }
 
         results.schedule = {
-          synced: matchRows.length,
-          played: matchRows.filter((m) => m.is_played).length,
-          upcoming: matchRows.filter((m) => !m.is_played).length,
+          synced: ownMatches.length,
+          played: ownMatches.filter((m) => m.is_played).length,
+          upcoming: ownMatches.filter((m) => !m.is_played).length,
         };
       } else {
         results.schedule = { error: "No schedule data parsed" };
