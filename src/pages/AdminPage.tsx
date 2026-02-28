@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw } from "lucide-react";
+import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
@@ -26,9 +26,14 @@ const AdminPage = () => {
   const [activeTab, setActiveTab] = useState<TabId>("news");
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [mzpnTableUrl, setMzpnTableUrl] = useState("");
+  const [mzpnScheduleUrl, setMzpnScheduleUrl] = useState("");
+  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     checkAuth();
+    loadSettings();
   }, []);
 
   const checkAuth = async () => {
@@ -40,6 +45,24 @@ const AdminPage = () => {
       .eq("user_id", session.user.id)
       .eq("role", "admin");
     if (!roles || roles.length === 0) navigate("/");
+  };
+
+  const loadSettings = async () => {
+    const { data } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url"]);
+    (data || []).forEach((s: any) => {
+      if (s.key === "mzpn_table_url") setMzpnTableUrl(s.value);
+      if (s.key === "mzpn_schedule_url") setMzpnScheduleUrl(s.value);
+    });
+  };
+
+  const saveSettings = async () => {
+    setSavingSettings(true);
+    await Promise.all([
+      supabase.from("site_settings").upsert({ key: "mzpn_table_url", value: mzpnTableUrl, updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "mzpn_schedule_url", value: mzpnScheduleUrl, updated_at: new Date().toISOString() }),
+    ]);
+    setSavingSettings(false);
+    setSyncResult("✅ Zapisano linki MZPN");
   };
 
   const handleSync = async () => {
@@ -82,6 +105,12 @@ const AdminPage = () => {
             </div>
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setShowSettings(!showSettings)}
+                className={`flex items-center gap-2 px-3 py-2 font-medium text-sm rounded-md transition-colors ${showSettings ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              <button
                 onClick={handleSync}
                 disabled={syncing}
                 className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground font-heading font-semibold text-sm rounded-md hover:bg-secondary/90 transition-colors disabled:opacity-50"
@@ -94,6 +123,43 @@ const AdminPage = () => {
               </button>
             </div>
           </div>
+
+          {showSettings && (
+            <div className="glass-card rounded-xl p-6 mb-6">
+              <h2 className="font-heading text-lg font-bold text-foreground mb-4">Linki MZPN do synchronizacji</h2>
+              <p className="text-xs text-muted-foreground mb-4">Zmień te linki gdy rozpocznie się nowy sezon rozgrywkowy.</p>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-foreground mb-1">Link do tabeli</label>
+                  <input
+                    type="url"
+                    value={mzpnTableUrl}
+                    onChange={(e) => setMzpnTableUrl(e.target.value)}
+                    placeholder="https://malopolskizpn.pl/rozgrywki/..."
+                    className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-foreground mb-1">Link do terminarza</label>
+                  <input
+                    type="url"
+                    value={mzpnScheduleUrl}
+                    onChange={(e) => setMzpnScheduleUrl(e.target.value)}
+                    placeholder="https://malopolskizpn.pl/rozgrywki/..."
+                    className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <button
+                  onClick={saveSettings}
+                  disabled={savingSettings}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" /> {savingSettings ? "Zapisuję..." : "Zapisz linki"}
+                </button>
+              </div>
+            </div>
+          )}
+
           {syncResult && (
             <div className={`mb-4 px-4 py-3 rounded-lg text-sm ${syncResult.startsWith("✅") ? "bg-pitch-green/10 text-pitch-green" : "bg-destructive/10 text-destructive"}`}>
               {syncResult}
