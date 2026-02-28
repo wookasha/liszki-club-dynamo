@@ -16,20 +16,20 @@ const nextMatch = {
   home: "Liszczanka Liszki",
   away: "Wawel Kraków",
   venue: "Stadion w Liszkach",
-  league: "Klasa okręgowa, grupa II",
+  league: "Klasa okręgowa, grupa II"
 };
 
 const demoNews = [
-  { id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
-  { id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
-  { id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null },
-];
+{ id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
+{ id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
+{ id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null }];
 
-interface SponsorData { id: string; name: string; logo_url: string | null; website_url: string | null; }
 
-interface NextMatchData { date: string; home: string; away: string; venue: string; stadium_address: string; }
-interface LeagueRow { position: number; team: string; played: number; points: number; is_own_team: boolean; logo_url: string | null; }
-interface LastResult { home: string; away: string; score_home: number; score_away: number; match_date: string; }
+interface SponsorData {id: string;name: string;logo_url: string | null;website_url: string | null;}
+
+interface NextMatchData {date: string;home: string;away: string;venue: string;stadium_address: string;}
+interface LeagueRow {position: number;team: string;played: number;points: number;is_own_team: boolean;logo_url: string | null;}
+interface LastResult {home: string;away: string;score_home: number;score_away: number;}
 
 const Index = () => {
   const [news, setNews] = useState(demoNews);
@@ -41,44 +41,44 @@ const Index = () => {
 
   useEffect(() => {
     // Fetch news
-    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url")
-      .eq("published", true).order("created_at", { ascending: false }).limit(3)
-      .then(({ data }) => { if (data && data.length > 0) setNews(data); });
+    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url").
+    eq("published", true).order("created_at", { ascending: false }).limit(3).
+    then(({ data }) => {if (data && data.length > 0) setNews(data);});
 
     // Fetch next match
-    supabase.from("matches").select("*")
-      .eq("is_played", false).order("match_date", { ascending: true }).limit(1)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          const m = data[0] as any;
-          setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd", stadium_address: m.stadium_address || "" });
-        }
-      });
+    supabase.from("matches").select("*").
+    eq("is_played", false).order("match_date", { ascending: true }).limit(1).
+    then(({ data }) => {
+      if (data && data.length > 0) {
+        const m = data[0] as any;
+        setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd", stadium_address: m.stadium_address || "" });
+      }
+    });
 
     // Fetch last results
-    supabase.from("matches").select("*")
-      .eq("is_played", true).order("match_date", { ascending: false }).limit(5)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setLastResults((data as any[]).map((m) => ({ home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away, match_date: m.match_date })));
-        }
-      });
+    supabase.from("matches").select("*").
+    eq("is_played", true).order("match_date", { ascending: false }).limit(10).
+    then(({ data }) => {
+      if (data && data.length > 0) {
+        setLastResults((data as any[]).map((m) => ({ home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away })));
+      }
+    });
 
     // Fetch league table (top 5) + logos
-    supabase.from("league_table").select("*")
-      .order("position", { ascending: true })
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setLeagueTable(data.slice(0, 5) as LeagueRow[]);
-          const logoMap: Record<string, string | null> = {};
-          (data as any[]).forEach((r) => { logoMap[r.team] = r.logo_url; });
-          setTeamLogos(logoMap);
-        }
-      });
+    supabase.from("league_table").select("*").
+    order("position", { ascending: true }).
+    then(({ data }) => {
+      if (data && data.length > 0) {
+        setLeagueTable(data.slice(0, 5) as LeagueRow[]);
+        const logoMap: Record<string, string | null> = {};
+        (data as any[]).forEach((r) => {logoMap[r.team] = r.logo_url;});
+        setTeamLogos(logoMap);
+      }
+    });
 
     // Fetch sponsors
-    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true })
-      .then(({ data }) => { if (data) setSponsors(data as SponsorData[]); });
+    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true }).
+    then(({ data }) => {if (data) setSponsors(data as SponsorData[]);});
   }, []);
   return (
     <div>
@@ -95,8 +95,8 @@ const Index = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto"
-          >
+            className="max-w-4xl mx-auto">
+
             {/* Club badge */}
             <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6">
               <img src={clubLogo} alt="LKS Liszczanka Liszki" className="w-full h-full object-contain" />
@@ -110,22 +110,22 @@ const Index = () => {
             </p>
             <div className="w-24 h-1 mx-auto bg-gradient-to-r from-club-red via-club-white to-club-blue rounded-full mb-8" />
 
-            <p className="text-muted-foreground max-w-xl mx-auto mb-10 text-sm md:text-base">
-              Klasa okręgowa Kraków, grupa II • Liszki, woj. małopolskie
-            </p>
+            
+
+
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link
                 to="/terminarz"
-                className="px-6 py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-              >
+                className="px-6 py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+
                 <Calendar className="w-5 h-5" />
                 Terminarz
               </Link>
               <Link
                 to="/sponsorzy"
-                className="px-6 py-3 border border-foreground/20 text-foreground font-heading font-semibold uppercase rounded-md hover:bg-foreground/10 transition-colors flex items-center justify-center gap-2"
-              >
+                className="px-6 py-3 border border-foreground/20 text-foreground font-heading font-semibold uppercase rounded-md hover:bg-foreground/10 transition-colors flex items-center justify-center gap-2">
+
                 <Trophy className="w-5 h-5" />
                 Zostań sponsorem
               </Link>
@@ -133,12 +133,12 @@ const Index = () => {
           </motion.div>
 
           {/* Countdown */}
-          {nextMatch && (
+          {nextMatch &&
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
+            transition={{ duration: 0.8, delay: 0.4 }}>
+
             <p className="text-sm text-muted-foreground mb-3 font-medium uppercase tracking-wider">
               Następny mecz za
             </p>
@@ -149,21 +149,21 @@ const Index = () => {
               {nextMatch.home} vs {nextMatch.away} • {nextMatch.venue}
             </p>
           </motion.div>
-          )}
+          }
         </div>
 
         {/* Scroll indicator */}
         <motion.div
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
+          transition={{ repeat: Infinity, duration: 2 }}>
+
           <ChevronRight className="w-6 h-6 text-muted-foreground rotate-90" />
         </motion.div>
       </section>
 
       {/* Next Match */}
-      {nextMatch && (
+      {nextMatch &&
       <section className="py-16 bg-card/50">
         <div className="container mx-auto px-4">
           <ScrollAnimation>
@@ -173,13 +173,13 @@ const Index = () => {
               </p>
               <div className="flex items-center justify-center gap-4 md:gap-8 my-6">
                 <div className="text-center">
-                  {teamLogos[nextMatch.home] ? (
-                    <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" />
-                  ) : (
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-2">
+                  {teamLogos[nextMatch.home] ?
+                  <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" /> :
+
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-2">
                       <span className="font-heading text-sm font-bold text-primary">{nextMatch.home.substring(0, 3).toUpperCase()}</span>
                     </div>
-                  )}
+                  }
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.home}</p>
                 </div>
                 <div>
@@ -188,20 +188,17 @@ const Index = () => {
                     {new Date(nextMatch.date).toLocaleDateString("pl-PL", { day: "numeric", month: "long", year: "numeric" })}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {(() => {
-                      const d = new Date(nextMatch.date);
-                      return d.getHours() === 0 && d.getMinutes() === 0 ? "TBD" : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
-                    })()}
+                    {new Date(nextMatch.date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
                 <div className="text-center">
-                  {teamLogos[nextMatch.away] ? (
-                    <img src={teamLogos[nextMatch.away]!} alt={nextMatch.away} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" />
-                  ) : (
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border border-border flex items-center justify-center mx-auto mb-2">
+                  {teamLogos[nextMatch.away] ?
+                  <img src={teamLogos[nextMatch.away]!} alt={nextMatch.away} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" /> :
+
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border border-border flex items-center justify-center mx-auto mb-2">
                       <span className="font-heading text-sm font-bold text-muted-foreground">{nextMatch.away.substring(0, 3).toUpperCase()}</span>
                     </div>
-                  )}
+                  }
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.away}</p>
                 </div>
               </div>
@@ -210,18 +207,18 @@ const Index = () => {
                   <MapPin className="w-4 h-4" />
                   {nextMatch.venue}
                 </div>
-                {nextMatch.stadium_address && (
-                  <p className="text-xs text-muted-foreground">{nextMatch.stadium_address}</p>
-                )}
+                {nextMatch.stadium_address &&
+                <p className="text-xs text-muted-foreground">{nextMatch.stadium_address}</p>
+                }
               </div>
             </div>
           </ScrollAnimation>
         </div>
       </section>
-      )}
+      }
 
       {/* Last Results - Carousel */}
-      {lastResults.length > 0 && (
+      {lastResults.length > 0 &&
       <section className="py-4 border-b border-border overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
@@ -231,37 +228,38 @@ const Index = () => {
             <Carousel
               opts={{ align: "start", loop: true }}
               plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
-              className="flex-1"
-            >
+              className="flex-1">
+
               <CarouselContent className="-ml-4">
                 {lastResults.map((r, i) => {
                   const liszczankaHome = r.home.includes("Liszczanka");
                   const lGoals = liszczankaHome ? r.score_home : r.score_away;
                   const oGoals = liszczankaHome ? r.score_away : r.score_home;
                   const win = lGoals > oGoals;
-                  const draw = lGoals === oGoals;
-                  const dateStr = new Date(r.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
                   return (
                     <CarouselItem key={i} className="pl-4 basis-auto">
                       <div className="flex items-center gap-2 shrink-0 text-sm py-2">
-                        <span className="text-xs text-muted-foreground">{dateStr}</span>
+                        {teamLogos[r.home] &&
+                        <img src={teamLogos[r.home]!} alt={r.home} className="w-5 h-5 object-contain" />
+                        }
                         <span className="text-foreground font-medium">{r.home}</span>
-                        <span className={`font-heading font-bold px-2 py-0.5 rounded ${
-                          win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"
-                        }`}>
+                        <span className={`font-heading font-bold px-2 py-0.5 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : "bg-muted text-muted-foreground"}`}>
                           {r.score_home}:{r.score_away}
                         </span>
                         <span className="text-foreground font-medium">{r.away}</span>
+                        {teamLogos[r.away] &&
+                        <img src={teamLogos[r.away]!} alt={r.away} className="w-5 h-5 object-contain" />
+                        }
                       </div>
-                    </CarouselItem>
-                  );
+                    </CarouselItem>);
+
                 })}
               </CarouselContent>
             </Carousel>
           </div>
         </div>
       </section>
-      )}
+      }
 
       {/* News */}
       <section className="py-16">
@@ -279,18 +277,18 @@ const Index = () => {
           </ScrollAnimation>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {news.map((item, i) => (
-              <ScrollAnimation key={item.id} delay={i * 0.1}>
+            {news.map((item, i) =>
+            <ScrollAnimation key={item.id} delay={i * 0.1}>
                 <Link to={`/aktualnosci/${item.id}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer">
-                  {item.image_url ? (
-                    <div className="h-48 overflow-hidden">
+                  {item.image_url ?
+                <div className="h-48 overflow-hidden">
                       <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                    </div>
-                  ) : (
-                    <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    </div> :
+
+                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                       <Calendar className="w-12 h-12 text-muted-foreground/30" />
                     </div>
-                  )}
+                }
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
@@ -305,7 +303,7 @@ const Index = () => {
                   </div>
                 </Link>
               </ScrollAnimation>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -337,28 +335,28 @@ const Index = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {leagueTable.map((row, index) => (
-                    <tr
-                      key={row.position}
-                      className={`border-b border-border/50 last:border-0 ${
-                        row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""
-                      }`}
-                    >
+                  {leagueTable.map((row, index) =>
+                  <tr
+                    key={row.position}
+                    className={`border-b border-border/50 last:border-0 ${
+                    row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""}`
+                    }>
+
                       <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{index + 1}</td>
                       <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
                         <div className="flex items-center gap-2">
-                          {row.logo_url ? (
-                            <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" />
-                          ) : (
-                            <div className="w-5 h-5 rounded-full bg-muted shrink-0" />
-                          )}
+                          {row.logo_url ?
+                        <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" /> :
+
+                        <div className="w-5 h-5 rounded-full bg-muted shrink-0" />
+                        }
                           {row.team}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-center text-muted-foreground">{row.played}</td>
                       <td className="py-3 px-4 text-sm text-center font-bold text-foreground">{row.points}</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -381,9 +379,9 @@ const Index = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
             {sponsors.map((sponsor, i) => {
-              const url = sponsor.website_url
-                ? sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`
-                : null;
+              const url = sponsor.website_url ?
+              sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}` :
+              null;
               const Wrapper = url ? "a" : "div";
               const wrapperProps = url ? { href: url, target: "_blank", rel: "noopener noreferrer" } : {};
 
@@ -391,23 +389,23 @@ const Index = () => {
                 <ScrollAnimation key={sponsor.id} delay={i * 0.05}>
                   <Wrapper
                     {...wrapperProps as any}
-                    className="glass-card rounded-xl p-5 flex items-center justify-center hover-lift cursor-pointer aspect-[3/2] group transition-all duration-300 relative overflow-hidden"
-                  >
-                    {sponsor.logo_url ? (
-                      <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
-                    ) : (
-                      <span className="font-heading text-xl font-bold text-muted-foreground text-center">{sponsor.name}</span>
-                    )}
-                    {url && (
-                      <span className="absolute inset-0 flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    className="glass-card rounded-xl p-5 flex items-center justify-center hover-lift cursor-pointer aspect-[3/2] group transition-all duration-300 relative overflow-hidden">
+
+                    {sponsor.logo_url ?
+                    <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" /> :
+
+                    <span className="font-heading text-xl font-bold text-muted-foreground text-center">{sponsor.name}</span>
+                    }
+                    {url &&
+                    <span className="absolute inset-0 flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <span className="text-[11px] text-primary-foreground bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
                           <ExternalLink className="w-3 h-3" /> Odwiedź stronę
                         </span>
                       </span>
-                    )}
+                    }
                   </Wrapper>
-                </ScrollAnimation>
-              );
+                </ScrollAnimation>);
+
             })}
           </div>
 
@@ -415,8 +413,8 @@ const Index = () => {
             <div className="text-center mt-10">
               <Link
                 to="/sponsorzy"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-primary text-primary font-heading font-semibold uppercase text-sm rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
-              >
+                className="inline-flex items-center gap-2 px-6 py-3 border border-primary text-primary font-heading font-semibold uppercase text-sm rounded-md hover:bg-primary hover:text-primary-foreground transition-colors">
+
                 Zostań sponsorem
                 <ArrowRight className="w-4 h-4" />
               </Link>
@@ -439,8 +437,8 @@ const Index = () => {
                 href="https://www.facebook.com/LiszczankaLiszki"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-6 py-4 glass-card rounded-xl hover-lift"
-              >
+                className="flex items-center gap-3 px-6 py-4 glass-card rounded-xl hover-lift">
+
                 <Facebook className="w-6 h-6 text-club-blue" />
                 <div className="text-left">
                   <p className="text-sm font-bold text-foreground">Facebook</p>
@@ -451,8 +449,8 @@ const Index = () => {
                 href="https://www.youtube.com/@liszczankaliszki8483"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-6 py-4 glass-card rounded-xl hover-lift"
-              >
+                className="flex items-center gap-3 px-6 py-4 glass-card rounded-xl hover-lift">
+
                 <Youtube className="w-6 h-6 text-primary" />
                 <div className="text-left">
                   <p className="text-sm font-bold text-foreground">YouTube</p>
@@ -463,8 +461,8 @@ const Index = () => {
           </ScrollAnimation>
         </div>
       </section>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
