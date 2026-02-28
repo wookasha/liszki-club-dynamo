@@ -78,7 +78,10 @@ const SchedulePage = () => {
                         <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
                           <span>{new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}</span>
                           <span>•</span>
-                          <span>{new Date(m.match_date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}</span>
+                          <span>{(() => {
+                            const d = new Date(m.match_date);
+                            return d.getHours() === 0 && d.getMinutes() === 0 ? "TBD" : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+                          })()}</span>
                         </div>
                         <div className="flex items-center gap-4 text-center">
                           <div className="flex items-center gap-2">

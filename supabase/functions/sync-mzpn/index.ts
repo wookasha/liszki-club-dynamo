@@ -73,6 +73,7 @@ interface MatchRow {
   score_away: number | null;
   is_played: boolean;
   venue: string;
+  has_time: boolean;
 }
 
 function parseSchedule(md: string): MatchRow[] {
@@ -93,8 +94,30 @@ function parseSchedule(md: string): MatchRow[] {
       const day = dateMatch[1].padStart(2, "0");
       const month = dateMatch[2];
       const year = dateMatch[3];
-      const time = dateMatch[4] || "12:00";
-      const dateStr = `${year}-${month}-${day}T${time}:00+02:00`;
+      const time = dateMatch[4] || null;
+      const hasTime = !!dateMatch[4];
+
+      // Determine correct Polish offset (CET +01:00 or CEST +02:00)
+      // CEST: last Sunday of March to last Sunday of October
+      const monthNum = parseInt(month);
+      const dayNum = parseInt(day);
+      const yearNum = parseInt(year);
+      let offset = "+01:00"; // CET default
+      if (monthNum > 3 && monthNum < 10) {
+        offset = "+02:00"; // CEST for sure (Apr-Sep)
+      } else if (monthNum === 3 && dayNum >= 25) {
+        // Approximate: last Sunday of March
+        const lastDay = new Date(yearNum, 2, 31);
+        const lastSunday = 31 - lastDay.getDay();
+        if (dayNum >= lastSunday) offset = "+02:00";
+      } else if (monthNum === 10) {
+        const lastDay = new Date(yearNum, 9, 31);
+        const lastSunday = 31 - lastDay.getDay();
+        if (dayNum < lastSunday) offset = "+02:00";
+      }
+
+      const timeStr = time || "00:00";
+      const dateStr = `${year}-${month}-${day}T${timeStr}:00${offset}`;
 
       // Next line should be the match: "TEAM A4:1 (3:1)TEAM B" or "TEAM ATEAM B"
       i++;
@@ -119,6 +142,7 @@ function parseSchedule(md: string): MatchRow[] {
             score_away: parseInt(playedMatch[3]),
             is_played: true,
             venue: isOwnHome ? "dom" : isOwnAway ? "wyjazd" : "dom",
+            has_time: hasTime,
           });
         } else {
           // Unplayed match: two team names concatenated
@@ -176,6 +200,7 @@ function parseSchedule(md: string): MatchRow[] {
               score_away: null,
               is_played: false,
               venue: isOwnHome ? "dom" : isOwnAway ? "wyjazd" : "dom",
+              has_time: hasTime,
             });
           }
         }
