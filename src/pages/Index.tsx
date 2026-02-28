@@ -235,17 +235,20 @@ const Index = () => {
                   const liszczankaHome = r.home.includes("Liszczanka");
                   const lGoals = liszczankaHome ? r.score_home : r.score_away;
                   const oGoals = liszczankaHome ? r.score_away : r.score_home;
-                  const win = lGoals > oGoals;
-                  return (
-                    <CarouselItem key={i} className="pl-4 basis-auto">
-                      <div className="flex items-center gap-2 shrink-0 text-sm py-2">
-                        {teamLogos[r.home] &&
-                        <img src={teamLogos[r.home]!} alt={r.home} className="w-5 h-5 object-contain" />
-                        }
-                        <span className="text-foreground font-medium">{r.home}</span>
-                        <span className={`font-heading font-bold px-2 py-0.5 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : "bg-muted text-muted-foreground"}`}>
-                          {r.score_home}:{r.score_away}
-                        </span>
+                   const win = lGoals > oGoals;
+                   const draw = lGoals === oGoals;
+                   const loss = lGoals < oGoals;
+                   const statusStyle = win ? "bg-pitch-green/20 text-pitch-green" : loss ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground";
+                   return (
+                     <CarouselItem key={i} className="pl-4 basis-auto">
+                       <div className="flex items-center gap-2 shrink-0 text-sm py-2">
+                         {teamLogos[r.home] &&
+                         <img src={teamLogos[r.home]!} alt={r.home} className="w-5 h-5 object-contain" />
+                         }
+                         <span className="text-foreground font-medium">{r.home}</span>
+                         <span className={`font-heading font-bold px-2 py-0.5 rounded ${statusStyle}`}>
+                           {r.score_home}:{r.score_away}
+                         </span>
                         <span className="text-foreground font-medium">{r.away}</span>
                         {teamLogos[r.away] &&
                         <img src={teamLogos[r.away]!} alt={r.away} className="w-5 h-5 object-contain" />
