@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, Star, Award, Shield, ArrowRight } from "lucide-react";
+import { CheckCircle, Star, Award, Shield, ArrowRight, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import PrivacyClause from "@/components/PrivacyClause";
@@ -183,26 +183,33 @@ const SponsorsPage = () => {
         {sponsors.length > 0 && (
           <ScrollAnimation>
             <h2 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">Nasi partnerzy</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
               {sponsors.map((sponsor) => {
-                const content = (
-                  <div className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift min-h-[100px] flex items-center justify-center">
+                const url = sponsor.website_url
+                  ? sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`
+                  : null;
+                const Wrapper = url ? "a" : "div";
+                const wrapperProps = url ? { href: url, target: "_blank", rel: "noopener noreferrer" } : {};
+
+                return (
+                  <Wrapper
+                    key={sponsor.id}
+                    {...wrapperProps as any}
+                    className="glass-card rounded-xl p-5 flex items-center justify-center hover-lift cursor-pointer aspect-[3/2] group transition-all duration-300 relative overflow-hidden"
+                  >
                     {sponsor.logo_url ? (
-                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-16 max-w-full object-contain" />
+                      <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
                     ) : (
-                      <p className="text-sm font-medium text-muted-foreground">{sponsor.name}</p>
+                      <span className="font-heading text-xl font-bold text-muted-foreground text-center">{sponsor.name}</span>
                     )}
-                  </div>
-                );
-                const href = sponsor.website_url.startsWith("http")
-                  ? sponsor.website_url
-                  : `https://${sponsor.website_url}`;
-                return sponsor.website_url ? (
-                  <a key={sponsor.id} href={href} target="_blank" rel="noopener noreferrer">
-                    {content}
-                  </a>
-                ) : (
-                  <div key={sponsor.id}>{content}</div>
+                    {url && (
+                      <span className="absolute inset-0 flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span className="text-[11px] text-primary-foreground bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
+                          <ExternalLink className="w-3 h-3" /> Odwiedź stronę
+                        </span>
+                      </span>
+                    )}
+                  </Wrapper>
                 );
               })}
             </div>
