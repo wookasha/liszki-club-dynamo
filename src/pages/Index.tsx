@@ -220,34 +220,44 @@ const Index = () => {
       </section>
       )}
 
-      {/* Last Results */}
+      {/* Last Results - Carousel */}
       {lastResults.length > 0 && (
-      <section className="py-6 border-b border-border">
+      <section className="py-4 border-b border-border overflow-hidden">
         <div className="container mx-auto px-4 max-w-3xl">
-          <h3 className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-4 text-center">
-            Ostatnie wyniki
-          </h3>
-          <div className="space-y-2">
-            {lastResults.map((r, i) => {
-              const liszczankaHome = r.home.includes("Liszczanka");
-              const lGoals = liszczankaHome ? r.score_home : r.score_away;
-              const oGoals = liszczankaHome ? r.score_away : r.score_home;
-              const win = lGoals > oGoals;
-              const draw = lGoals === oGoals;
-              const dateStr = new Date(r.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
-              return (
-                <div key={i} className="flex items-center justify-center gap-3 text-sm py-1.5">
-                  <span className="text-xs text-muted-foreground w-16 text-right shrink-0">{dateStr}</span>
-                  <span className={`font-medium text-right w-32 truncate ${liszczankaHome ? "text-primary" : "text-foreground"}`}>{r.home}</span>
-                  <span className={`font-heading font-bold px-2.5 py-0.5 rounded text-sm min-w-[3rem] text-center ${
-                    win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"
-                  }`}>
-                    {r.score_home}:{r.score_away}
-                  </span>
-                  <span className={`font-medium text-left w-32 truncate ${!liszczankaHome ? "text-primary" : "text-foreground"}`}>{r.away}</span>
-                </div>
-              );
-            })}
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider shrink-0 font-medium">
+              Ostatnie wyniki:
+            </span>
+            <Carousel
+              opts={{ align: "start", loop: true }}
+              plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
+              className="flex-1"
+            >
+              <CarouselContent className="-ml-4">
+                {lastResults.map((r, i) => {
+                  const liszczankaHome = r.home.includes("Liszczanka");
+                  const lGoals = liszczankaHome ? r.score_home : r.score_away;
+                  const oGoals = liszczankaHome ? r.score_away : r.score_home;
+                  const win = lGoals > oGoals;
+                  const draw = lGoals === oGoals;
+                  const dateStr = new Date(r.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
+                  return (
+                    <CarouselItem key={i} className="pl-4 basis-auto">
+                      <div className="flex items-center gap-2 shrink-0 text-sm py-2">
+                        <span className="text-xs text-muted-foreground">{dateStr}</span>
+                        <span className="text-foreground font-medium">{r.home}</span>
+                        <span className={`font-heading font-bold px-2 py-0.5 rounded ${
+                          win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"
+                        }`}>
+                          {r.score_home}:{r.score_away}
+                        </span>
+                        <span className="text-foreground font-medium">{r.away}</span>
+                      </div>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+            </Carousel>
           </div>
         </div>
       </section>
