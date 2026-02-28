@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users } from "lucide-react";
+import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
@@ -24,6 +24,8 @@ type TabId = typeof tabs[number]["id"];
 const AdminPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>("news");
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<string | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -40,6 +42,30 @@ const AdminPage = () => {
     if (!roles || roles.length === 0) navigate("/");
   };
 
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-mzpn", {
+        body: { type: "all" },
+      });
+      if (error) throw error;
+      if (data?.success) {
+        const t = data.results?.table;
+        const s = data.results?.schedule;
+        const parts: string[] = [];
+        if (t?.synced) parts.push(`Tabela: ${t.synced} drużyn`);
+        if (s?.synced) parts.push(`Mecze: ${s.synced} (rozegrane: ${s.played}, nadchodzące: ${s.upcoming})`);
+        setSyncResult(`✅ ${parts.join(" • ") || "Zsynchronizowano"}`);
+      } else {
+        setSyncResult(`❌ ${data?.error || "Błąd synchronizacji"}`);
+      }
+    } catch (err: any) {
+      setSyncResult(`❌ ${err.message || "Błąd połączenia"}`);
+    }
+    setSyncing(false);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
@@ -54,10 +80,25 @@ const AdminPage = () => {
               <h1 className="section-heading text-3xl mb-1">Panel CMS</h1>
               <p className="text-muted-foreground text-sm">Zarządzaj treścią strony klubu</p>
             </div>
-            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-muted text-muted-foreground font-medium text-sm rounded-md hover:text-foreground transition-colors">
-              <LogOut className="w-4 h-4" /> Wyloguj
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSync}
+                disabled={syncing}
+                className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground font-heading font-semibold text-sm rounded-md hover:bg-secondary/90 transition-colors disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
+                <span className="hidden sm:inline">{syncing ? "Synchronizuję..." : "Synchronizuj z MZPN"}</span>
+              </button>
+              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-muted text-muted-foreground font-medium text-sm rounded-md hover:text-foreground transition-colors">
+                <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Wyloguj</span>
+              </button>
+            </div>
           </div>
+          {syncResult && (
+            <div className={`mb-4 px-4 py-3 rounded-lg text-sm ${syncResult.startsWith("✅") ? "bg-pitch-green/10 text-pitch-green" : "bg-destructive/10 text-destructive"}`}>
+              {syncResult}
+            </div>
+          )}
 
           {/* Tabs */}
           <div className="flex gap-1 mb-8 bg-muted/50 p-1 rounded-lg">

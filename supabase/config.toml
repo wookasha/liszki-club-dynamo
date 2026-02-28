@@ -1,1 +1,4 @@
 project_id = "lfjbcdywcuvlokiiztpg"
+
+[functions.sync-mzpn]
+verify_jwt = false
