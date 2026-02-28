@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight } from "lucide-react";
+import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
@@ -377,28 +377,37 @@ const Index = () => {
             </div>
           </ScrollAnimation>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {sponsors.map((sponsor, i) => (
-              <ScrollAnimation key={sponsor.id} delay={i * 0.05}>
-                {sponsor.website_url ? (
-                  <a href={sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`} target="_blank" rel="noopener noreferrer" className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl mx-auto">
+            {sponsors.map((sponsor, i) => {
+              const url = sponsor.website_url
+                ? sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`
+                : null;
+              const Wrapper = url ? "a" : "div";
+              const wrapperProps = url ? { href: url, target: "_blank", rel: "noopener noreferrer" } : {};
+
+              return (
+                <ScrollAnimation key={sponsor.id} delay={i * 0.05}>
+                  <Wrapper
+                    {...wrapperProps as any}
+                    className="glass-card rounded-xl p-6 flex flex-col items-center justify-center gap-3 hover-lift cursor-pointer min-h-[140px] group transition-all duration-300"
+                  >
                     {sponsor.logo_url ? (
-                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
+                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-20 max-w-[160px] object-contain group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <p className="text-xs md:text-sm font-medium text-muted-foreground">{sponsor.name}</p>
+                      <div className="w-20 h-20 rounded-xl bg-muted border border-border flex items-center justify-center">
+                        <span className="font-heading text-lg font-bold text-muted-foreground">{sponsor.name.substring(0, 2).toUpperCase()}</span>
+                      </div>
                     )}
-                  </a>
-                ) : (
-                  <div className="glass-card rounded-lg p-4 md:p-6 text-center hover-lift cursor-pointer min-h-[80px] flex items-center justify-center">
-                    {sponsor.logo_url ? (
-                      <img src={sponsor.logo_url} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
-                    ) : (
-                      <p className="text-xs md:text-sm font-medium text-muted-foreground">{sponsor.name}</p>
+                    <p className="font-heading text-sm font-semibold text-foreground text-center">{sponsor.name}</p>
+                    {url && (
+                      <span className="text-[11px] text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ExternalLink className="w-3 h-3" /> Odwiedź stronę
+                      </span>
                     )}
-                  </div>
-                )}
-              </ScrollAnimation>
-            ))}
+                  </Wrapper>
+                </ScrollAnimation>
+              );
+            })}
           </div>
 
           <ScrollAnimation>
