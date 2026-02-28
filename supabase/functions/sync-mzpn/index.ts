@@ -6,9 +6,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TABLE_URL =
+const DEFAULT_TABLE_URL =
   "https://malopolskizpn.pl/rozgrywki/2025-2026/seniorzy/ko2_krakow/?view=table";
-const SCHEDULE_URL =
+const DEFAULT_SCHEDULE_URL =
   "https://malopolskizpn.pl/rozgrywki/2025-2026/seniorzy/ko2_krakow/?view=schedule";
 
 const OWN_TEAM_KEYWORD = "LISZCZANKA";
@@ -292,11 +292,18 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const syncType = body.type || "all"; // "table", "schedule", or "all"
 
+    // Get URLs from settings or use defaults
+    const { data: settings } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url"]);
+    const settingsMap: Record<string, string> = {};
+    (settings || []).forEach((s: any) => { settingsMap[s.key] = s.value; });
+    const TABLE_URL = settingsMap["mzpn_table_url"] || DEFAULT_TABLE_URL;
+    const SCHEDULE_URL = settingsMap["mzpn_schedule_url"] || DEFAULT_SCHEDULE_URL;
+
     const results: Record<string, unknown> = {};
 
     // ── Sync league table ──
     if (syncType === "all" || syncType === "table") {
-      console.log("Fetching league table...");
+      console.log("Fetching league table from:", TABLE_URL);
       const tableHtml = await fetchPage(TABLE_URL);
 
       // Try HTML parsing first
