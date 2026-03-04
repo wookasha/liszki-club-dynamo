@@ -67,8 +67,7 @@ const LeagueTablePage = () => {
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">W</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">R</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">P</th>
-                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Bz</th>
-                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Bs</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">B</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -84,8 +83,7 @@ const LeagueTablePage = () => {
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.won}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.drawn}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.lost}</td>
-                      <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.goals_for}</td>
-                      <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.goals_against}</td>
+                      <td className="py-3 px-3 text-sm text-center text-muted-foreground whitespace-nowrap">{row.goals_for}&nbsp;-&nbsp;{row.goals_against}</td>
                     </tr>
                   ))}
                 </tbody>
