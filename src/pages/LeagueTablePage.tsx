@@ -55,13 +55,20 @@ const LeagueTablePage = () => {
           ) : table.length === 0 ? (
             <p className="text-muted-foreground text-center py-12">Tabela jeszcze nie została uzupełniona.</p>
           ) : (
-            <div className="glass-card rounded-xl overflow-hidden overflow-x-auto">
-              <table className="w-full min-w-[600px]">
+            <div className="glass-card rounded-xl overflow-hidden">
+              <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    {["#", "", "Drużyna", "M", "W", "R", "P", "Bz", "Bs", "Pkt"].map((h, i) => (
-                      <th key={`${h}-${i}`} className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center first:text-left">{h}</th>
-                    ))}
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-left">#</th>
+                    <th className="py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center"></th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-left">Drużyna</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">M</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">W</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">R</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">P</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Bz</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Bs</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Pkt</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -73,9 +80,9 @@ const LeagueTablePage = () => {
                       </td>
                       <td className={`py-3 px-3 text-sm font-medium text-left ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>{row.team}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.played}</td>
-                      <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.won}</td>
-                      <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.drawn}</td>
-                      <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.lost}</td>
+                      <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.won}</td>
+                      <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.drawn}</td>
+                      <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.lost}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.goals_for}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.goals_against}</td>
                       <td className="py-3 px-3 text-sm text-center font-bold text-foreground">{row.points}</td>
