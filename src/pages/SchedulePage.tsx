@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MapPin, Home, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
@@ -76,7 +77,7 @@ const SchedulePage = () => {
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Nadchodzące mecze</h2>
                 </ScrollAnimation>
                 <div className="space-y-4 mb-14">
-                  {(showAllUpcoming ? upcoming : upcoming.slice(0, INITIAL_COUNT)).map((m, i) => (
+                  {upcoming.slice(0, INITIAL_COUNT).map((m, i) => (
                     <ScrollAnimation key={m.id} delay={i * 0.05}>
                       <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
@@ -109,14 +110,57 @@ const SchedulePage = () => {
                       </div>
                     </ScrollAnimation>
                   ))}
+                  <AnimatePresence>
+                    {showAllUpcoming && upcoming.slice(INITIAL_COUNT).map((m, i) => (
+                      <motion.div
+                        key={m.id}
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        transition={{ duration: 0.3, delay: i * 0.05 }}
+                      >
+                        <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                            <span>{new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}</span>
+                            <span>•</span>
+                            <span>{(() => {
+                              const d = new Date(m.match_date);
+                              return d.getHours() === 0 && d.getMinutes() === 0 ? "TBD" : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+                            })()}</span>
+                          </div>
+                          <div className="flex items-center gap-4 text-center">
+                            <div className="flex items-center gap-2">
+                              <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
+                              <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
+                            </div>
+                            <span className="font-heading text-xl text-muted-foreground">vs</span>
+                            <div className="flex items-center gap-2">
+                              <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
+                              <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
+                            </div>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
+                            {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
+                          </span>
+                          {m.stadium_address && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                              <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
+                            </p>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                   {upcoming.length > INITIAL_COUNT && (
-                    <button
+                    <motion.button
                       onClick={() => setShowAllUpcoming(!showAllUpcoming)}
                       className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
                     >
-                      <ChevronDown className={`w-4 h-4 transition-transform ${showAllUpcoming ? "rotate-180" : ""}`} />
+                      <motion.span animate={{ rotate: showAllUpcoming ? 180 : 0 }} transition={{ duration: 0.3 }}>
+                        <ChevronDown className="w-4 h-4" />
+                      </motion.span>
                       {showAllUpcoming ? "Pokaż mniej" : `Pokaż więcej (${upcoming.length - INITIAL_COUNT})`}
-                    </button>
+                    </motion.button>
                   )}
                 </div>
               </>
@@ -128,7 +172,7 @@ const SchedulePage = () => {
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Wyniki</h2>
                 </ScrollAnimation>
                 <div className="space-y-4">
-                  {(showAllResults ? results : results.slice(0, INITIAL_COUNT)).map((m, i) => {
+                  {results.slice(0, INITIAL_COUNT).map((m, i) => {
                     const liszczankaHome = m.home_team.includes("Liszczanka");
                     const lGoals = liszczankaHome ? m.score_home! : m.score_away!;
                     const oGoals = liszczankaHome ? m.score_away! : m.score_home!;
@@ -165,14 +209,61 @@ const SchedulePage = () => {
                       </ScrollAnimation>
                     );
                   })}
+                  <AnimatePresence>
+                    {showAllResults && results.slice(INITIAL_COUNT).map((m, i) => {
+                      const liszczankaHome = m.home_team.includes("Liszczanka");
+                      const lGoals = liszczankaHome ? m.score_home! : m.score_away!;
+                      const oGoals = liszczankaHome ? m.score_away! : m.score_home!;
+                      const win = lGoals > oGoals;
+                      const draw = lGoals === oGoals;
+                      return (
+                        <motion.div
+                          key={m.id}
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          transition={{ duration: 0.3, delay: i * 0.05 }}
+                        >
+                          <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="text-sm text-muted-foreground shrink-0">
+                              {new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}
+                            </div>
+                            <div className="flex items-center gap-4 text-center">
+                              <div className="flex items-center gap-2">
+                                <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
+                                <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
+                              </div>
+                              <span className={`font-heading text-xl font-bold px-3 py-1 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"}`}>
+                                {m.score_home}:{m.score_away}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
+                                <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
+                              </div>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
+                              {m.venue === "dom" ? "Dom" : "Wyjazd"}
+                            </span>
+                            {m.stadium_address && (
+                              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                                <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
+                              </p>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
                   {results.length > INITIAL_COUNT && (
-                    <button
+                    <motion.button
                       onClick={() => setShowAllResults(!showAllResults)}
                       className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
                     >
-                      <ChevronDown className={`w-4 h-4 transition-transform ${showAllResults ? "rotate-180" : ""}`} />
+                      <motion.span animate={{ rotate: showAllResults ? 180 : 0 }} transition={{ duration: 0.3 }}>
+                        <ChevronDown className="w-4 h-4" />
+                      </motion.span>
                       {showAllResults ? "Pokaż mniej" : `Pokaż więcej (${results.length - INITIAL_COUNT})`}
-                    </button>
+                    </motion.button>
                   )}
                 </div>
               </>
