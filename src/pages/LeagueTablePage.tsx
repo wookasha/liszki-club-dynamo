@@ -63,12 +63,12 @@ const LeagueTablePage = () => {
                     <th className="py-3 px-2 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center"></th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-left">Drużyna</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">M</th>
+                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Pkt</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">W</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">R</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center hidden md:table-cell">P</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Bz</th>
                     <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Bs</th>
-                    <th className="py-3 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium text-center">Pkt</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -80,12 +80,12 @@ const LeagueTablePage = () => {
                       </td>
                       <td className={`py-3 px-3 text-sm font-medium text-left ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>{row.team}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.played}</td>
+                      <td className="py-3 px-3 text-sm text-center font-bold text-foreground">{row.points}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.won}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.drawn}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground hidden md:table-cell">{row.lost}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.goals_for}</td>
                       <td className="py-3 px-3 text-sm text-center text-muted-foreground">{row.goals_against}</td>
-                      <td className="py-3 px-3 text-sm text-center font-bold text-foreground">{row.points}</td>
                     </tr>
                   ))}
                 </tbody>
