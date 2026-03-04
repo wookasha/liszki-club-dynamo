@@ -84,9 +84,9 @@ const Index = () => {
     <div>
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-background">
           <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-contain md:object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/70 to-background md:from-background/70 md:via-background/60 md:to-background" />
           <div className="absolute inset-0 bg-gradient-to-r from-club-red/10 via-transparent to-club-blue/10" />
         </div>
 
