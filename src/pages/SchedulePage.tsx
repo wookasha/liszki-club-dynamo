@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, Home } from "lucide-react";
+import { MapPin, Home, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
@@ -29,10 +29,14 @@ const TeamLogo = ({ url, name, size = "w-8 h-8" }: { url: string | null; name: s
   )
 );
 
+const INITIAL_COUNT = 5;
+
 const SchedulePage = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [logos, setLogos] = useState<TeamLogoMap>({});
   const [loading, setLoading] = useState(true);
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [showAllResults, setShowAllResults] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +76,7 @@ const SchedulePage = () => {
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Nadchodzące mecze</h2>
                 </ScrollAnimation>
                 <div className="space-y-4 mb-14">
-                  {upcoming.map((m, i) => (
+                  {(showAllUpcoming ? upcoming : upcoming.slice(0, INITIAL_COUNT)).map((m, i) => (
                     <ScrollAnimation key={m.id} delay={i * 0.05}>
                       <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
@@ -105,6 +109,15 @@ const SchedulePage = () => {
                       </div>
                     </ScrollAnimation>
                   ))}
+                  {upcoming.length > INITIAL_COUNT && (
+                    <button
+                      onClick={() => setShowAllUpcoming(!showAllUpcoming)}
+                      className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
+                    >
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showAllUpcoming ? "rotate-180" : ""}`} />
+                      {showAllUpcoming ? "Pokaż mniej" : `Pokaż więcej (${upcoming.length - INITIAL_COUNT})`}
+                    </button>
+                  )}
                 </div>
               </>
             )}
@@ -115,7 +128,7 @@ const SchedulePage = () => {
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Wyniki</h2>
                 </ScrollAnimation>
                 <div className="space-y-4">
-                  {results.map((m, i) => {
+                  {(showAllResults ? results : results.slice(0, INITIAL_COUNT)).map((m, i) => {
                     const liszczankaHome = m.home_team.includes("Liszczanka");
                     const lGoals = liszczankaHome ? m.score_home! : m.score_away!;
                     const oGoals = liszczankaHome ? m.score_away! : m.score_home!;
@@ -152,6 +165,15 @@ const SchedulePage = () => {
                       </ScrollAnimation>
                     );
                   })}
+                  {results.length > INITIAL_COUNT && (
+                    <button
+                      onClick={() => setShowAllResults(!showAllResults)}
+                      className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
+                    >
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showAllResults ? "rotate-180" : ""}`} />
+                      {showAllResults ? "Pokaż mniej" : `Pokaż więcej (${results.length - INITIAL_COUNT})`}
+                    </button>
+                  )}
                 </div>
               </>
             )}
