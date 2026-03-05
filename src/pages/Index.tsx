@@ -31,8 +31,8 @@ interface NextMatchData {date: string;home: string;away: string;venue: string;st
 interface LeagueRow {position: number;team: string;played: number;points: number;is_own_team: boolean;logo_url: string | null;}
 interface LastResult {home: string;away: string;score_home: number;score_away: number;match_date: string;}
 
-// Launch date: March 5, 2026 at 20:50 CET (UTC+1) — TEST
-const LAUNCH_DATE = new Date("2026-03-05T19:50:00Z"); // 20:50 CET = 19:50 UTC
+// Launch date: March 6, 2026 at 19:48 CET (UTC+1)
+const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z"); // 19:48 CET = 18:48 UTC
 
 const Index = () => {
   const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
