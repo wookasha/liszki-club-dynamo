@@ -87,9 +87,14 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-1" ref={dropdownRef}>
             {navLinks.map((link) =>
               link.children ? (
-                <div key={link.label} className="relative">
-                  <button
-                    onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                <div
+                  key={link.label}
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(link.label)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
+                  <Link
+                    to={link.children[0]?.href || "#"}
                     className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       isChildActive(link)
                         ? "text-primary bg-primary/10"
@@ -98,7 +103,7 @@ const Navbar = () => {
                   >
                     {link.label}
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === link.label ? "rotate-180" : ""}`} />
-                  </button>
+                  </Link>
                   <AnimatePresence>
                     {openDropdown === link.label && (
                       <motion.div
@@ -106,21 +111,23 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -4 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 mt-1 w-56 bg-popover border border-border rounded-lg shadow-lg overflow-hidden z-50"
+                        className="absolute top-full left-0 pt-1 z-50"
                       >
-                        {link.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            to={child.href}
-                            className={`block px-4 py-2.5 text-sm transition-colors ${
-                              location.pathname === child.href
-                                ? "text-primary bg-primary/10"
-                                : "text-popover-foreground hover:bg-muted/50"
-                            }`}
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
+                        <div className="w-56 bg-popover border border-border rounded-lg shadow-lg overflow-hidden">
+                          {link.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              to={child.href}
+                              className={`block px-4 py-2.5 text-sm transition-colors ${
+                                location.pathname === child.href
+                                  ? "text-primary bg-primary/10"
+                                  : "text-popover-foreground hover:bg-muted/50"
+                              }`}
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
