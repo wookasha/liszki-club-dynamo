@@ -214,6 +214,33 @@ export type Database = {
           },
         ]
       }
+      player_stats: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          player_name: string
+          sort_order: number
+          stat_type: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          player_name: string
+          sort_order?: number
+          stat_type?: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          player_name?: string
+          sort_order?: number
+          stat_type?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
