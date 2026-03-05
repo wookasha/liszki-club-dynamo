@@ -4,8 +4,8 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CookieConsent from "./CookieConsent";
 
-// TEST: ~1 minute from now
-const LAUNCH_DATE = new Date(Date.now() + 60 * 1000);
+// TEST: 21:13 CET = 20:13 UTC
+const LAUNCH_DATE = new Date("2026-03-05T20:13:00Z");
 
 const Layout = () => {
   const location = useLocation();

@@ -31,8 +31,8 @@ interface NextMatchData {date: string;home: string;away: string;venue: string;st
 interface LeagueRow {position: number;team: string;played: number;points: number;is_own_team: boolean;logo_url: string | null;}
 interface LastResult {home: string;away: string;score_home: number;score_away: number;match_date: string;}
 
-// TEST: ~1 minute from now
-const LAUNCH_DATE = new Date(Date.now() + 60 * 1000);
+// TEST: 21:13 CET = 20:13 UTC
+const LAUNCH_DATE = new Date("2026-03-05T20:13:00Z");
 
 const Index = () => {
   const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
