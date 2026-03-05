@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import CookieConsent from "./CookieConsent";
 
 // Launch date: March 6, 2026 at 19:48 CET (UTC+1)
-const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z");
+const LAUNCH_DATE = new Date("2026-03-05T19:50:00Z"); // 20:50 CET = 19:50 UTC
 
 const Layout = () => {
   const location = useLocation();

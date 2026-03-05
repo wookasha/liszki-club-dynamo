@@ -31,11 +31,12 @@ interface NextMatchData {date: string;home: string;away: string;venue: string;st
 interface LeagueRow {position: number;team: string;played: number;points: number;is_own_team: boolean;logo_url: string | null;}
 interface LastResult {home: string;away: string;score_home: number;score_away: number;match_date: string;}
 
-// Launch date: March 6, 2026 at 19:48 CET (UTC+1)
-const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z"); // 19:48 CET = 18:48 UTC
+// Launch date: March 5, 2026 at 20:50 CET (UTC+1) — TEST
+const LAUNCH_DATE = new Date("2026-03-05T19:50:00Z"); // 20:50 CET = 19:50 UTC
 
 const Index = () => {
   const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
+  const [showTransition, setShowTransition] = useState(false);
   const [news, setNews] = useState(demoNews);
   const [nextMatch, setNextMatch] = useState<NextMatchData | null>(null);
   const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
@@ -43,12 +44,56 @@ const Index = () => {
   const [sponsors, setSponsors] = useState<SponsorData[]>([]);
   const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({});
 
+  // Fire confetti burst
+  const fireConfetti = async () => {
+    const confetti = (await import("canvas-confetti")).default;
+    const duration = 4000;
+    const end = Date.now() + duration;
+
+    const colors = ["#DC2626", "#FFFFFF", "#2563EB"]; // club colors
+
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors,
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors,
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+
+    // Big center burst
+    confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 },
+      colors,
+      startVelocity: 45,
+    });
+  };
+
   // Check launch time every second
   useEffect(() => {
     if (isLaunched) return;
     const interval = setInterval(() => {
       if (Date.now() >= LAUNCH_DATE.getTime()) {
-        setIsLaunched(true);
+        // Start transition sequence
+        setShowTransition(true);
+        fireConfetti();
+        // After transition animation, show full site
+        setTimeout(() => {
+          setIsLaunched(true);
+          setShowTransition(false);
+        }, 3000);
         clearInterval(interval);
       }
     }, 1000);
@@ -96,6 +141,44 @@ const Index = () => {
     supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true }).
     then(({ data }) => {if (data) setSponsors(data as SponsorData[]);});
   }, []);
+  // Transition overlay after countdown hits zero
+  if (showTransition) {
+    return (
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 2.5, delay: 0.5 }}
+          className="absolute inset-0 bg-background z-20"
+        />
+        <motion.div
+          initial={{ scale: 1.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="relative z-10 text-center"
+        >
+          <div className="w-32 h-32 md:w-48 md:h-48 mx-auto mb-6">
+            <img src={clubLogo} alt="LKS Liszczanka Liszki" className="w-full h-full object-contain drop-shadow-2xl" />
+          </div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="font-heading text-5xl md:text-7xl font-bold text-foreground"
+          >
+            Witamy na nowej stronie!
+          </motion.h1>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 1, duration: 0.6 }}
+            className="w-48 h-1 mx-auto mt-4 bg-gradient-to-r from-club-red via-club-white to-club-blue rounded-full"
+          />
+        </motion.div>
+      </div>
+    );
+  }
+
   // Landing / countdown page before launch
   if (!isLaunched) {
     return (
