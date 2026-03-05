@@ -11,10 +11,19 @@ interface PlayerStat {
   sort_order: number;
 }
 
+type StatType = "goals" | "assists" | "yellow_cards" | "red_cards";
+
+const typeLabels: Record<StatType, { label: string; addLabel: string; countLabel: string; emptyLabel: string }> = {
+  goals: { label: "Strzelcy", addLabel: "strzelca", countLabel: "Bramki", emptyLabel: "strzelców" },
+  assists: { label: "Asystenci", addLabel: "asystenta", countLabel: "Asysty", emptyLabel: "asystentów" },
+  yellow_cards: { label: "Żółte kartki", addLabel: "zawodnika", countLabel: "Żółte", emptyLabel: "żółtych kartek" },
+  red_cards: { label: "Czerwone kartki", addLabel: "zawodnika", countLabel: "Czerwone", emptyLabel: "czerwonych kartek" },
+};
+
 const AdminStats = () => {
   const [stats, setStats] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeType, setActiveType] = useState<"goals" | "assists">("goals");
+  const [activeType, setActiveType] = useState<StatType>("goals");
   const [newName, setNewName] = useState("");
   const [newCount, setNewCount] = useState(0);
 
@@ -32,6 +41,7 @@ const AdminStats = () => {
   };
 
   const filtered = stats.filter((s) => s.stat_type === activeType);
+  const info = typeLabels[activeType];
 
   const handleAdd = async () => {
     if (!newName.trim()) return;
@@ -63,29 +73,24 @@ const AdminStats = () => {
     <ScrollAnimation>
       <div className="space-y-6">
         {/* Type tabs */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setActiveType("goals")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeType === "goals" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Strzelcy
-          </button>
-          <button
-            onClick={() => setActiveType("assists")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeType === "assists" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Asystenci
-          </button>
+        <div className="flex gap-2 flex-wrap">
+          {(Object.keys(typeLabels) as StatType[]).map((type) => (
+            <button
+              key={type}
+              onClick={() => setActiveType(type)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeType === type ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {typeLabels[type].label}
+            </button>
+          ))}
         </div>
 
         {/* Add form */}
         <div className="glass-card rounded-xl p-4">
           <h3 className="font-heading text-sm font-bold text-foreground mb-3">
-            Dodaj {activeType === "goals" ? "strzelca" : "asystenta"}
+            Dodaj {info.addLabel}
           </h3>
           <div className="flex gap-3 items-end">
             <div className="flex-1">
@@ -100,7 +105,7 @@ const AdminStats = () => {
             </div>
             <div className="w-24">
               <label className="block text-xs font-medium text-foreground mb-1">
-                {activeType === "goals" ? "Bramki" : "Asysty"}
+                {info.countLabel}
               </label>
               <input
                 type="number"
@@ -122,7 +127,7 @@ const AdminStats = () => {
         {/* List */}
         {filtered.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
-            Brak {activeType === "goals" ? "strzelców" : "asystentów"}
+            Brak {info.emptyLabel}
           </div>
         ) : (
           <div className="space-y-2">
