@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Users, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,12 +28,11 @@ const navLinks: NavItem[] = [
   { href: "/kontakt", label: "Kontakt" },
 ];
 
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
+  const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -44,18 +43,9 @@ const Navbar = () => {
 
   useEffect(() => {
     setIsOpen(false);
-    setOpenDropdown(null);
+    setDesktopDropdown(null);
+    setMobileDropdown(null);
   }, [location]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const isChildActive = (link: NavItem) =>
     link.children?.some((c) => location.pathname === c.href) ?? false;
@@ -84,14 +74,14 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1" ref={dropdownRef}>
+          <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) =>
               link.children ? (
                 <div
                   key={link.label}
                   className="relative"
-                  onMouseEnter={() => setOpenDropdown(link.label)}
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  onMouseEnter={() => setDesktopDropdown(link.label)}
+                  onMouseLeave={() => setDesktopDropdown(null)}
                 >
                   <Link
                     to={link.children[0]?.href || "#"}
@@ -102,10 +92,12 @@ const Navbar = () => {
                     }`}
                   >
                     {link.label}
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === link.label ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 transition-transform ${desktopDropdown === link.label ? "rotate-180" : ""}`}
+                    />
                   </Link>
                   <AnimatePresence>
-                    {openDropdown === link.label && (
+                    {desktopDropdown === link.label && (
                       <motion.div
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -157,7 +149,14 @@ const Navbar = () => {
               <Users className="w-4 h-4" />
               Dołącz do nas
             </Link>
-            <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-foreground hover:text-primary transition-colors">
+            <button
+              onClick={() => {
+                setIsOpen((prev) => !prev);
+                setMobileDropdown(null);
+              }}
+              className="lg:hidden p-2 text-foreground hover:text-primary transition-colors"
+              aria-label="Otwórz menu"
+            >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
@@ -178,7 +177,11 @@ const Navbar = () => {
                 link.children ? (
                   <div key={link.label}>
                     <button
-                      onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                      onClick={() =>
+                        setMobileDropdown((prev) =>
+                          prev === link.label ? null : link.label,
+                        )
+                      }
                       className={`flex items-center justify-between w-full px-4 py-3 rounded-md text-base font-medium transition-colors ${
                         isChildActive(link)
                           ? "text-primary bg-primary/10"
@@ -186,9 +189,11 @@ const Navbar = () => {
                       }`}
                     >
                       {link.label}
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openDropdown === link.label ? "rotate-180" : ""}`} />
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 ${mobileDropdown === link.label ? "rotate-180" : ""}`}
+                      />
                     </button>
-                    {openDropdown === link.label && (
+                    {mobileDropdown === link.label && (
                       <div className="pl-4 space-y-0.5 mt-1">
                         {link.children.map((child) => (
                           <Link
