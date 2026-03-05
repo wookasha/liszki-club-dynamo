@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -9,8 +10,20 @@ const LAUNCH_DATE = new Date(Date.now() + 60 * 1000);
 const Layout = () => {
   const location = useLocation();
   const isHomepage = location.pathname === "/";
-  const isBeforeLaunch = Date.now() < LAUNCH_DATE.getTime();
-  const hideChrome = isHomepage && isBeforeLaunch;
+  const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
+
+  useEffect(() => {
+    if (isLaunched) return;
+    const interval = setInterval(() => {
+      if (Date.now() >= LAUNCH_DATE.getTime()) {
+        setIsLaunched(true);
+        clearInterval(interval);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isLaunched]);
+
+  const hideChrome = isHomepage && !isLaunched;
 
   return (
     <div className="min-h-screen flex flex-col">
