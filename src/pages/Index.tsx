@@ -210,7 +210,7 @@ const Index = () => {
             </h1>
             <div className="w-32 h-1 mx-auto bg-gradient-to-r from-club-red via-club-white to-club-blue rounded-full mb-6" />
             <p className="text-lg md:text-2xl text-muted-foreground font-heading tracking-widest mb-12 uppercase">
-              Nowa strona już wkrótce
+              Start strony już wkrótce
             </p>
           </motion.div>
 
