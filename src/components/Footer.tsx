@@ -40,11 +40,13 @@ const Footer = () => {
             <ul className="space-y-2">
               {[
                 { href: "/aktualnosci", label: "Aktualności" },
-                { href: "/terminarz", label: "Terminarz i wyniki" },
                 { href: "/tabela", label: "Tabela ligowa" },
+                { href: "/terminarz", label: "Terminarz" },
+                { href: "/statystyki", label: "Statystyki indywidualne" },
                 { href: "/mlodziez", label: "Drużyny młodzieżowe" },
                 { href: "/galeria", label: "Galeria" },
-                { href: "/sponsorzy", label: "Zostań sponsorem" },
+                { href: "/sponsorzy", label: "Sponsorzy" },
+                { href: "/kontakt", label: "Kontakt" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
