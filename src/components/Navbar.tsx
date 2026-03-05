@@ -186,32 +186,25 @@ const Navbar = () => {
                       }`}
                     >
                       {link.label}
-                      <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openDropdown === link.label ? "rotate-180" : ""}`} />
                     </button>
-                    <AnimatePresence>
-                      {openDropdown === link.label && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden"
-                        >
-                          {link.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              to={child.href}
-                              className={`block pl-8 pr-4 py-2.5 text-sm transition-colors ${
-                                location.pathname === child.href
-                                  ? "text-primary bg-primary/10"
-                                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                              }`}
-                            >
-                              {child.label}
-                            </Link>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {openDropdown === link.label && (
+                      <div className="pl-4 space-y-0.5 mt-1">
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            to={child.href}
+                            className={`block pl-4 pr-4 py-2.5 text-sm rounded-md transition-colors ${
+                              location.pathname === child.href
+                                ? "text-primary bg-primary/10"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            }`}
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <Link
