@@ -31,13 +31,29 @@ interface NextMatchData {date: string;home: string;away: string;venue: string;st
 interface LeagueRow {position: number;team: string;played: number;points: number;is_own_team: boolean;logo_url: string | null;}
 interface LastResult {home: string;away: string;score_home: number;score_away: number;match_date: string;}
 
+// Launch date: March 6, 2026 at 19:48 CET (UTC+1)
+const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z"); // 19:48 CET = 18:48 UTC
+
 const Index = () => {
+  const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
   const [news, setNews] = useState(demoNews);
   const [nextMatch, setNextMatch] = useState<NextMatchData | null>(null);
   const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
   const [lastResults, setLastResults] = useState<LastResult[]>([]);
   const [sponsors, setSponsors] = useState<SponsorData[]>([]);
   const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({});
+
+  // Check launch time every second
+  useEffect(() => {
+    if (isLaunched) return;
+    const interval = setInterval(() => {
+      if (Date.now() >= LAUNCH_DATE.getTime()) {
+        setIsLaunched(true);
+        clearInterval(interval);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isLaunched]);
 
   useEffect(() => {
     // Fetch news
@@ -80,6 +96,63 @@ const Index = () => {
     supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true }).
     then(({ data }) => {if (data) setSponsors(data as SponsorData[]);});
   }, []);
+  // Landing / countdown page before launch
+  if (!isLaunched) {
+    return (
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-background">
+          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_25%] md:object-center" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/80 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-club-red/15 via-transparent to-club-blue/15" />
+        </div>
+
+        <div className="relative z-10 text-center px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          >
+            <div className="w-28 h-28 md:w-40 md:h-40 mx-auto mb-8">
+              <img src={clubLogo} alt="LKS Liszczanka Liszki" className="w-full h-full object-contain drop-shadow-2xl" />
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 leading-tight">
+              Liszczanka Liszki
+            </h1>
+            <div className="w-32 h-1 mx-auto bg-gradient-to-r from-club-red via-club-white to-club-blue rounded-full mb-6" />
+            <p className="text-lg md:text-2xl text-muted-foreground font-heading tracking-widest mb-12 uppercase">
+              Nowa strona już wkrótce
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex justify-center"
+          >
+            <CountdownTimer targetDate={LAUNCH_DATE.toISOString()} />
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="mt-10 text-sm text-muted-foreground/70"
+          >
+            Premiera: 6 marca 2026, godz. 19:48
+          </motion.p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Hero Section */}
