@@ -11,9 +11,16 @@ interface PlayerStat {
   sort_order: number;
 }
 
+interface CardStat {
+  player_name: string;
+  yellow: number;
+  red: number;
+}
+
 const StatsPage = () => {
   const [scorers, setScorers] = useState<PlayerStat[]>([]);
   const [assisters, setAssisters] = useState<PlayerStat[]>([]);
+  const [cards, setCards] = useState<CardStat[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,6 +33,27 @@ const StatsPage = () => {
       if (data) {
         setScorers(data.filter((s) => s.stat_type === "goals"));
         setAssisters(data.filter((s) => s.stat_type === "assists"));
+
+        const yellowCards = data.filter((s) => s.stat_type === "yellow_cards");
+        const redCards = data.filter((s) => s.stat_type === "red_cards");
+
+        const playerMap = new Map<string, CardStat>();
+        yellowCards.forEach((s) => {
+          playerMap.set(s.player_name, { player_name: s.player_name, yellow: s.count, red: 0 });
+        });
+        redCards.forEach((s) => {
+          const existing = playerMap.get(s.player_name);
+          if (existing) {
+            existing.red = s.count;
+          } else {
+            playerMap.set(s.player_name, { player_name: s.player_name, yellow: 0, red: s.count });
+          }
+        });
+
+        const cardList = Array.from(playerMap.values()).sort(
+          (a, b) => (b.yellow + b.red) - (a.yellow + a.red)
+        );
+        setCards(cardList);
       }
       setLoading(false);
     };
@@ -84,6 +112,61 @@ const StatsPage = () => {
     </ScrollAnimation>
   );
 
+  const YellowCardIcon = () => (
+    <div className="w-4 h-5 rounded-[2px] bg-yellow-400 border border-yellow-500 inline-block" />
+  );
+
+  const RedCardIcon = () => (
+    <div className="w-4 h-5 rounded-[2px] bg-red-500 border border-red-600 inline-block" />
+  );
+
+  const renderCardsTable = () => (
+    <ScrollAnimation>
+      <div className="glass-card rounded-xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-3">
+          <div className="flex gap-1">
+            <YellowCardIcon />
+            <RedCardIcon />
+          </div>
+          <h2 className="font-heading text-xl font-bold text-foreground">Kartki</h2>
+        </div>
+        {cards.length === 0 ? (
+          <div className="px-6 py-12 text-center text-muted-foreground">Brak danych o kartkach</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-16">#</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Zawodnik</th>
+                  <th className="px-6 py-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider w-20">
+                    <div className="flex justify-center"><YellowCardIcon /></div>
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider w-20">
+                    <div className="flex justify-center"><RedCardIcon /></div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {cards.map((player, idx) => (
+                  <tr
+                    key={player.player_name}
+                    className="border-b border-border/50 transition-colors hover:bg-muted/20"
+                  >
+                    <td className="px-6 py-3 text-sm font-bold text-muted-foreground">{idx + 1}</td>
+                    <td className="px-6 py-3 text-sm font-medium text-foreground">{player.player_name}</td>
+                    <td className="px-6 py-3 text-center text-sm font-bold text-yellow-500">{player.yellow}</td>
+                    <td className="px-6 py-3 text-center text-sm font-bold text-red-500">{player.red}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </ScrollAnimation>
+  );
+
   if (loading) {
     return (
       <div className="pt-24 pb-16 flex items-center justify-center min-h-[60vh]">
@@ -99,7 +182,7 @@ const StatsPage = () => {
           <div className="text-center mb-12">
             <h1 className="section-heading text-3xl md:text-4xl mb-4">Statystyki indywidualne</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Klasyfikacja strzelców i asystentów w bieżącym sezonie
+              Klasyfikacja strzelców, asystentów i kartek w bieżącym sezonie
             </p>
           </div>
         </ScrollAnimation>
@@ -107,6 +190,7 @@ const StatsPage = () => {
         <div className="space-y-8">
           {renderTable("Strzelcy", <Trophy className="w-5 h-5 text-yellow-500" />, scorers, "Brak danych o strzelcach")}
           {renderTable("Asystenci", <Star className="w-5 h-5 text-primary" />, assisters, "Brak danych o asystentach")}
+          {renderCardsTable()}
         </div>
       </div>
     </div>
