@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MapPin, Mail, Phone, Facebook, Youtube, CheckCircle, Send } from "lucide-react";
+import { toast } from "sonner";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import PrivacyClause from "@/components/PrivacyClause";
 
@@ -71,7 +72,7 @@ const ContactPage = () => {
                     <Youtube className="w-4 h-4" /> YouTube
                   </a>
                 </div>
-                <p className="text-muted-foreground/40 text-[11px] font-mono mt-3 select-all" title="Kto pamięta? - Bogusław Moniak">BM·185</p>
+                <p className="text-muted-foreground/40 text-[11px] font-mono mt-3 select-all cursor-pointer" title="Kto pamięta? - Bogusław Moniak" onClick={() => toast("Kto pamięta? - Bogusław Moniak", { duration: 3000 })}>BM·185</p>
               </div>
 
               {/* Google Map */}
