@@ -63,7 +63,7 @@ const ContactPage = () => {
 
               <div className="glass-card rounded-xl p-6">
                 <h2 className="font-heading text-xl font-bold text-foreground mb-4">Social media</h2>
-                <div className="flex gap-3">
+              <div className="flex gap-3">
                   <a href="https://www.facebook.com/LiszczankaLiszki" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-muted rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors text-sm">
                     <Facebook className="w-4 h-4" /> Facebook
                   </a>
@@ -71,6 +71,7 @@ const ContactPage = () => {
                     <Youtube className="w-4 h-4" /> YouTube
                   </a>
                 </div>
+                <p className="text-muted-foreground/20 text-[9px] font-mono mt-3 select-all" title="Kto pamięta?">BM·185</p>
               </div>
 
               {/* Google Map */}
