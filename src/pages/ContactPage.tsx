@@ -71,7 +71,7 @@ const ContactPage = () => {
                     <Youtube className="w-4 h-4" /> YouTube
                   </a>
                 </div>
-                <p className="text-muted-foreground/20 text-[9px] font-mono mt-3 select-all" title="Kto pamięta? - Bogusław Moniak">BM·185</p>
+                <p className="text-muted-foreground/40 text-[11px] font-mono mt-3 select-all" title="Kto pamięta? - Bogusław Moniak">BM·185</p>
               </div>
 
               {/* Google Map */}
