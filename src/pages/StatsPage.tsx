@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { Trophy, Star } from "lucide-react";
 
@@ -184,7 +185,7 @@ const StatsPage = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Klasyfikacja strzelców, asystentów i kartek w bieżącym sezonie
             </p>
-            <p className="text-muted-foreground/40 text-[11px] font-mono mt-2 select-all" title="Obecny na każdym meczu - Marian Kowalik">MK·141</p>
+            <p className="text-muted-foreground/40 text-[11px] font-mono mt-2 select-all cursor-pointer" title="Obecny na każdym meczu - Marian Kowalik" onClick={() => toast("Obecny na każdym meczu - Marian Kowalik", { duration: 3000 })}>MK·141</p>
           </div>
         </ScrollAnimation>
 
