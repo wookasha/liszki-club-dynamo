@@ -184,7 +184,7 @@ const StatsPage = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Klasyfikacja strzelców, asystentów i kartek w bieżącym sezonie
             </p>
-            <p className="text-muted-foreground/20 text-[9px] font-mono mt-2 select-all" title="Legenda">MK·141</p>
+            <p className="text-muted-foreground/20 text-[9px] font-mono mt-2 select-all" title="Obecny na każdym meczu - Marian Kowalik">MK·141</p>
           </div>
         </ScrollAnimation>
 

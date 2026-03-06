@@ -14,7 +14,7 @@ const Footer = () => {
             <p className="text-muted-foreground text-sm leading-relaxed mb-4">
               Klub piłkarski z tradycją od 1948 roku. Gramy w klasie okręgowej Kraków, grupa II.
             </p>
-            <p className="text-muted-foreground/20 text-[9px] font-mono select-all" title="Pamiętacie?">AM·187</p>
+            <p className="text-muted-foreground/20 text-[9px] font-mono select-all" title="Legenda - Adam Mlostek">AM·187</p>
             <div className="flex gap-3">
               <a
                 href="https://www.facebook.com/LiszczankaLiszki"
