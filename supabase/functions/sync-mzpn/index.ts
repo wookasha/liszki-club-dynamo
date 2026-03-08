@@ -409,12 +409,34 @@ Deno.serve(async (req) => {
       // Sort by length descending so longer names match first (e.g. "CLEPARDIA KRAKÓW" before "KRAKÓW")
       knownTeams.sort((a: string, b: string) => b.length - a.length);
 
+      console.log(`Known teams: ${knownTeams.length}`, knownTeams);
+
       let matchRows = parseScheduleFromHtml(scheduleHtml, knownTeams);
+      console.log(`parseScheduleFromHtml returned ${matchRows.length} matches`);
 
       if (matchRows.length === 0) {
         // Fallback: strip to text
         const schedText = htmlToText(scheduleHtml);
+        console.log(`Fallback text (first 500 chars):`, schedText.substring(0, 500));
         matchRows = parseSchedule(schedText, knownTeams);
+      }
+
+      // Debug: log first 20 lines of extracted text to understand format
+      const mainMatch2 = scheduleHtml.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
+      if (mainMatch2) {
+        const debugText = mainMatch2[1]
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/<\/div>/gi, "\n")
+          .replace(/<\/p>/gi, "\n")
+          .replace(/<\/li>/gi, "\n")
+          .replace(/<\/h[1-6]>/gi, "\n")
+          .replace(/<[^>]+>/g, "")
+          .replace(/&amp;/g, "&")
+          .replace(/&nbsp;/g, " ")
+          .replace(/\r/g, "");
+        const debugLines = debugText.split("\n").map((l: string) => l.trim()).filter(Boolean);
+        console.log(`Total text lines: ${debugLines.length}`);
+        console.log(`First 30 lines:`, debugLines.slice(0, 30));
       }
 
       // Filter only Liszczanka matches
