@@ -301,7 +301,7 @@ function parseTableFromHtml(html: string): TableRow[] {
 }
 
 // Parse schedule from HTML
-function parseScheduleFromHtml(html: string): MatchRow[] {
+function parseScheduleFromHtml(html: string, knownTeams: string[] = []): MatchRow[] {
   // Extract main content
   const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
   if (!mainMatch) return [];
@@ -319,7 +319,7 @@ function parseScheduleFromHtml(html: string): MatchRow[] {
     .replace(/&nbsp;/g, " ")
     .replace(/\r/g, "");
 
-  return parseSchedule(text);
+  return parseSchedule(text, knownTeams);
 }
 
 Deno.serve(async (req) => {
