@@ -403,12 +403,18 @@ Deno.serve(async (req) => {
       console.log("Fetching schedule...");
       const scheduleHtml = await fetchPage(SCHEDULE_URL);
 
-      let matchRows = parseScheduleFromHtml(scheduleHtml);
+      // Get known team names from league table for better unplayed match parsing
+      const { data: leagueTeams } = await supabase.from("league_table").select("team");
+      const knownTeams = (leagueTeams || []).map((t: any) => t.team);
+      // Sort by length descending so longer names match first (e.g. "CLEPARDIA KRAKÓW" before "KRAKÓW")
+      knownTeams.sort((a: string, b: string) => b.length - a.length);
+
+      let matchRows = parseScheduleFromHtml(scheduleHtml, knownTeams);
 
       if (matchRows.length === 0) {
         // Fallback: strip to text
         const schedText = htmlToText(scheduleHtml);
-        matchRows = parseSchedule(schedText);
+        matchRows = parseSchedule(schedText, knownTeams);
       }
 
       // Filter only Liszczanka matches
