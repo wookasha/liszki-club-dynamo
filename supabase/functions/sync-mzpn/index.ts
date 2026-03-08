@@ -76,19 +76,22 @@ interface MatchRow {
   has_time: boolean;
 }
 
-function parseSchedule(md: string): MatchRow[] {
+function parseSchedule(md: string, knownTeams: string[] = []): MatchRow[] {
   const matches: MatchRow[] = [];
 
   // Split into lines
   const lines = md.split("\n").map((l) => l.trim()).filter(Boolean);
 
+  // Build known teams list in uppercase for matching
+  const teamsUpper = knownTeams.map((t) => t.toUpperCase());
+
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
 
-    // Match date line: "15.08.202511:00" or "6.06.2026" (no time)
+    // Match date line: "15.08.2025 11:00" or "15.08.202511:00" or "6.06.2026" (no time)
     const dateMatch = line.match(
-      /^(\d{1,2})\.(\d{2})\.(\d{4})(\d{2}:\d{2})?$/
+      /^(\d{1,2})\.(\d{2})\.(\d{4})\s*(\d{2}:\d{2})?$/
     );
     if (dateMatch) {
       const day = dateMatch[1].padStart(2, "0");
@@ -98,7 +101,6 @@ function parseSchedule(md: string): MatchRow[] {
       const hasTime = !!dateMatch[4];
 
       // Determine correct Polish offset (CET +01:00 or CEST +02:00)
-      // CEST: last Sunday of March to last Sunday of October
       const monthNum = parseInt(month);
       const dayNum = parseInt(day);
       const yearNum = parseInt(year);
@@ -106,7 +108,6 @@ function parseSchedule(md: string): MatchRow[] {
       if (monthNum > 3 && monthNum < 10) {
         offset = "+02:00"; // CEST for sure (Apr-Sep)
       } else if (monthNum === 3 && dayNum >= 25) {
-        // Approximate: last Sunday of March
         const lastDay = new Date(yearNum, 2, 31);
         const lastSunday = 31 - lastDay.getDay();
         if (dayNum >= lastSunday) offset = "+02:00";
@@ -119,10 +120,16 @@ function parseSchedule(md: string): MatchRow[] {
       const timeStr = time || "00:00";
       const dateStr = `${year}-${month}-${day}T${timeStr}:00${offset}`;
 
-      // Next line should be the match: "TEAM A4:1 (3:1)TEAM B" or "TEAM ATEAM B"
+      // Next line should be the match
       i++;
       if (i < lines.length) {
         const matchLine = lines[i];
+
+        // Skip "Kolejka X" lines
+        if (/^Kolejka\s+\d+$/i.test(matchLine)) {
+          i++;
+          continue;
+        }
 
         // Try played match: TEAM_A<score_home>:<score_away> (<half>)TEAM_B
         const playedMatch = matchLine.match(
@@ -146,62 +153,74 @@ function parseSchedule(md: string): MatchRow[] {
           });
         } else {
           // Unplayed match: two team names concatenated
-          // We need to split them. Teams are in UPPERCASE with spaces.
-          // Strategy: try to find a known team boundary
-          // Since we may not have the team list here, use a heuristic:
-          // Look for a pattern where a lowercase-to-uppercase transition happens
-          // But all names are uppercase, so we need another approach.
-          // The safest approach: try matching known team suffixes
-          const unplayedMatch = matchLine.match(
-            /^([A-ZŻŹĆĄŚĘŁÓŃ][A-ZŻŹĆĄŚĘŁÓŃa-zżźćąśęłóń\s]+?)([A-ZŻŹĆĄŚĘŁÓŃ]{2}[A-ZŻŹĆĄŚĘŁÓŃa-zżźćąśęłóń\s]+)$/
-          );
-          // Better approach: split by known city names that appear at the end of team names
-          // Actually the simplest: we know all teams end with a city (KRAKÓW, LISZKI, KASZÓW, ZIELONKI)
-          // So look for the second occurrence of a city keyword
+          // Strategy 1: use known teams list to find the split point
+          let found = false;
 
-          const cities = [
-            "KRAKÓW",
-            "LISZKI",
-            "KASZÓW",
-            "ZIELONKI",
-          ];
+          if (teamsUpper.length > 0) {
+            const matchUpper = matchLine.toUpperCase();
+            // Try each known team as home team prefix
+            for (const team of teamsUpper) {
+              if (matchUpper.startsWith(team)) {
+                const restStart = team.length;
+                const rest = matchLine.substring(restStart).trim();
+                if (rest.length > 0) {
+                  const homeTeam = normalizeName(matchLine.substring(0, restStart));
+                  const awayTeam = normalizeName(rest);
+                  const isOwnHome = matchLine.substring(0, restStart).toUpperCase().includes(OWN_TEAM_KEYWORD);
+                  const isOwnAway = rest.toUpperCase().includes(OWN_TEAM_KEYWORD);
 
-          let splitIdx = -1;
-          // Find the first city occurrence (end of home team)
-          for (const city of cities) {
-            const idx = matchLine.toUpperCase().indexOf(city);
-            if (idx !== -1) {
-              const endOfFirst = idx + city.length;
-              // Check if there's more text after
-              if (endOfFirst < matchLine.length) {
-                splitIdx = endOfFirst;
-                break;
+                  matches.push({
+                    match_date: dateStr,
+                    home_team: homeTeam,
+                    away_team: awayTeam,
+                    score_home: null,
+                    score_away: null,
+                    is_played: false,
+                    venue: isOwnHome ? "dom" : isOwnAway ? "wyjazd" : "dom",
+                    has_time: hasTime,
+                  });
+                  found = true;
+                  break;
+                }
               }
             }
           }
 
-          if (splitIdx > 0) {
-            const homeTeam = normalizeName(matchLine.substring(0, splitIdx));
-            const awayTeam = normalizeName(matchLine.substring(splitIdx));
-            const isOwnHome = matchLine
-              .substring(0, splitIdx)
-              .toUpperCase()
-              .includes(OWN_TEAM_KEYWORD);
-            const isOwnAway = matchLine
-              .substring(splitIdx)
-              .toUpperCase()
-              .includes(OWN_TEAM_KEYWORD);
+          // Strategy 2: fallback city-based splitting
+          if (!found) {
+            const cities = [
+              "KRAKÓW", "LISZKI", "KASZÓW", "ZIELONKI",
+            ];
 
-            matches.push({
-              match_date: dateStr,
-              home_team: homeTeam,
-              away_team: awayTeam,
-              score_home: null,
-              score_away: null,
-              is_played: false,
-              venue: isOwnHome ? "dom" : isOwnAway ? "wyjazd" : "dom",
-              has_time: hasTime,
-            });
+            let splitIdx = -1;
+            for (const city of cities) {
+              const idx = matchLine.toUpperCase().indexOf(city);
+              if (idx !== -1) {
+                const endOfFirst = idx + city.length;
+                if (endOfFirst < matchLine.length) {
+                  splitIdx = endOfFirst;
+                  break;
+                }
+              }
+            }
+
+            if (splitIdx > 0) {
+              const homeTeam = normalizeName(matchLine.substring(0, splitIdx));
+              const awayTeam = normalizeName(matchLine.substring(splitIdx));
+              const isOwnHome = matchLine.substring(0, splitIdx).toUpperCase().includes(OWN_TEAM_KEYWORD);
+              const isOwnAway = matchLine.substring(splitIdx).toUpperCase().includes(OWN_TEAM_KEYWORD);
+
+              matches.push({
+                match_date: dateStr,
+                home_team: homeTeam,
+                away_team: awayTeam,
+                score_home: null,
+                score_away: null,
+                is_played: false,
+                venue: isOwnHome ? "dom" : isOwnAway ? "wyjazd" : "dom",
+                has_time: hasTime,
+              });
+            }
           }
         }
       }
@@ -282,7 +301,7 @@ function parseTableFromHtml(html: string): TableRow[] {
 }
 
 // Parse schedule from HTML
-function parseScheduleFromHtml(html: string): MatchRow[] {
+function parseScheduleFromHtml(html: string, knownTeams: string[] = []): MatchRow[] {
   // Extract main content
   const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
   if (!mainMatch) return [];
@@ -300,7 +319,7 @@ function parseScheduleFromHtml(html: string): MatchRow[] {
     .replace(/&nbsp;/g, " ")
     .replace(/\r/g, "");
 
-  return parseSchedule(text);
+  return parseSchedule(text, knownTeams);
 }
 
 Deno.serve(async (req) => {
@@ -384,12 +403,18 @@ Deno.serve(async (req) => {
       console.log("Fetching schedule...");
       const scheduleHtml = await fetchPage(SCHEDULE_URL);
 
-      let matchRows = parseScheduleFromHtml(scheduleHtml);
+      // Get known team names from league table for better unplayed match parsing
+      const { data: leagueTeams } = await supabase.from("league_table").select("team");
+      const knownTeams = (leagueTeams || []).map((t: any) => t.team);
+      // Sort by length descending so longer names match first (e.g. "CLEPARDIA KRAKÓW" before "KRAKÓW")
+      knownTeams.sort((a: string, b: string) => b.length - a.length);
+
+      let matchRows = parseScheduleFromHtml(scheduleHtml, knownTeams);
 
       if (matchRows.length === 0) {
         // Fallback: strip to text
         const schedText = htmlToText(scheduleHtml);
-        matchRows = parseSchedule(schedText);
+        matchRows = parseSchedule(schedText, knownTeams);
       }
 
       // Filter only Liszczanka matches
