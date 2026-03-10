@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { MapPin, Home, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
+import MatchCard from "@/components/schedule/MatchCard";
 
 interface Match {
   id: string;
@@ -19,16 +20,6 @@ interface Match {
 interface TeamLogoMap {
   [team: string]: string | null;
 }
-
-const TeamLogo = ({ url, name, size = "w-8 h-8" }: { url: string | null; name: string; size?: string }) => (
-  url ? (
-    <img src={url} alt={name} className={`${size} object-contain`} />
-  ) : (
-    <div className={`${size} rounded-full bg-muted border border-border flex items-center justify-center`}>
-      <span className="text-[9px] font-bold text-muted-foreground">{name.substring(0, 3).toUpperCase()}</span>
-    </div>
-  )
-);
 
 const INITIAL_COUNT = 5;
 
@@ -57,6 +48,71 @@ const SchedulePage = () => {
   const upcoming = matches.filter((m) => !m.is_played);
   const results = matches.filter((m) => m.is_played).reverse();
 
+  const renderMatchList = (
+    list: Match[],
+    showAll: boolean,
+    setShowAll: (v: boolean) => void,
+  ) => {
+    const visible = list.slice(0, INITIAL_COUNT);
+    const hidden = list.slice(INITIAL_COUNT);
+
+    return (
+      <div className="space-y-3">
+        {visible.map((m, i) => (
+          <ScrollAnimation key={m.id} delay={i * 0.04}>
+            <MatchCard
+              homeTeam={m.home_team}
+              awayTeam={m.away_team}
+              matchDate={m.match_date}
+              venue={m.venue}
+              stadiumAddress={m.stadium_address}
+              homeLogo={logos[m.home_team] || null}
+              awayLogo={logos[m.away_team] || null}
+              scoreHome={m.score_home}
+              scoreAway={m.score_away}
+              isPlayed={m.is_played}
+            />
+          </ScrollAnimation>
+        ))}
+        <AnimatePresence>
+          {showAll && hidden.map((m, i) => (
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, delay: i * 0.03 }}
+            >
+              <MatchCard
+                homeTeam={m.home_team}
+                awayTeam={m.away_team}
+                matchDate={m.match_date}
+                venue={m.venue}
+                stadiumAddress={m.stadium_address}
+                homeLogo={logos[m.home_team] || null}
+                awayLogo={logos[m.away_team] || null}
+                scoreHome={m.score_home}
+                scoreAway={m.score_away}
+                isPlayed={m.is_played}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {list.length > INITIAL_COUNT && (
+          <motion.button
+            onClick={() => setShowAll(!showAll)}
+            className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
+          >
+            <motion.span animate={{ rotate: showAll ? 180 : 0 }} transition={{ duration: 0.3 }}>
+              <ChevronDown className="w-4 h-4" />
+            </motion.span>
+            {showAll ? "Pokaż mniej" : `Pokaż więcej (${list.length - INITIAL_COUNT})`}
+          </motion.button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4">
@@ -70,205 +126,24 @@ const SchedulePage = () => {
         ) : matches.length === 0 ? (
           <p className="text-muted-foreground text-center py-12">Brak meczów w terminarzu.</p>
         ) : (
-          <>
+          <div className="space-y-14">
             {upcoming.length > 0 && (
-              <>
+              <section>
                 <ScrollAnimation>
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Nadchodzące mecze</h2>
                 </ScrollAnimation>
-                <div className="space-y-4 mb-14">
-                  {upcoming.slice(0, INITIAL_COUNT).map((m, i) => (
-                    <ScrollAnimation key={m.id} delay={i * 0.05}>
-                      <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                          <span>{new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}</span>
-                          <span>•</span>
-                          <span>{(() => {
-                            const d = new Date(m.match_date);
-                            return d.getHours() === 0 && d.getMinutes() === 0 ? "TBD" : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
-                          })()}</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-center">
-                          <div className="flex items-center gap-2">
-                            <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
-                            <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
-                          </div>
-                          <span className="font-heading text-xl text-muted-foreground">vs</span>
-                          <div className="flex items-center gap-2">
-                            <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
-                            <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
-                          </div>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
-                          {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
-                        </span>
-                        {m.stadium_address && (
-                          <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
-                            <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                          </a>
-                        )}
-                      </div>
-                    </ScrollAnimation>
-                  ))}
-                  <AnimatePresence>
-                    {showAllUpcoming && upcoming.slice(INITIAL_COUNT).map((m, i) => (
-                      <motion.div
-                        key={m.id}
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: "auto", marginTop: 16 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        transition={{ duration: 0.3, delay: i * 0.05 }}
-                      >
-                        <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                            <span>{new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}</span>
-                            <span>•</span>
-                            <span>{(() => {
-                              const d = new Date(m.match_date);
-                              return d.getHours() === 0 && d.getMinutes() === 0 ? "TBD" : d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
-                            })()}</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-center">
-                            <div className="flex items-center gap-2">
-                              <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
-                              <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
-                            </div>
-                            <span className="font-heading text-xl text-muted-foreground">vs</span>
-                            <div className="flex items-center gap-2">
-                              <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
-                              <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
-                            </div>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
-                            {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
-                          </span>
-                          {m.stadium_address && (
-                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
-                              <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                            </a>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                  {upcoming.length > INITIAL_COUNT && (
-                    <motion.button
-                      onClick={() => setShowAllUpcoming(!showAllUpcoming)}
-                      className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
-                    >
-                      <motion.span animate={{ rotate: showAllUpcoming ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                        <ChevronDown className="w-4 h-4" />
-                      </motion.span>
-                      {showAllUpcoming ? "Pokaż mniej" : `Pokaż więcej (${upcoming.length - INITIAL_COUNT})`}
-                    </motion.button>
-                  )}
-                </div>
-              </>
+                {renderMatchList(upcoming, showAllUpcoming, setShowAllUpcoming)}
+              </section>
             )}
-
             {results.length > 0 && (
-              <>
+              <section>
                 <ScrollAnimation>
                   <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Wyniki</h2>
                 </ScrollAnimation>
-                <div className="space-y-4">
-                  {results.slice(0, INITIAL_COUNT).map((m, i) => {
-                    const liszczankaHome = m.home_team.includes("Liszczanka");
-                    const lGoals = liszczankaHome ? m.score_home! : m.score_away!;
-                    const oGoals = liszczankaHome ? m.score_away! : m.score_home!;
-                    const win = lGoals > oGoals;
-                    const draw = lGoals === oGoals;
-                    return (
-                      <ScrollAnimation key={m.id} delay={i * 0.05}>
-                        <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                          <div className="text-sm text-muted-foreground shrink-0">
-                            {new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}
-                          </div>
-                          <div className="flex items-center gap-4 text-center">
-                            <div className="flex items-center gap-2">
-                              <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
-                              <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
-                            </div>
-                            <span className={`font-heading text-xl font-bold px-3 py-1 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"}`}>
-                              {m.score_home}:{m.score_away}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
-                              <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
-                            </div>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
-                            {m.venue === "dom" ? "Dom" : "Wyjazd"}
-                          </span>
-                          {m.stadium_address && (
-                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
-                              <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                            </a>
-                          )}
-                        </div>
-                      </ScrollAnimation>
-                    );
-                  })}
-                  <AnimatePresence>
-                    {showAllResults && results.slice(INITIAL_COUNT).map((m, i) => {
-                      const liszczankaHome = m.home_team.includes("Liszczanka");
-                      const lGoals = liszczankaHome ? m.score_home! : m.score_away!;
-                      const oGoals = liszczankaHome ? m.score_away! : m.score_home!;
-                      const win = lGoals > oGoals;
-                      const draw = lGoals === oGoals;
-                      return (
-                        <motion.div
-                          key={m.id}
-                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                          animate={{ opacity: 1, height: "auto", marginTop: 16 }}
-                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                          transition={{ duration: 0.3, delay: i * 0.05 }}
-                        >
-                          <div className="glass-card rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="text-sm text-muted-foreground shrink-0">
-                              {new Date(m.match_date).toLocaleDateString("pl-PL", { day: "numeric", month: "long" })}
-                            </div>
-                            <div className="flex items-center gap-4 text-center">
-                              <div className="flex items-center gap-2">
-                                <TeamLogo url={logos[m.home_team] || null} name={m.home_team} />
-                                <span className={`font-heading text-base font-bold ${m.home_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.home_team}</span>
-                              </div>
-                              <span className={`font-heading text-xl font-bold px-3 py-1 rounded ${win ? "bg-pitch-green/20 text-pitch-green" : draw ? "bg-muted text-muted-foreground" : "bg-destructive/20 text-destructive"}`}>
-                                {m.score_home}:{m.score_away}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <span className={`font-heading text-base font-bold ${m.away_team.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>{m.away_team}</span>
-                                <TeamLogo url={logos[m.away_team] || null} name={m.away_team} />
-                              </div>
-                            </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${m.venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"}`}>
-                              {m.venue === "dom" ? "Dom" : "Wyjazd"}
-                            </span>
-                            {m.stadium_address && (
-                              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
-                                <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                              </a>
-                            )}
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                  {results.length > INITIAL_COUNT && (
-                    <motion.button
-                      onClick={() => setShowAllResults(!showAllResults)}
-                      className="w-full py-3 text-sm text-primary hover:text-primary/80 font-medium flex items-center justify-center gap-1 transition-colors"
-                    >
-                      <motion.span animate={{ rotate: showAllResults ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                        <ChevronDown className="w-4 h-4" />
-                      </motion.span>
-                      {showAllResults ? "Pokaż mniej" : `Pokaż więcej (${results.length - INITIAL_COUNT})`}
-                    </motion.button>
-                  )}
-                </div>
-              </>
+                {renderMatchList(results, showAllResults, setShowAllResults)}
+              </section>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>
