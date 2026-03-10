@@ -173,7 +173,10 @@ const AdminMatches = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gospodarz</label>
-                <select value={form.home_team} onChange={(e) => setForm({ ...form, home_team: e.target.value })} className={inputClass}>
+                <select value={form.home_team} onChange={(e) => {
+                  const team = e.target.value;
+                  setForm({ ...form, home_team: team, stadium_address: stadiumMap[team] || form.stadium_address });
+                }} className={inputClass}>
                   {teams.length > 0 ? teams.map((t) => (
                     <option key={t} value={t}>{t}</option>
                   )) : <option value={form.home_team}>{form.home_team}</option>}
