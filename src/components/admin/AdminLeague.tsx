@@ -54,7 +54,7 @@ const AdminLeague = () => {
     await supabase.from("league_table").insert({ ...newRow, position, logo_url } as any);
     setSaving(false);
     setShowAdd(false);
-    setNewRow({ team: "", played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, is_own_team: false });
+    setNewRow({ team: "", played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, is_own_team: false, stadium_address: "" });
     setNewLogoFile(null);
     setNewLogoPreview(null);
     fetchRows();
