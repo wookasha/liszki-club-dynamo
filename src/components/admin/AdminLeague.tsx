@@ -15,6 +15,7 @@ interface LeagueRow {
   points: number;
   is_own_team: boolean;
   logo_url: string | null;
+  stadium_address: string;
 }
 
 const AdminLeague = () => {
