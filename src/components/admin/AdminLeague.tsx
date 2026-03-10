@@ -195,6 +195,9 @@ const AdminLeague = () => {
                     </label>
                   </td>
                   <td className={`py-2 px-2 text-sm font-medium text-left ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>{row.team}</td>
+                  <td className="py-2 px-1">
+                    <input type="text" value={row.stadium_address} onChange={(e) => handleUpdate(row, "stadium_address", e.target.value)} placeholder="Adres boiska..." className="w-32 px-1 py-1 bg-transparent border border-transparent hover:border-border focus:border-primary rounded text-xs text-muted-foreground focus:text-foreground focus:outline-none" />
+                  </td>
                   {(["played", "won", "drawn", "lost", "goals_for", "goals_against", "points"] as const).map((field) => (
                     <td key={field} className="py-2 px-1">
                       <input type="number" min={0} value={row[field]} onChange={(e) => handleUpdate(row, field, Number(e.target.value))} className="w-12 px-1 py-1 bg-transparent border border-transparent hover:border-border focus:border-primary rounded text-sm text-center text-foreground focus:outline-none" />
