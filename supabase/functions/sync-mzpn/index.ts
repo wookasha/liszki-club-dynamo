@@ -389,6 +389,7 @@ Deno.serve(async (req) => {
           goals_against: r.goals_against,
           is_own_team: r.is_own_team,
           logo_url: logoMap[r.team] || null,
+          stadium_address: existingStadiumMap[r.team] || "",
         }));
 
         const { error: insertErr } = await supabase.from("league_table").insert(inserts);
