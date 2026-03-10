@@ -171,7 +171,7 @@ const AdminLeague = () => {
           <table className="w-full min-w-[750px]">
             <thead>
               <tr className="border-b border-border">
-                {["#", "", "Drużyna", "M", "W", "R", "P", "Bz", "Bs", "Pkt", ""].map((h, i) => (
+                {["#", "", "Drużyna", "Boisko", "M", "W", "R", "P", "Bz", "Bs", "Pkt", ""].map((h, i) => (
                   <th key={`${h}-${i}`} className="py-2.5 px-2 text-[10px] uppercase tracking-wider text-muted-foreground font-medium text-center first:text-left">{h}</th>
                 ))}
               </tr>
