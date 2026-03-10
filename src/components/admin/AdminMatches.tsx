@@ -38,6 +38,7 @@ const defaultForm = {
 const AdminMatches = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<string[]>([]);
+  const [stadiumMap, setStadiumMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Match | null>(null);
   const [creating, setCreating] = useState(false);
@@ -47,8 +48,11 @@ const AdminMatches = () => {
   useEffect(() => { fetchMatches(); fetchTeams(); }, []);
 
   const fetchTeams = async () => {
-    const { data } = await supabase.from("league_table").select("team").order("position", { ascending: true });
+    const { data } = await supabase.from("league_table").select("team, stadium_address").order("position", { ascending: true });
     setTeams((data || []).map((r: any) => r.team));
+    const map: Record<string, string> = {};
+    (data || []).forEach((r: any) => { if (r.stadium_address) map[r.team] = r.stadium_address; });
+    setStadiumMap(map);
   };
 
   const fetchMatches = async () => {
@@ -169,7 +173,10 @@ const AdminMatches = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gospodarz</label>
-                <select value={form.home_team} onChange={(e) => setForm({ ...form, home_team: e.target.value })} className={inputClass}>
+                <select value={form.home_team} onChange={(e) => {
+                  const team = e.target.value;
+                  setForm({ ...form, home_team: team, stadium_address: stadiumMap[team] || form.stadium_address });
+                }} className={inputClass}>
                   {teams.length > 0 ? teams.map((t) => (
                     <option key={t} value={t}>{t}</option>
                   )) : <option value={form.home_team}>{form.home_team}</option>}
