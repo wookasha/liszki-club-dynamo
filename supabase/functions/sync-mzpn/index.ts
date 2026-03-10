@@ -403,10 +403,12 @@ Deno.serve(async (req) => {
       console.log("Fetching schedule...");
       const scheduleHtml = await fetchPage(SCHEDULE_URL);
 
-      // Get known team names from league table for better unplayed match parsing
-      const { data: leagueTeams } = await supabase.from("league_table").select("team");
+      // Get known team names and stadium addresses from league table
+      const { data: leagueTeams } = await supabase.from("league_table").select("team, stadium_address");
       const knownTeams = (leagueTeams || []).map((t: any) => t.team);
-      // Sort by length descending so longer names match first (e.g. "CLEPARDIA KRAKÓW" before "KRAKÓW")
+      const stadiumMap: Record<string, string> = {};
+      (leagueTeams || []).forEach((t: any) => { if (t.stadium_address) stadiumMap[t.team] = t.stadium_address; });
+      // Sort by length descending so longer names match first
       knownTeams.sort((a: string, b: string) => b.length - a.length);
 
       let matchRows = parseScheduleFromHtml(scheduleHtml, knownTeams);
