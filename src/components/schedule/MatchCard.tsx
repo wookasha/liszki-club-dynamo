@@ -62,34 +62,34 @@ const MatchCard = ({
         </div>
 
         {/* Teams & score section - uses CSS grid for perfect centering */}
-        <div className="flex-1 grid grid-cols-[1fr_80px_1fr] items-center py-4 px-2 sm:px-4 min-w-0">
+        <div className="flex-1 grid grid-cols-[1fr_56px_1fr] sm:grid-cols-[1fr_80px_1fr] items-center py-4 px-1.5 sm:px-4 min-w-0">
           {/* Home team - right aligned */}
-          <div className="flex items-center gap-2 sm:gap-3 justify-end min-w-0">
-            <span className={`font-heading text-sm sm:text-base font-bold truncate text-right ${homeTeam.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>
+          <div className="flex items-center gap-1.5 sm:gap-3 justify-end min-w-0">
+            <span className={`font-heading text-xs sm:text-base font-bold text-right leading-tight ${homeTeam.includes("Liszczanka") ? "text-primary" : "text-foreground"}`} style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {homeTeam}
             </span>
-            <TeamLogo url={homeLogo} name={homeTeam} />
+            <TeamLogo url={homeLogo} name={homeTeam} size="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
 
           {/* Score / VS - always centered */}
           {isPlayed ? (
-            <div className={`flex items-center justify-center gap-1 font-heading text-xl sm:text-2xl font-bold py-1.5 rounded-lg mx-auto ${
+            <div className={`flex items-center justify-center gap-0.5 sm:gap-1 font-heading text-lg sm:text-2xl font-bold py-1 sm:py-1.5 rounded-lg mx-auto ${
               win ? "bg-pitch-green/15 text-pitch-green" : loss ? "bg-destructive/15 text-destructive" : "bg-muted text-muted-foreground"
             }`}>
               <span>{scoreHome}</span>
-              <span className="text-muted-foreground text-base">:</span>
+              <span className="text-muted-foreground text-sm sm:text-base">:</span>
               <span>{scoreAway}</span>
             </div>
           ) : (
             <div className="flex items-center justify-center mx-auto">
-              <span className="font-heading text-lg text-muted-foreground/60 tracking-wider">VS</span>
+              <span className="font-heading text-base sm:text-lg text-muted-foreground/60 tracking-wider">VS</span>
             </div>
           )}
 
           {/* Away team - left aligned */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <TeamLogo url={awayLogo} name={awayTeam} />
-            <span className={`font-heading text-sm sm:text-base font-bold truncate ${awayTeam.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>
+          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
+            <TeamLogo url={awayLogo} name={awayTeam} size="w-8 h-8 sm:w-10 sm:h-10" />
+            <span className={`font-heading text-xs sm:text-base font-bold leading-tight ${awayTeam.includes("Liszczanka") ? "text-primary" : "text-foreground"}`} style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {awayTeam}
             </span>
           </div>
