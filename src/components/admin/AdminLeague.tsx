@@ -66,7 +66,7 @@ const AdminLeague = () => {
     fetchRows();
   };
 
-  const handleUpdate = async (row: LeagueRow, field: string, value: number | boolean) => {
+  const handleUpdate = async (row: LeagueRow, field: string, value: number | boolean | string) => {
     const updated = { ...row, [field]: value };
     await supabase.from("league_table").update({ [field]: value }).eq("id", row.id);
     setRows((prev) => prev.map((r) => r.id === row.id ? updated : r));
