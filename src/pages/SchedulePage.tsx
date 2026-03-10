@@ -103,9 +103,9 @@ const SchedulePage = () => {
                           {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
                         </span>
                         {m.stadium_address && (
-                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                          <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
                             <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                          </p>
+                          </a>
                         )}
                       </div>
                     </ScrollAnimation>
@@ -143,9 +143,9 @@ const SchedulePage = () => {
                             {m.venue === "dom" ? <span className="flex items-center gap-1"><Home className="w-3 h-3" /> Dom</span> : <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Wyjazd</span>}
                           </span>
                           {m.stadium_address && (
-                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
                               <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                            </p>
+                            </a>
                           )}
                         </div>
                       </motion.div>
@@ -201,9 +201,9 @@ const SchedulePage = () => {
                             {m.venue === "dom" ? "Dom" : "Wyjazd"}
                           </span>
                           {m.stadium_address && (
-                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
                               <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                            </p>
+                            </a>
                           )}
                         </div>
                       </ScrollAnimation>
@@ -245,9 +245,9 @@ const SchedulePage = () => {
                               {m.venue === "dom" ? "Dom" : "Wyjazd"}
                             </span>
                             {m.stadium_address && (
-                              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1 md:mt-0">
+                              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.stadium_address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mt-1 md:mt-0 transition-colors">
                                 <MapPin className="w-3 h-3 shrink-0" /> {m.stadium_address}
-                              </p>
+                              </a>
                             )}
                           </div>
                         </motion.div>
