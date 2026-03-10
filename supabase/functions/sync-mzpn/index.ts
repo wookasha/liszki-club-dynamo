@@ -363,13 +363,15 @@ Deno.serve(async (req) => {
       console.log(`Parsed ${tableRows.length} teams`);
 
       if (tableRows.length > 0) {
-        // Get existing teams to preserve logo_url
+        // Get existing teams to preserve logo_url and stadium_address
         const { data: existing } = await supabase
           .from("league_table")
-          .select("team, logo_url");
+          .select("team, logo_url, stadium_address");
         const logoMap: Record<string, string | null> = {};
+        const existingStadiumMap: Record<string, string> = {};
         (existing || []).forEach((r: any) => {
           logoMap[r.team] = r.logo_url;
+          if (r.stadium_address) existingStadiumMap[r.team] = r.stadium_address;
         });
 
         // Delete all existing rows and insert fresh
