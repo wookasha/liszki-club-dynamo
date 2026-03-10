@@ -52,8 +52,8 @@ const MatchCard = ({
   return (
     <div className={`group relative rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden border-l-[3px] ${resultAccent} hover:bg-card transition-colors duration-200`}>
       <div className="flex items-stretch">
-        {/* Date section */}
-        <div className="flex flex-col items-center justify-center px-4 py-4 min-w-[72px] border-r border-border/40">
+        {/* Date section - fixed width */}
+        <div className="flex flex-col items-center justify-center py-4 w-[72px] shrink-0 border-r border-border/40">
           <span className="text-2xl font-heading font-bold text-foreground leading-none">{dayNum}</span>
           <span className="text-[10px] font-semibold tracking-widest text-muted-foreground mt-0.5">{monthName}</span>
           {!isPlayed && (
@@ -61,19 +61,19 @@ const MatchCard = ({
           )}
         </div>
 
-        {/* Teams & score section */}
-        <div className="flex-1 flex items-center justify-center gap-3 sm:gap-5 py-4 px-3 sm:px-6">
-          {/* Home team */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-end min-w-0">
+        {/* Teams & score section - uses CSS grid for perfect centering */}
+        <div className="flex-1 grid grid-cols-[1fr_80px_1fr] items-center py-4 px-2 sm:px-4 min-w-0">
+          {/* Home team - right aligned */}
+          <div className="flex items-center gap-2 sm:gap-3 justify-end min-w-0">
             <span className={`font-heading text-sm sm:text-base font-bold truncate text-right ${homeTeam.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>
               {homeTeam}
             </span>
             <TeamLogo url={homeLogo} name={homeTeam} />
           </div>
 
-          {/* Score / VS */}
+          {/* Score / VS - always centered */}
           {isPlayed ? (
-            <div className={`flex items-center gap-1 font-heading text-xl sm:text-2xl font-bold px-3 py-1.5 rounded-lg min-w-[72px] justify-center ${
+            <div className={`flex items-center justify-center gap-1 font-heading text-xl sm:text-2xl font-bold py-1.5 rounded-lg mx-auto ${
               win ? "bg-pitch-green/15 text-pitch-green" : loss ? "bg-destructive/15 text-destructive" : "bg-muted text-muted-foreground"
             }`}>
               <span>{scoreHome}</span>
@@ -81,13 +81,13 @@ const MatchCard = ({
               <span>{scoreAway}</span>
             </div>
           ) : (
-            <div className="flex items-center justify-center min-w-[72px]">
+            <div className="flex items-center justify-center mx-auto">
               <span className="font-heading text-lg text-muted-foreground/60 tracking-wider">VS</span>
             </div>
           )}
 
-          {/* Away team */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          {/* Away team - left aligned */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <TeamLogo url={awayLogo} name={awayTeam} />
             <span className={`font-heading text-sm sm:text-base font-bold truncate ${awayTeam.includes("Liszczanka") ? "text-primary" : "text-foreground"}`}>
               {awayTeam}
@@ -95,8 +95,8 @@ const MatchCard = ({
           </div>
         </div>
 
-        {/* Venue & address section */}
-        <div className="hidden md:flex flex-col items-end justify-center gap-1.5 px-5 py-4 min-w-[180px] border-l border-border/40">
+        {/* Venue & address section - fixed width */}
+        <div className="hidden md:flex flex-col items-end justify-center gap-1.5 px-5 py-4 w-[220px] shrink-0 border-l border-border/40">
           <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
             venue === "dom" ? "bg-pitch-green/10 text-pitch-green" : "bg-secondary/10 text-secondary"
           }`}>
@@ -107,7 +107,7 @@ const MatchCard = ({
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stadiumAddress)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors max-w-[170px] truncate"
+              className="text-[11px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors max-w-[190px] truncate"
             >
               <MapPin className="w-3 h-3 shrink-0" />
               <span className="truncate">{stadiumAddress}</span>
