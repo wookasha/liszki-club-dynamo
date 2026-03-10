@@ -438,17 +438,17 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {news.map((item, i) =>
             <ScrollAnimation key={item.id} delay={i * 0.1}>
-                <Link to={`/aktualnosci/${item.id}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer">
+                <Link to={`/aktualnosci/${item.id}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer h-full flex flex-col">
                   {item.image_url ?
-                <div className="h-48 overflow-hidden">
+                <div className="h-48 overflow-hidden shrink-0">
                       <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </div> :
 
-                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center shrink-0">
                       <Calendar className="w-12 h-12 text-muted-foreground/30" />
                     </div>
                 }
-                  <div className="p-5">
+                  <div className="p-5 flex flex-col flex-grow">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
                         {item.category}
