@@ -38,6 +38,7 @@ const defaultForm = {
 const AdminMatches = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<string[]>([]);
+  const [stadiumMap, setStadiumMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Match | null>(null);
   const [creating, setCreating] = useState(false);
@@ -47,8 +48,11 @@ const AdminMatches = () => {
   useEffect(() => { fetchMatches(); fetchTeams(); }, []);
 
   const fetchTeams = async () => {
-    const { data } = await supabase.from("league_table").select("team").order("position", { ascending: true });
+    const { data } = await supabase.from("league_table").select("team, stadium_address").order("position", { ascending: true });
     setTeams((data || []).map((r: any) => r.team));
+    const map: Record<string, string> = {};
+    (data || []).forEach((r: any) => { if (r.stadium_address) map[r.team] = r.stadium_address; });
+    setStadiumMap(map);
   };
 
   const fetchMatches = async () => {
