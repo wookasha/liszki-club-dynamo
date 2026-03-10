@@ -15,6 +15,7 @@ interface LeagueRow {
   points: number;
   is_own_team: boolean;
   logo_url: string | null;
+  stadium_address: string;
 }
 
 const AdminLeague = () => {
@@ -22,7 +23,7 @@ const AdminLeague = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newRow, setNewRow] = useState({
-    team: "", played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, is_own_team: false,
+    team: "", played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, is_own_team: false, stadium_address: "",
   });
   const [newLogoFile, setNewLogoFile] = useState<File | null>(null);
   const [newLogoPreview, setNewLogoPreview] = useState<string | null>(null);
@@ -53,7 +54,7 @@ const AdminLeague = () => {
     await supabase.from("league_table").insert({ ...newRow, position, logo_url } as any);
     setSaving(false);
     setShowAdd(false);
-    setNewRow({ team: "", played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, is_own_team: false });
+    setNewRow({ team: "", played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, is_own_team: false, stadium_address: "" });
     setNewLogoFile(null);
     setNewLogoPreview(null);
     fetchRows();
@@ -65,7 +66,7 @@ const AdminLeague = () => {
     fetchRows();
   };
 
-  const handleUpdate = async (row: LeagueRow, field: string, value: number | boolean) => {
+  const handleUpdate = async (row: LeagueRow, field: string, value: number | boolean | string) => {
     const updated = { ...row, [field]: value };
     await supabase.from("league_table").update({ [field]: value }).eq("id", row.id);
     setRows((prev) => prev.map((r) => r.id === row.id ? updated : r));
@@ -152,6 +153,10 @@ const AdminLeague = () => {
                 <input type="number" min={0} value={(newRow as any)[key]} onChange={(e) => setNewRow({ ...newRow, [key]: Number(e.target.value) })} className={inputCls} />
               </div>
             ))}
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-foreground mb-1">Adres boiska</label>
+              <input type="text" value={newRow.stadium_address} onChange={(e) => setNewRow({ ...newRow, stadium_address: e.target.value })} placeholder="np. ul. Sportowa 1, Liszki" className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+            </div>
             <div className="flex items-end">
               <label className="flex items-center gap-2 cursor-pointer pb-1.5">
                 <input type="checkbox" checked={newRow.is_own_team} onChange={(e) => setNewRow({ ...newRow, is_own_team: e.target.checked })} className="w-4 h-4 rounded" />
@@ -170,7 +175,7 @@ const AdminLeague = () => {
           <table className="w-full min-w-[750px]">
             <thead>
               <tr className="border-b border-border">
-                {["#", "", "Drużyna", "M", "W", "R", "P", "Bz", "Bs", "Pkt", ""].map((h, i) => (
+                {["#", "", "Drużyna", "Boisko", "M", "W", "R", "P", "Bz", "Bs", "Pkt", ""].map((h, i) => (
                   <th key={`${h}-${i}`} className="py-2.5 px-2 text-[10px] uppercase tracking-wider text-muted-foreground font-medium text-center first:text-left">{h}</th>
                 ))}
               </tr>
@@ -194,6 +199,9 @@ const AdminLeague = () => {
                     </label>
                   </td>
                   <td className={`py-2 px-2 text-sm font-medium text-left ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>{row.team}</td>
+                  <td className="py-2 px-1">
+                    <input type="text" value={row.stadium_address} onChange={(e) => handleUpdate(row, "stadium_address", e.target.value)} placeholder="Adres boiska..." className="w-32 px-1 py-1 bg-transparent border border-transparent hover:border-border focus:border-primary rounded text-xs text-muted-foreground focus:text-foreground focus:outline-none" />
+                  </td>
                   {(["played", "won", "drawn", "lost", "goals_for", "goals_against", "points"] as const).map((field) => (
                     <td key={field} className="py-2 px-1">
                       <input type="number" min={0} value={row[field]} onChange={(e) => handleUpdate(row, field, Number(e.target.value))} className="w-12 px-1 py-1 bg-transparent border border-transparent hover:border-border focus:border-primary rounded text-sm text-center text-foreground focus:outline-none" />

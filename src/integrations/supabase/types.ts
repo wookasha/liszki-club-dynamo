@@ -87,6 +87,7 @@ export type Database = {
           played: number
           points: number
           position: number
+          stadium_address: string
           team: string
           won: number
         }
@@ -102,6 +103,7 @@ export type Database = {
           played?: number
           points?: number
           position: number
+          stadium_address?: string
           team: string
           won?: number
         }
@@ -117,6 +119,7 @@ export type Database = {
           played?: number
           points?: number
           position?: number
+          stadium_address?: string
           team?: string
           won?: number
         }

@@ -1,0 +1,1 @@
+ALTER TABLE public.league_table ADD COLUMN stadium_address text NOT NULL DEFAULT '';
