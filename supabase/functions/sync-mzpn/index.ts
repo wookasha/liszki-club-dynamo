@@ -441,7 +441,7 @@ Deno.serve(async (req) => {
             is_played: m.is_played,
             venue: m.venue,
             league: "Klasa okręgowa, grupa II",
-            stadium_address: "",
+            stadium_address: stadiumMap[m.home_team] || "",
             scorers: [],
           }));
           const { error } = await supabase.from("matches").insert(batch);

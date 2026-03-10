@@ -153,6 +153,10 @@ const AdminLeague = () => {
                 <input type="number" min={0} value={(newRow as any)[key]} onChange={(e) => setNewRow({ ...newRow, [key]: Number(e.target.value) })} className={inputCls} />
               </div>
             ))}
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-foreground mb-1">Adres boiska</label>
+              <input type="text" value={newRow.stadium_address} onChange={(e) => setNewRow({ ...newRow, stadium_address: e.target.value })} placeholder="np. ul. Sportowa 1, Liszki" className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+            </div>
             <div className="flex items-end">
               <label className="flex items-center gap-2 cursor-pointer pb-1.5">
                 <input type="checkbox" checked={newRow.is_own_team} onChange={(e) => setNewRow({ ...newRow, is_own_team: e.target.checked })} className="w-4 h-4 rounded" />
