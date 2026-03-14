@@ -22,6 +22,14 @@ const navLinks: NavItem[] = [
       { href: "/statystyki", label: "Statystyki indywidualne" },
     ],
   },
+  {
+    href: "#",
+    label: "Historia",
+    children: [
+      { href: "/historia", label: "Historia klubu" },
+      { href: "/os-czasu", label: "Oś czasu" },
+    ],
+  },
   { href: "/mlodziez", label: "Młodzież" },
   { href: "/galeria", label: "Galeria" },
   { href: "/sponsorzy", label: "Sponsorzy" },

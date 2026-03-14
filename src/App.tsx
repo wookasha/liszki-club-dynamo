@@ -17,6 +17,8 @@ import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import StatsPage from "./pages/StatsPage";
+import HistoryPage from "./pages/HistoryPage";
+import TimelinePage from "./pages/TimelinePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import NotFound from "./pages/NotFound";
 
@@ -44,6 +46,8 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/statystyki" element={<StatsPage />} />
+            <Route path="/historia" element={<HistoryPage />} />
+            <Route path="/os-czasu" element={<TimelinePage />} />
             <Route path="/polityka-prywatnosci" element={<PrivacyPolicyPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />

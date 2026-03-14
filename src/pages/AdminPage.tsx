@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3 } from "lucide-react";
+import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3, History } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
@@ -10,6 +10,8 @@ import AdminGallery from "@/components/admin/AdminGallery";
 import AdminSponsors from "@/components/admin/AdminSponsors";
 import AdminYouth from "@/components/admin/AdminYouth";
 import AdminStats from "@/components/admin/AdminStats";
+import AdminHistory from "@/components/admin/AdminHistory";
+import AdminTimeline from "@/components/admin/AdminTimeline";
 
 const tabs = [
   { id: "news", label: "Aktualności", icon: Newspaper },
@@ -19,6 +21,7 @@ const tabs = [
   { id: "sponsors", label: "Sponsorzy", icon: Handshake },
   { id: "youth", label: "Młodzież", icon: Users },
   { id: "stats", label: "Statystyki", icon: BarChart3 },
+  { id: "history", label: "Historia", icon: History },
 ] as const;
 
 type TabId = typeof tabs[number]["id"];
@@ -194,6 +197,12 @@ const AdminPage = () => {
         {activeTab === "sponsors" && <AdminSponsors />}
         {activeTab === "youth" && <AdminYouth />}
         {activeTab === "stats" && <AdminStats />}
+        {activeTab === "history" && (
+          <div className="space-y-6">
+            <AdminHistory />
+            <AdminTimeline />
+          </div>
+        )}
       </div>
     </div>
   );
