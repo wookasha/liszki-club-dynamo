@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Calendar } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
 interface TimelineEvent {
@@ -28,54 +28,83 @@ const TimelinePage = () => {
 
   return (
     <div className="pt-24 pb-16">
-      <div className="container mx-auto px-4 max-w-3xl">
+      {/* Header */}
+      <div className="container mx-auto px-4 max-w-3xl mb-10">
         <ScrollAnimation>
-          <h1 className="section-heading text-3xl md:text-4xl mb-2">Oś czasu</h1>
-          <p className="text-muted-foreground mb-10">Najważniejsze wydarzenia w historii Liszczanki</p>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-primary" />
+            </div>
+            <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground">Oś czasu</h1>
+          </div>
+          <p className="text-muted-foreground ml-[52px]">
+            Najważniejsze wydarzenia w historii Liszczanki Liszki
+          </p>
         </ScrollAnimation>
+      </div>
 
+      <div className="container mx-auto px-4 max-w-3xl">
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-16 bg-muted rounded-lg animate-pulse" />
+              <div key={i} className="h-20 bg-muted rounded-xl animate-pulse" />
             ))}
           </div>
         ) : (
           <div className="relative">
             {/* Vertical line */}
-            <div className="absolute left-[23px] sm:left-[27px] top-0 bottom-0 w-[2px] bg-primary/20" />
+            <div className="absolute left-[19px] sm:left-[23px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-primary/40 via-primary/20 to-primary/5" />
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {events.map((event, index) => {
                 const isOpen = openId === event.id;
+                const isFirst = index === 0;
+                const isLast = index === events.length - 1;
+
                 return (
-                  <ScrollAnimation key={event.id} delay={index * 0.05}>
-                    <div className="relative pl-14 sm:pl-16">
-                      {/* Dot */}
-                      <div
-                        className={`absolute left-[17px] sm:left-[21px] top-4 w-3 h-3 rounded-full border-2 transition-colors ${
-                          isOpen ? "bg-primary border-primary" : "bg-background border-primary/50"
-                        }`}
-                      />
+                  <ScrollAnimation key={event.id} delay={index * 0.04}>
+                    <div className="relative pl-12 sm:pl-14">
+                      {/* Dot / circle */}
+                      <div className="absolute left-0 top-0 flex flex-col items-center">
+                        <div
+                          className={`relative z-10 w-[14px] h-[14px] sm:w-4 sm:h-4 rounded-full border-[2.5px] transition-all duration-300 mt-[18px] ${
+                            isOpen
+                              ? "bg-primary border-primary shadow-[0_0_10px_hsl(var(--primary)/0.4)]"
+                              : "bg-background border-primary/40 hover:border-primary/70"
+                          }`}
+                        />
+                      </div>
 
                       <button
                         onClick={() => setOpenId(isOpen ? null : event.id)}
-                        className="w-full text-left glass-card rounded-xl p-4 sm:p-5 hover:bg-muted/50 transition-colors group"
+                        className={`w-full text-left rounded-xl p-4 sm:p-5 transition-all duration-200 group border ${
+                          isOpen
+                            ? "bg-card border-primary/20 shadow-lg shadow-primary/5"
+                            : "bg-card/50 border-border hover:bg-card hover:border-border/80"
+                        }`}
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="min-w-0">
-                            <span className="text-xs font-bold text-primary uppercase tracking-wider">
-                              {event.year_label}
-                            </span>
-                            <h3 className="font-heading font-bold text-foreground text-sm sm:text-base mt-0.5">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2.5 mb-1">
+                              <span className={`inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
+                                isOpen
+                                  ? "bg-primary/15 text-primary"
+                                  : "bg-muted text-muted-foreground"
+                              }`}>
+                                {event.year_label}
+                              </span>
+                            </div>
+                            <h3 className="font-heading font-bold text-foreground text-sm sm:text-base leading-snug">
                               {event.title}
                             </h3>
                           </div>
-                          <ChevronDown
-                            className={`w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-300 ${
-                              isOpen ? "rotate-180" : ""
-                            }`}
-                          />
+                          <div className={`p-1.5 rounded-md transition-colors ${isOpen ? "bg-primary/10" : "bg-transparent group-hover:bg-muted"}`}>
+                            <ChevronDown
+                              className={`w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-transform duration-300 ${
+                                isOpen ? "rotate-180 text-primary" : ""
+                              }`}
+                            />
+                          </div>
                         </div>
 
                         <AnimatePresence>
@@ -84,12 +113,14 @@ const TimelinePage = () => {
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: "auto", opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.3 }}
+                              transition={{ duration: 0.3, ease: "easeOut" }}
                               className="overflow-hidden"
                             >
-                              <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
-                                {event.description}
-                              </p>
+                              <div className="mt-3 pt-3 border-t border-border/50">
+                                <p className="text-muted-foreground text-sm leading-relaxed">
+                                  {event.description}
+                                </p>
+                              </div>
                             </motion.div>
                           )}
                         </AnimatePresence>
