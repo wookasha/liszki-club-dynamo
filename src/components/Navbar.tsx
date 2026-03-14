@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Users, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import clubLogo from "@/assets/club-logo.png";
 
 interface NavItem {
@@ -41,7 +42,25 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
+  const [hasTimelineEvents, setHasTimelineEvents] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    supabase.from("timeline_events").select("id", { count: "exact", head: true }).then(({ count }) => {
+      setHasTimelineEvents((count ?? 0) > 0);
+    });
+  }, []);
+
+  // Filter nav links based on data availability
+  const filteredNavLinks = navLinks.map((link) => {
+    if (link.label === "Historia" && link.children) {
+      const children = link.children.filter((c) => c.href !== "/os-czasu" || hasTimelineEvents);
+      if (children.length === 0) return null;
+      if (children.length === 1) return { href: children[0].href, label: link.label };
+      return { ...link, children };
+    }
+    return link;
+  }).filter(Boolean) as NavItem[];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -83,7 +102,7 @@ const Navbar = () => {
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) =>
+            {filteredNavLinks.map((link) =>
               link.children ? (
                 <div
                   key={link.label}
@@ -181,7 +200,7 @@ const Navbar = () => {
             className="lg:hidden bg-background/98 backdrop-blur-md border-b border-border overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4 space-y-1">
-              {navLinks.map((link) =>
+              {filteredNavLinks.map((link) =>
                 link.children ? (
                   <div key={link.label}>
                     <button
