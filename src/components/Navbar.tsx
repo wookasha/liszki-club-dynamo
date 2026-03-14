@@ -22,6 +22,8 @@ const navLinks: NavItem[] = [
       { href: "/statystyki", label: "Statystyki indywidualne" },
     ],
   },
+  { href: "/mlodziez", label: "Młodzież" },
+  { href: "/galeria", label: "Galeria" },
   {
     href: "#",
     label: "Historia",
@@ -30,8 +32,6 @@ const navLinks: NavItem[] = [
       { href: "/os-czasu", label: "Oś czasu" },
     ],
   },
-  { href: "/mlodziez", label: "Młodzież" },
-  { href: "/galeria", label: "Galeria" },
   { href: "/sponsorzy", label: "Sponsorzy" },
   { href: "/kontakt", label: "Kontakt" },
 ];
