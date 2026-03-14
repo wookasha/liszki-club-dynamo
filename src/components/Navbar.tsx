@@ -200,7 +200,7 @@ const Navbar = () => {
             className="lg:hidden bg-background/98 backdrop-blur-md border-b border-border overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4 space-y-1">
-              {navLinks.map((link) =>
+              {filteredNavLinks.map((link) =>
                 link.children ? (
                   <div key={link.label}>
                     <button
