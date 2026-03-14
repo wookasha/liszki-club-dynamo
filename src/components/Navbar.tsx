@@ -102,7 +102,7 @@ const Navbar = () => {
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) =>
+            {filteredNavLinks.map((link) =>
               link.children ? (
                 <div
                   key={link.label}
