@@ -46,6 +46,8 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/statystyki" element={<StatsPage />} />
+            <Route path="/historia" element={<HistoryPage />} />
+            <Route path="/os-czasu" element={<TimelinePage />} />
             <Route path="/polityka-prywatnosci" element={<PrivacyPolicyPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />

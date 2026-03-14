@@ -197,6 +197,12 @@ const AdminPage = () => {
         {activeTab === "sponsors" && <AdminSponsors />}
         {activeTab === "youth" && <AdminYouth />}
         {activeTab === "stats" && <AdminStats />}
+        {activeTab === "history" && (
+          <div className="space-y-6">
+            <AdminHistory />
+            <AdminTimeline />
+          </div>
+        )}
       </div>
     </div>
   );
