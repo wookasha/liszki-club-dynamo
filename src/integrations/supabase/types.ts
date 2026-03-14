@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      club_history: {
+        Row: {
+          content: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_albums: {
         Row: {
           cover_image_url: string | null
@@ -307,6 +325,33 @@ export type Database = {
           name?: string
           sort_order?: number
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      timeline_events: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          sort_order: number
+          title: string
+          year_label: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          sort_order?: number
+          title?: string
+          year_label: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          sort_order?: number
+          title?: string
+          year_label?: string
         }
         Relationships: []
       }
