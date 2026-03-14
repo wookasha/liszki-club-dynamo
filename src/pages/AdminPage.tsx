@@ -21,6 +21,7 @@ const tabs = [
   { id: "sponsors", label: "Sponsorzy", icon: Handshake },
   { id: "youth", label: "Młodzież", icon: Users },
   { id: "stats", label: "Statystyki", icon: BarChart3 },
+  { id: "history", label: "Historia", icon: History },
 ] as const;
 
 type TabId = typeof tabs[number]["id"];
