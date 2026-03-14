@@ -17,6 +17,8 @@ import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import StatsPage from "./pages/StatsPage";
+import HistoryPage from "./pages/HistoryPage";
+import TimelinePage from "./pages/TimelinePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import NotFound from "./pages/NotFound";
 
