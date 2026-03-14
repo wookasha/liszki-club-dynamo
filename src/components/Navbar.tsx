@@ -42,7 +42,25 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
+  const [hasTimelineEvents, setHasTimelineEvents] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    supabase.from("timeline_events").select("id", { count: "exact", head: true }).then(({ count }) => {
+      setHasTimelineEvents((count ?? 0) > 0);
+    });
+  }, []);
+
+  // Filter nav links based on data availability
+  const filteredNavLinks = navLinks.map((link) => {
+    if (link.label === "Historia" && link.children) {
+      const children = link.children.filter((c) => c.href !== "/os-czasu" || hasTimelineEvents);
+      if (children.length === 0) return null;
+      if (children.length === 1) return { href: children[0].href, label: link.label };
+      return { ...link, children };
+    }
+    return link;
+  }).filter(Boolean) as NavItem[];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
