@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail, Facebook, Youtube } from "lucide-react";
-import { toast } from "sonner";
+import { MapPin, Mail, Facebook, Youtube } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -15,7 +14,6 @@ const Footer = () => {
             <p className="text-muted-foreground text-sm leading-relaxed mb-4">
               Klub piłkarski z tradycją od 1948 roku. Gramy w klasie okręgowej Kraków, grupa II.
             </p>
-            <p className="text-muted-foreground/40 text-[11px] font-mono select-all cursor-pointer" title="Legenda - Adam Mlostek" onClick={() => toast("Legenda - Adam Mlostek", { duration: 3000 })}>AM·187</p>
             <div className="flex gap-3">
               <a
                 href="https://www.facebook.com/LiszczankaLiszki"
