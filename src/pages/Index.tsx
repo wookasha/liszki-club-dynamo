@@ -298,15 +298,9 @@ const Index = () => {
             <p className="text-sm text-muted-foreground mb-3 font-medium uppercase tracking-wider">
               Następny mecz za
             </p>
-            <a
-              href="https://web.archive.org/web/20170618155645/http://www.liszczanka.pl/1,21/klub/snajperzy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex justify-center cursor-pointer"
-              title="⏳"
-            >
+            <div className="inline-flex justify-center">
               <CountdownTimer targetDate={nextMatch.date} />
-            </a>
+            </div>
             <p className="text-xs text-muted-foreground mt-3">
               {nextMatch.home} vs {nextMatch.away} • {nextMatch.venue}
             </p>
