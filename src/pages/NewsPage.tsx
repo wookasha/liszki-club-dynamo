@@ -130,7 +130,7 @@ const NewsPage = () => {
             {filtered.map((item, i) => (
               <ScrollAnimation key={item.id} delay={i * 0.05}>
                  <article
-                  onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.id}`); }}
+                  onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.slug}`); }}
                   className="glass-card rounded-xl overflow-hidden hover-lift cursor-pointer flex flex-col sm:flex-row"
                 >
                   {item.image_url ? (
