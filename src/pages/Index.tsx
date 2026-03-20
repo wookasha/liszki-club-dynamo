@@ -102,7 +102,7 @@ const Index = () => {
 
   useEffect(() => {
     // Fetch news
-    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url").
+    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url, slug").
     eq("published", true).order("created_at", { ascending: false }).limit(3).
     then(({ data }) => {if (data && data.length > 0) setNews(data);});
 
