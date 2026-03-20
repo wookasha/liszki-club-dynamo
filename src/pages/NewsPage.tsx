@@ -31,11 +31,11 @@ const NewsPage = () => {
 
   useEffect(() => {
     if (id && posts.length > 0) {
-      const post = posts.find((p) => p.id === id);
+      const post = posts.find((p) => p.slug === id);
       if (post) setSelectedPost(post);
       else {
-        // Fetch single post by ID if not in list
-        supabase.from("news_posts").select("*").eq("id", id).single()
+        // Fetch single post by slug if not in list
+        supabase.from("news_posts").select("*").eq("slug", id).single()
           .then(({ data }) => { if (data) setSelectedPost(data as NewsPost); });
       }
     }
