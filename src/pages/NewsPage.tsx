@@ -14,6 +14,7 @@ interface NewsPost {
   category: string;
   image_url: string | null;
   created_at: string;
+  slug: string;
 }
 
 const NewsPage = () => {
