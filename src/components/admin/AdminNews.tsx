@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Save, X, Upload, Eye, EyeOff } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload, Eye, EyeOff, Bold, Italic } from "lucide-react";
 
 interface NewsPost {
   id: string;
