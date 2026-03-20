@@ -432,7 +432,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {news.map((item, i) =>
             <ScrollAnimation key={item.id} delay={i * 0.1}>
-                <Link to={`/aktualnosci/${item.id}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer h-full flex flex-col">
+                <Link to={`/aktualnosci/${item.slug}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer h-full flex flex-col">
                   {item.image_url ?
                 <div className="h-48 overflow-hidden shrink-0">
                       <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
