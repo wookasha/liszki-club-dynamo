@@ -26,6 +26,23 @@ const AdminNews = () => {
   const [form, setForm] = useState({
     title: "", content: "", excerpt: "", category: "Klub", image_url: "", published: false,
   });
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  const wrapSelection = (wrapper: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const text = form.content;
+    const selected = text.substring(start, end);
+    const newText = text.substring(0, start) + wrapper + selected + wrapper + text.substring(end);
+    setForm((p) => ({ ...p, content: newText }));
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = start + wrapper.length;
+      ta.selectionEnd = end + wrapper.length;
+    }, 0);
+  };
 
   useEffect(() => { fetchPosts(); }, []);
 
