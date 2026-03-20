@@ -20,9 +20,9 @@ const nextMatch = {
 };
 
 const demoNews = [
-{ id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
-{ id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
-{ id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null }];
+{ id: "1", slug: "zwyciestwo-w-derbach-gminy", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
+{ id: "2", slug: "nabor-do-grup-mlodziezowych", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
+{ id: "3", slug: "nowy-sponsor-dolacza-do-klubu", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null }];
 
 
 interface SponsorData {id: string;name: string;logo_url: string | null;website_url: string | null;}
@@ -102,7 +102,7 @@ const Index = () => {
 
   useEffect(() => {
     // Fetch news
-    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url").
+    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url, slug").
     eq("published", true).order("created_at", { ascending: false }).limit(3).
     then(({ data }) => {if (data && data.length > 0) setNews(data);});
 
@@ -432,7 +432,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {news.map((item, i) =>
             <ScrollAnimation key={item.id} delay={i * 0.1}>
-                <Link to={`/aktualnosci/${item.id}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer h-full flex flex-col">
+                <Link to={`/aktualnosci/${item.slug}`} className="block glass-card rounded-xl overflow-hidden hover-lift group cursor-pointer h-full flex flex-col">
                   {item.image_url ?
                 <div className="h-48 overflow-hidden shrink-0">
                       <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />

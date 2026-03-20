@@ -48,6 +48,7 @@ const AdminNews = () => {
         title: form.title, content: form.content, excerpt: form.excerpt,
         category: form.category, image_url: form.image_url || null,
         published: form.published, author_id: session?.user.id,
+        slug: form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
       });
     }
     setSaving(false);

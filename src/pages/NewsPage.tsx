@@ -14,6 +14,7 @@ interface NewsPost {
   category: string;
   image_url: string | null;
   created_at: string;
+  slug: string;
 }
 
 const NewsPage = () => {
@@ -30,11 +31,11 @@ const NewsPage = () => {
 
   useEffect(() => {
     if (id && posts.length > 0) {
-      const post = posts.find((p) => p.id === id);
+      const post = posts.find((p) => p.slug === id);
       if (post) setSelectedPost(post);
       else {
-        // Fetch single post by ID if not in list
-        supabase.from("news_posts").select("*").eq("id", id).single()
+        // Fetch single post by slug if not in list
+        supabase.from("news_posts").select("*").eq("slug", id).single()
           .then(({ data }) => { if (data) setSelectedPost(data as NewsPost); });
       }
     }
@@ -129,7 +130,7 @@ const NewsPage = () => {
             {filtered.map((item, i) => (
               <ScrollAnimation key={item.id} delay={i * 0.05}>
                  <article
-                  onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.id}`); }}
+                  onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.slug}`); }}
                   className="glass-card rounded-xl overflow-hidden hover-lift cursor-pointer flex flex-col sm:flex-row"
                 >
                   {item.image_url ? (
