@@ -20,9 +20,9 @@ const nextMatch = {
 };
 
 const demoNews = [
-{ id: "1", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
-{ id: "2", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
-{ id: "3", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null }];
+{ id: "1", slug: "zwyciestwo-w-derbach-gminy", title: "Zwycięstwo w derbach gminy!", excerpt: "Liszczanka pokonała rywali 3:1 w emocjonującym meczu derbowym.", created_at: "2026-02-20", category: "Mecze", image_url: null as string | null },
+{ id: "2", slug: "nabor-do-grup-mlodziezowych", title: "Nabór do grup młodzieżowych", excerpt: "Zapraszamy dzieci w wieku 4-12 lat na treningi piłkarskie.", created_at: "2026-02-18", category: "Młodzież", image_url: null as string | null },
+{ id: "3", slug: "nowy-sponsor-dolacza-do-klubu", title: "Nowy sponsor dołącza do klubu", excerpt: "Z radością witamy firmę Royal Ride jako nowego partnera Liszczanki.", created_at: "2026-02-15", category: "Klub", image_url: null as string | null }];
 
 
 interface SponsorData {id: string;name: string;logo_url: string | null;website_url: string | null;}
