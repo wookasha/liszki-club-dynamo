@@ -153,7 +153,11 @@ const AdminNews = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Treść</label>
-              <textarea rows={8} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
+              <div className="flex gap-1 mb-1">
+                <button type="button" onClick={() => wrapSelection("**")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Pogrubienie"><Bold className="w-4 h-4" /></button>
+                <button type="button" onClick={() => wrapSelection("*")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Kursywa"><Italic className="w-4 h-4" /></button>
+              </div>
+              <textarea ref={contentRef} rows={8} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} className="w-4 h-4 rounded" />

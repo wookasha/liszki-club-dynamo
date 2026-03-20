@@ -86,9 +86,15 @@ const NewsPage = () => {
                 className="w-full h-64 md:h-96 object-cover rounded-xl mb-6"
               />
             )}
-            <div className="prose prose-invert max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {selectedPost.content}
-            </div>
+            <div
+              className="prose prose-invert max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{
+                __html: selectedPost.content
+                  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                  .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                  .replace(/\*(.+?)\*/g, "<em>$1</em>")
+              }}
+            />
           </ScrollAnimation>
         </div>
       </div>
