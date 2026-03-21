@@ -55,6 +55,10 @@ const NewsPage = () => {
     ? posts
     : posts.filter((n) => n.category === activeCategory);
 
+  const relatedPosts = selectedPost
+    ? posts.filter((p) => p.id !== selectedPost.id).slice(0, 4)
+    : [];
+
   if (selectedPost) {
     return (
       <div className="pt-24 pb-16">
@@ -96,6 +100,40 @@ const NewsPage = () => {
               }}
             />
           </ScrollAnimation>
+
+          {relatedPosts.length > 0 && (
+            <section className="mt-16 border-t border-border pt-10">
+              <h2 className="font-heading text-xl font-bold text-foreground mb-6">Przeczytaj również</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {relatedPosts.map((post) => (
+                  <article
+                    key={post.id}
+                    onClick={() => { setSelectedPost(post); navigate(`/aktualnosci/${post.slug}`); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    className="glass-card rounded-xl overflow-hidden hover-lift cursor-pointer flex flex-col"
+                  >
+                    {post.image_url ? (
+                      <img src={post.image_url} alt={post.title} className="w-full h-36 object-cover" />
+                    ) : (
+                      <div className="w-full h-36 bg-muted flex items-center justify-center">
+                        <Tag className="w-6 h-6 text-muted-foreground/30" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[10px] uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                          {post.category}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(post.created_at).toLocaleDateString("pl-PL")}
+                        </span>
+                      </div>
+                      <h3 className="font-heading text-sm font-bold text-foreground line-clamp-2">{post.title}</h3>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     );
