@@ -97,6 +97,7 @@ const AdminMatches = () => {
       score_away: form.is_played && form.score_away !== "" ? Number(form.score_away) : null,
       is_played: form.is_played,
       scorers: form.is_played ? form.scorers : [],
+      news_slug: form.news_slug || null,
     };
 
     let error;
