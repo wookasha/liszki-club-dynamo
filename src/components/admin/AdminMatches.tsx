@@ -20,6 +20,12 @@ interface Match {
   score_away: number | null;
   is_played: boolean;
   scorers: Scorer[];
+  news_slug: string | null;
+}
+
+interface NewsOption {
+  slug: string;
+  title: string;
 }
 
 const defaultForm = {
@@ -33,6 +39,7 @@ const defaultForm = {
   score_away: "",
   is_played: false,
   scorers: [] as Scorer[],
+  news_slug: "" as string,
 };
 
 const AdminMatches = () => {
@@ -44,8 +51,14 @@ const AdminMatches = () => {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...defaultForm });
+  const [newsPosts, setNewsPosts] = useState<NewsOption[]>([]);
 
-  useEffect(() => { fetchMatches(); fetchTeams(); }, []);
+  useEffect(() => { fetchMatches(); fetchTeams(); fetchNews(); }, []);
+
+  const fetchNews = async () => {
+    const { data } = await supabase.from("news_posts").select("slug, title").eq("published", true).order("created_at", { ascending: false });
+    setNewsPosts((data as NewsOption[]) || []);
+  };
 
   const fetchTeams = async () => {
     const { data } = await supabase.from("league_table").select("team, stadium_address").order("position", { ascending: true });
@@ -84,6 +97,7 @@ const AdminMatches = () => {
       score_away: form.is_played && form.score_away !== "" ? Number(form.score_away) : null,
       is_played: form.is_played,
       scorers: form.is_played ? form.scorers : [],
+      news_slug: form.news_slug || null,
     };
 
     let error;
@@ -121,6 +135,7 @@ const AdminMatches = () => {
       score_away: m.score_away?.toString() || "",
       is_played: m.is_played,
       scorers: (m.scorers as Scorer[]) || [],
+      news_slug: m.news_slug || "",
     });
   };
 
@@ -215,6 +230,15 @@ const AdminMatches = () => {
             </label>
             {form.is_played && (
               <>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Powiązany artykuł</label>
+                  <select value={form.news_slug} onChange={(e) => setForm({ ...form, news_slug: e.target.value })} className={inputClass}>
+                    <option value="">— Brak —</option>
+                    {newsPosts.map((n) => (
+                      <option key={n.slug} value={n.slug}>{n.title}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Bramki gospodarz</label>

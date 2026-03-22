@@ -152,6 +152,7 @@ export type Database = {
           is_played: boolean
           league: string
           match_date: string
+          news_slug: string | null
           score_away: number | null
           score_home: number | null
           scorers: Json | null
@@ -166,6 +167,7 @@ export type Database = {
           is_played?: boolean
           league?: string
           match_date: string
+          news_slug?: string | null
           score_away?: number | null
           score_home?: number | null
           scorers?: Json | null
@@ -180,6 +182,7 @@ export type Database = {
           is_played?: boolean
           league?: string
           match_date?: string
+          news_slug?: string | null
           score_away?: number | null
           score_home?: number | null
           scorers?: Json | null

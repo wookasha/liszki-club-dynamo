@@ -1,4 +1,5 @@
-import { MapPin, Home, Plane, Calendar } from "lucide-react";
+import { MapPin, Home, Plane } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface MatchCardProps {
   homeTeam: string;
@@ -11,6 +12,7 @@ interface MatchCardProps {
   scoreHome?: number | null;
   scoreAway?: number | null;
   isPlayed: boolean;
+  newsSlug?: string | null;
 }
 
 const TeamLogo = ({ url, name, size = "w-10 h-10" }: { url: string | null; name: string; size?: string }) => (
@@ -25,9 +27,11 @@ const TeamLogo = ({ url, name, size = "w-10 h-10" }: { url: string | null; name:
 
 const MatchCard = ({
   homeTeam, awayTeam, matchDate, venue, stadiumAddress,
-  homeLogo, awayLogo, scoreHome, scoreAway, isPlayed,
+  homeLogo, awayLogo, scoreHome, scoreAway, isPlayed, newsSlug,
 }: MatchCardProps) => {
+  const navigate = useNavigate();
   const date = new Date(matchDate);
+  const isClickable = isPlayed && !!newsSlug;
   const dayNum = date.toLocaleDateString("pl-PL", { day: "numeric" });
   const monthName = date.toLocaleDateString("pl-PL", { month: "short" }).toUpperCase();
   const time = date.getHours() === 0 && date.getMinutes() === 0
@@ -50,7 +54,10 @@ const MatchCard = ({
     : "border-l-primary";
 
   return (
-    <div className={`group relative rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden border-l-[3px] ${resultAccent} hover:bg-card transition-colors duration-200`}>
+    <div
+      onClick={isClickable ? () => navigate(`/aktualnosci/${newsSlug}`) : undefined}
+      className={`group relative rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden border-l-[3px] ${resultAccent} hover:bg-card transition-colors duration-200 ${isClickable ? "cursor-pointer hover:border-primary/40" : ""}`}
+    >
       <div className="flex items-stretch">
         {/* Date section - fixed width */}
         <div className="flex flex-col items-center justify-center py-4 w-[72px] shrink-0 border-r border-border/40">

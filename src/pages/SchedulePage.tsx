@@ -15,6 +15,7 @@ interface Match {
   score_home: number | null;
   score_away: number | null;
   is_played: boolean;
+  news_slug: string | null;
 }
 
 interface TeamLogoMap {
@@ -71,6 +72,7 @@ const SchedulePage = () => {
               scoreHome={m.score_home}
               scoreAway={m.score_away}
               isPlayed={m.is_played}
+              newsSlug={m.news_slug}
             />
           </ScrollAnimation>
         ))}
@@ -94,6 +96,7 @@ const SchedulePage = () => {
                 scoreHome={m.score_home}
                 scoreAway={m.score_away}
                 isPlayed={m.is_played}
+                newsSlug={m.news_slug}
               />
             </motion.div>
           ))}
