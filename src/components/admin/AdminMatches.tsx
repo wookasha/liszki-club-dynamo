@@ -135,6 +135,7 @@ const AdminMatches = () => {
       score_away: m.score_away?.toString() || "",
       is_played: m.is_played,
       scorers: (m.scorers as Scorer[]) || [],
+      news_slug: m.news_slug || "",
     });
   };
 
