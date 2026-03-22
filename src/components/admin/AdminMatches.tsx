@@ -230,6 +230,15 @@ const AdminMatches = () => {
             </label>
             {form.is_played && (
               <>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Powiązany artykuł</label>
+                  <select value={form.news_slug} onChange={(e) => setForm({ ...form, news_slug: e.target.value })} className={inputClass}>
+                    <option value="">— Brak —</option>
+                    {newsPosts.map((n) => (
+                      <option key={n.slug} value={n.slug}>{n.title}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Bramki gospodarz</label>
