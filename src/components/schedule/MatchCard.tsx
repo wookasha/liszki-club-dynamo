@@ -12,6 +12,7 @@ interface MatchCardProps {
   scoreHome?: number | null;
   scoreAway?: number | null;
   isPlayed: boolean;
+  newsSlug?: string | null;
 }
 
 const TeamLogo = ({ url, name, size = "w-10 h-10" }: { url: string | null; name: string; size?: string }) => (
