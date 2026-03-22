@@ -51,8 +51,14 @@ const AdminMatches = () => {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...defaultForm });
+  const [newsPosts, setNewsPosts] = useState<NewsOption[]>([]);
 
-  useEffect(() => { fetchMatches(); fetchTeams(); }, []);
+  useEffect(() => { fetchMatches(); fetchTeams(); fetchNews(); }, []);
+
+  const fetchNews = async () => {
+    const { data } = await supabase.from("news_posts").select("slug, title").eq("published", true).order("created_at", { ascending: false });
+    setNewsPosts((data as NewsOption[]) || []);
+  };
 
   const fetchTeams = async () => {
     const { data } = await supabase.from("league_table").select("team, stadium_address").order("position", { ascending: true });
