@@ -15,6 +15,7 @@ interface Match {
   score_home: number | null;
   score_away: number | null;
   is_played: boolean;
+  news_slug: string | null;
 }
 
 interface TeamLogoMap {
