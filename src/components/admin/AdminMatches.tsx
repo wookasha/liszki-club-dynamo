@@ -23,6 +23,11 @@ interface Match {
   news_slug: string | null;
 }
 
+interface NewsOption {
+  slug: string;
+  title: string;
+}
+
 const defaultForm = {
   match_date: "",
   home_team: "Liszczanka Liszki",
@@ -34,6 +39,7 @@ const defaultForm = {
   score_away: "",
   is_played: false,
   scorers: [] as Scorer[],
+  news_slug: "" as string,
 };
 
 const AdminMatches = () => {
