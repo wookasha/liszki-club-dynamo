@@ -54,7 +54,10 @@ const MatchCard = ({
     : "border-l-primary";
 
   return (
-    <div className={`group relative rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden border-l-[3px] ${resultAccent} hover:bg-card transition-colors duration-200`}>
+    <div
+      onClick={isClickable ? () => navigate(`/aktualnosci/${newsSlug}`) : undefined}
+      className={`group relative rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden border-l-[3px] ${resultAccent} hover:bg-card transition-colors duration-200 ${isClickable ? "cursor-pointer hover:border-primary/40" : ""}`}
+    >
       <div className="flex items-stretch">
         {/* Date section - fixed width */}
         <div className="flex flex-col items-center justify-center py-4 w-[72px] shrink-0 border-r border-border/40">
