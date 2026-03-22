@@ -20,6 +20,7 @@ interface Match {
   score_away: number | null;
   is_played: boolean;
   scorers: Scorer[];
+  news_slug: string | null;
 }
 
 const defaultForm = {
