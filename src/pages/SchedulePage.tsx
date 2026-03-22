@@ -95,7 +95,7 @@ const SchedulePage = () => {
                 scoreHome={m.score_home}
                 scoreAway={m.score_away}
                 isPlayed={m.is_played}
-              />
+                newsSlug={m.news_slug}
             </motion.div>
           ))}
         </AnimatePresence>
