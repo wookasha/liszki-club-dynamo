@@ -29,7 +29,9 @@ const MatchCard = ({
   homeTeam, awayTeam, matchDate, venue, stadiumAddress,
   homeLogo, awayLogo, scoreHome, scoreAway, isPlayed, newsSlug,
 }: MatchCardProps) => {
+  const navigate = useNavigate();
   const date = new Date(matchDate);
+  const isClickable = isPlayed && !!newsSlug;
   const dayNum = date.toLocaleDateString("pl-PL", { day: "numeric" });
   const monthName = date.toLocaleDateString("pl-PL", { month: "short" }).toUpperCase();
   const time = date.getHours() === 0 && date.getMinutes() === 0
