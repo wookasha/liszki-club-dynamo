@@ -27,7 +27,7 @@ const TeamLogo = ({ url, name, size = "w-10 h-10" }: { url: string | null; name:
 
 const MatchCard = ({
   homeTeam, awayTeam, matchDate, venue, stadiumAddress,
-  homeLogo, awayLogo, scoreHome, scoreAway, isPlayed,
+  homeLogo, awayLogo, scoreHome, scoreAway, isPlayed, newsSlug,
 }: MatchCardProps) => {
   const date = new Date(matchDate);
   const dayNum = date.toLocaleDateString("pl-PL", { day: "numeric" });
