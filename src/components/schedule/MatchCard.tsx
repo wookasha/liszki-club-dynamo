@@ -1,6 +1,12 @@
 import { MapPin, Home, Plane } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+interface Scorer {
+  player: string;
+  goals: number;
+  team: "home" | "away";
+}
+
 interface MatchCardProps {
   homeTeam: string;
   awayTeam: string;
@@ -13,6 +19,7 @@ interface MatchCardProps {
   scoreAway?: number | null;
   isPlayed: boolean;
   newsSlug?: string | null;
+  scorers?: Scorer[];
 }
 
 const TeamLogo = ({ url, name, size = "w-10 h-10" }: { url: string | null; name: string; size?: string }) => (
