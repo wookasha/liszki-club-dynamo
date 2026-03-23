@@ -121,6 +121,7 @@ const MatchCard = ({
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stadiumAddress)}`}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="text-[11px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors max-w-[190px] truncate"
             >
               <MapPin className="w-3 h-3 shrink-0" />
@@ -128,6 +129,13 @@ const MatchCard = ({
             </a>
           )}
         </div>
+
+        {/* Read article indicator */}
+        {isClickable && (
+          <div className="hidden md:flex items-center justify-center px-3 shrink-0 border-l border-border/40">
+            <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+        )}
       </div>
 
       {/* Scorers row */}
