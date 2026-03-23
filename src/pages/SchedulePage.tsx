@@ -5,6 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import MatchCard from "@/components/schedule/MatchCard";
 
+interface Scorer {
+  player: string;
+  goals: number;
+  team: "home" | "away";
+}
+
 interface Match {
   id: string;
   match_date: string;
@@ -16,6 +22,7 @@ interface Match {
   score_away: number | null;
   is_played: boolean;
   news_slug: string | null;
+  scorers: Scorer[] | null;
 }
 
 interface TeamLogoMap {
