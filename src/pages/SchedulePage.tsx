@@ -44,7 +44,7 @@ const SchedulePage = () => {
         supabase.from("matches").select("*").order("match_date", { ascending: true }),
         supabase.from("league_table").select("team, logo_url"),
       ]);
-      setMatches((matchesRes.data as Match[]) || []);
+      setMatches((matchesRes.data as unknown as Match[]) || []);
       const logoMap: TeamLogoMap = {};
       ((leagueRes.data as any[]) || []).forEach((r: any) => { logoMap[r.team] = r.logo_url; });
       setLogos(logoMap);
