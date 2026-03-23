@@ -1,4 +1,4 @@
-import { MapPin, Home, Plane } from "lucide-react";
+import { MapPin, Home, Plane, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Scorer {
