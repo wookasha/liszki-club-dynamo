@@ -143,31 +143,42 @@ const MatchCard = ({
         const homeScorers = scorers.filter(s => s.team === "home");
         const awayScorers = scorers.filter(s => s.team === "away");
         return (
-          <div className="grid grid-cols-[1fr_56px_1fr] sm:grid-cols-[1fr_80px_1fr] px-1.5 sm:px-4 py-2 border-t border-border/30 bg-muted/20" style={{ marginLeft: 72 }}>
-            {/* Home scorers - right aligned */}
-            <div className="text-right text-[11px] text-muted-foreground leading-snug">
-              {homeScorers.map((s, i) => (
-                <span key={i}>
-                  {i > 0 && ", "}
-                  <span className="font-medium text-foreground">{s.player}</span>
-                  {s.goals > 1 && <span> ({s.goals})</span>}
-                  {" ⚽"}
-                </span>
-              ))}
+          <div className="flex items-stretch border-t border-border/30 bg-muted/20">
+            {/* Date spacer */}
+            <div className="w-[72px] shrink-0 border-r border-border/40" />
+            {/* Scorers grid - matches teams grid */}
+            <div className="flex-1 grid grid-cols-[1fr_56px_1fr] sm:grid-cols-[1fr_80px_1fr] px-1.5 sm:px-4 py-2 min-w-0">
+              {/* Home scorers - right aligned */}
+              <div className="text-right text-[11px] text-muted-foreground leading-snug">
+                {homeScorers.map((s, i) => (
+                  <span key={i}>
+                    {i > 0 && ", "}
+                    <span className="font-medium text-foreground">{s.player}</span>
+                    {s.goals > 1 && <span> ({s.goals})</span>}
+                    {" ⚽"}
+                  </span>
+                ))}
+              </div>
+              {/* Spacer */}
+              <div />
+              {/* Away scorers - left aligned */}
+              <div className="text-left text-[11px] text-muted-foreground leading-snug">
+                {awayScorers.map((s, i) => (
+                  <span key={i}>
+                    {i > 0 && ", "}
+                    {"⚽ "}
+                    <span className="font-medium text-foreground">{s.player}</span>
+                    {s.goals > 1 && <span> ({s.goals})</span>}
+                  </span>
+                ))}
+              </div>
             </div>
-            {/* Spacer */}
-            <div />
-            {/* Away scorers - left aligned */}
-            <div className="text-left text-[11px] text-muted-foreground leading-snug">
-              {awayScorers.map((s, i) => (
-                <span key={i}>
-                  {i > 0 && ", "}
-                  {"⚽ "}
-                  <span className="font-medium text-foreground">{s.player}</span>
-                  {s.goals > 1 && <span> ({s.goals})</span>}
-                </span>
-              ))}
-            </div>
+            {/* Venue spacer - matches venue section width */}
+            <div className="hidden md:block w-[220px] shrink-0 border-l border-border/40" />
+            {/* Link spacer */}
+            {isClickable && (
+              <div className="hidden md:block w-[40px] shrink-0 border-l border-border/40" />
+            )}
           </div>
         );
       })()}
