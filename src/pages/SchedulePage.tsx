@@ -5,6 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import MatchCard from "@/components/schedule/MatchCard";
 
+interface Scorer {
+  player: string;
+  goals: number;
+  team: "home" | "away";
+}
+
 interface Match {
   id: string;
   match_date: string;
@@ -16,6 +22,7 @@ interface Match {
   score_away: number | null;
   is_played: boolean;
   news_slug: string | null;
+  scorers: Scorer[] | null;
 }
 
 interface TeamLogoMap {
@@ -37,7 +44,7 @@ const SchedulePage = () => {
         supabase.from("matches").select("*").order("match_date", { ascending: true }),
         supabase.from("league_table").select("team, logo_url"),
       ]);
-      setMatches((matchesRes.data as Match[]) || []);
+      setMatches((matchesRes.data as unknown as Match[]) || []);
       const logoMap: TeamLogoMap = {};
       ((leagueRes.data as any[]) || []).forEach((r: any) => { logoMap[r.team] = r.logo_url; });
       setLogos(logoMap);
@@ -73,6 +80,7 @@ const SchedulePage = () => {
               scoreAway={m.score_away}
               isPlayed={m.is_played}
               newsSlug={m.news_slug}
+              scorers={m.scorers || undefined}
             />
           </ScrollAnimation>
         ))}
@@ -97,6 +105,7 @@ const SchedulePage = () => {
                 scoreAway={m.score_away}
                 isPlayed={m.is_played}
                 newsSlug={m.news_slug}
+                scorers={m.scorers || undefined}
               />
             </motion.div>
           ))}
