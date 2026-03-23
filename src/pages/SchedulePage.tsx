@@ -105,6 +105,7 @@ const SchedulePage = () => {
                 scoreAway={m.score_away}
                 isPlayed={m.is_played}
                 newsSlug={m.news_slug}
+                scorers={m.scorers || undefined}
               />
             </motion.div>
           ))}
