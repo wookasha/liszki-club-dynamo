@@ -130,6 +130,22 @@ const MatchCard = ({
         </div>
       </div>
 
+      {/* Scorers row */}
+      {isPlayed && scorers && scorers.length > 0 && (
+        <div className="flex items-center gap-2 px-4 md:px-5 py-2 border-t border-border/30 bg-muted/20">
+          <span className="text-[11px] text-muted-foreground">⚽</span>
+          <span className="text-[11px] text-muted-foreground leading-snug">
+            {scorers.map((s, i) => (
+              <span key={i}>
+                {i > 0 && ", "}
+                <span className="font-medium text-foreground">{s.player}</span>
+                {s.goals > 1 && <span className="text-muted-foreground"> ({s.goals})</span>}
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
+
       {/* Mobile venue row */}
       <div className="flex md:hidden items-center justify-between px-4 py-2.5 border-t border-border/30 bg-muted/30">
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
