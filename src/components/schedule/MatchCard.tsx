@@ -34,7 +34,7 @@ const TeamLogo = ({ url, name, size = "w-10 h-10" }: { url: string | null; name:
 
 const MatchCard = ({
   homeTeam, awayTeam, matchDate, venue, stadiumAddress,
-  homeLogo, awayLogo, scoreHome, scoreAway, isPlayed, newsSlug,
+  homeLogo, awayLogo, scoreHome, scoreAway, isPlayed, newsSlug, scorers,
 }: MatchCardProps) => {
   const navigate = useNavigate();
   const date = new Date(matchDate);
