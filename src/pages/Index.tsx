@@ -330,7 +330,7 @@ const Index = () => {
               <div className="flex items-center justify-center gap-4 md:gap-8 my-6">
                 <div className="text-center">
                   {teamLogos[nextMatch.home] ?
-                  <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" /> :
+                  <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" loading="lazy" decoding="async" /> :
 
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-2">
                       <span className="font-heading text-sm font-bold text-primary">{nextMatch.home.substring(0, 3).toUpperCase()}</span>
