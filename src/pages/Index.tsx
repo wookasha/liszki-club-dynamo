@@ -125,14 +125,27 @@ const Index = () => {
       }
     });
 
-    // Fetch league table (top 5) + logos
+    // Fetch league table centered on own team
     supabase.from("league_table").select("*").
     order("position", { ascending: true }).
     then(({ data }) => {
       if (data && data.length > 0) {
-        setLeagueTable(data.slice(0, 5) as LeagueRow[]);
+        const allRows = data as LeagueRow[];
+        const ownIndex = allRows.findIndex((r) => r.is_own_team);
+        let slice: LeagueRow[];
+        if (ownIndex === -1) {
+          slice = allRows.slice(0, 5);
+        } else {
+          const total = allRows.length;
+          const windowSize = Math.min(5, total);
+          let start = Math.max(0, ownIndex - Math.floor(windowSize / 2));
+          const end = Math.min(total, start + windowSize);
+          start = Math.max(0, end - windowSize);
+          slice = allRows.slice(start, end);
+        }
+        setLeagueTable(slice);
         const logoMap: Record<string, string | null> = {};
-        (data as any[]).forEach((r) => {logoMap[r.team] = r.logo_url;});
+        allRows.forEach((r) => {logoMap[r.team] = r.logo_url;});
         setTeamLogos(logoMap);
       }
     });
@@ -495,7 +508,7 @@ const Index = () => {
                     row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""}`
                     }>
 
-                      <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{index + 1}</td>
+                      <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{row.position}</td>
                       <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
                         <div className="flex items-center gap-2">
                           {row.logo_url ?
