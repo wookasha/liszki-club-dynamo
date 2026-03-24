@@ -545,7 +545,7 @@ const Index = () => {
                     className="glass-card rounded-xl p-5 flex items-center justify-center hover-lift cursor-pointer aspect-[3/2] group transition-all duration-300 relative overflow-hidden">
 
                     {sponsor.logo_url ?
-                    <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" /> :
+                    <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" loading="lazy" decoding="async" /> :
 
                     <span className="font-heading text-xl font-bold text-muted-foreground text-center">{sponsor.name}</span>
                     }
