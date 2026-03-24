@@ -32,7 +32,7 @@ const AdminSponsors = () => {
   const uploadLogo = async (file: File): Promise<string | null> => {
     const ext = file.name.split(".").pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage.from("sponsor-logos").upload(fileName, file);
+    const { error } = await supabase.storage.from("sponsor-logos").upload(fileName, file, { cacheControl: '31536000', upsert: true });
     if (error) { console.error(error); return null; }
     const { data } = supabase.storage.from("sponsor-logos").getPublicUrl(fileName);
     return data.publicUrl;
