@@ -524,7 +524,7 @@ const Index = () => {
                       </td>
                       <td className="py-3 px-4 text-sm text-center text-muted-foreground">{row.played}</td>
                       <td className="py-3 px-4 text-sm text-center font-bold text-foreground">{row.points}</td>
-                    </tr>
+                    </motion.tr>
                   )}
                 </tbody>
               </table>
