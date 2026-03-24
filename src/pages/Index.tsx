@@ -502,10 +502,13 @@ const Index = () => {
                 </thead>
                 <tbody>
                   {leagueTable.map((row, index) =>
-                  <tr
+                  <motion.tr
                     key={row.position}
+                    initial={row.is_own_team ? { backgroundColor: "hsl(var(--primary) / 0)" } : undefined}
+                    animate={row.is_own_team ? { backgroundColor: ["hsl(var(--primary) / 0)", "hsl(var(--primary) / 0.15)", "hsl(var(--primary) / 0.08)"] } : undefined}
+                    transition={row.is_own_team ? { duration: 1.5, delay: 0.5, ease: "easeInOut" } : undefined}
                     className={`border-b border-border/50 last:border-0 ${
-                    row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""}`
+                    row.is_own_team ? "border-l-2 border-l-primary" : ""}`
                     }>
 
                       <td className="py-3 px-4 text-sm font-medium text-muted-foreground">{row.position}</td>
@@ -521,7 +524,7 @@ const Index = () => {
                       </td>
                       <td className="py-3 px-4 text-sm text-center text-muted-foreground">{row.played}</td>
                       <td className="py-3 px-4 text-sm text-center font-bold text-foreground">{row.points}</td>
-                    </tr>
+                    </motion.tr>
                   )}
                 </tbody>
               </table>
