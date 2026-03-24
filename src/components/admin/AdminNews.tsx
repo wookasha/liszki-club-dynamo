@@ -96,7 +96,7 @@ const AdminNews = () => {
     if (!file) return;
     setUploading(true);
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${file.name.split(".").pop()}`;
-    const { error } = await supabase.storage.from("news-images").upload(fileName, file);
+    const { error } = await supabase.storage.from("news-images").upload(fileName, file, { cacheControl: '31536000', upsert: true });
     if (error) { alert("Błąd: " + error.message); setUploading(false); return; }
     const { data: { publicUrl } } = supabase.storage.from("news-images").getPublicUrl(fileName);
     setForm((p) => ({ ...p, image_url: publicUrl }));
