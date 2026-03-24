@@ -241,7 +241,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-background">
-          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_25%] md:object-center" />
+          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_25%] md:object-center" fetchPriority="high" decoding="async" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/70 to-background md:from-background/70 md:via-background/60 md:to-background" />
           <div className="absolute inset-0 bg-gradient-to-r from-club-red/10 via-transparent to-club-blue/10" />
         </div>
@@ -330,7 +330,7 @@ const Index = () => {
               <div className="flex items-center justify-center gap-4 md:gap-8 my-6">
                 <div className="text-center">
                   {teamLogos[nextMatch.home] ?
-                  <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" /> :
+                  <img src={teamLogos[nextMatch.home]!} alt={nextMatch.home} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" loading="lazy" decoding="async" /> :
 
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-2">
                       <span className="font-heading text-sm font-bold text-primary">{nextMatch.home.substring(0, 3).toUpperCase()}</span>
@@ -349,7 +349,7 @@ const Index = () => {
                 </div>
                 <div className="text-center">
                   {teamLogos[nextMatch.away] ?
-                  <img src={teamLogos[nextMatch.away]!} alt={nextMatch.away} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" /> :
+                  <img src={teamLogos[nextMatch.away]!} alt={nextMatch.away} className="w-16 h-16 md:w-20 md:h-20 object-contain mx-auto mb-2" loading="lazy" decoding="async" /> :
 
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border border-border flex items-center justify-center mx-auto mb-2">
                       <span className="font-heading text-sm font-bold text-muted-foreground">{nextMatch.away.substring(0, 3).toUpperCase()}</span>
@@ -499,7 +499,7 @@ const Index = () => {
                       <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
                         <div className="flex items-center gap-2">
                           {row.logo_url ?
-                        <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" /> :
+                        <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" loading="lazy" decoding="async" /> :
 
                         <div className="w-5 h-5 rounded-full bg-muted shrink-0" />
                         }
@@ -545,7 +545,7 @@ const Index = () => {
                     className="glass-card rounded-xl p-5 flex items-center justify-center hover-lift cursor-pointer aspect-[3/2] group transition-all duration-300 relative overflow-hidden">
 
                     {sponsor.logo_url ?
-                    <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" /> :
+                    <img src={sponsor.logo_url} alt={sponsor.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" loading="lazy" decoding="async" /> :
 
                     <span className="font-heading text-xl font-bold text-muted-foreground text-center">{sponsor.name}</span>
                     }
