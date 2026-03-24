@@ -499,7 +499,7 @@ const Index = () => {
                       <td className={`py-3 px-4 text-sm font-medium ${row.is_own_team ? "text-primary font-bold" : "text-foreground"}`}>
                         <div className="flex items-center gap-2">
                           {row.logo_url ?
-                        <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" /> :
+                        <img src={row.logo_url} alt={row.team} className="w-5 h-5 object-contain shrink-0" loading="lazy" decoding="async" /> :
 
                         <div className="w-5 h-5 rounded-full bg-muted shrink-0" />
                         }
