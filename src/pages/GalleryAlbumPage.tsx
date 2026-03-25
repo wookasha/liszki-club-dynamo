@@ -1,37 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, ChevronLeft, ChevronRight, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useGalleryAlbum } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
 const R2_BASE = "https://pub-d35a7dceb96745ed8eda4586e984ca7f.r2.dev";
 
-interface GalleryAlbum {
-  id: string;
-  title: string;
-  r2_folder_path: string;
-  photo_count: number;
-}
-
 const GalleryAlbumPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [album, setAlbum] = useState<GalleryAlbum | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: album, isLoading: loading } = useGalleryAlbum(id);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-
-  useEffect(() => {
-    if (!id) return;
-    supabase
-      .from("gallery_albums")
-      .select("id, title, r2_folder_path, photo_count")
-      .eq("id", id)
-      .single()
-      .then(({ data }) => {
-        setAlbum(data as GalleryAlbum | null);
-        setLoading(false);
-      });
-  }, [id]);
 
   const getPhotoUrl = (index: number) => {
     if (!album) return "";
@@ -55,7 +34,6 @@ const GalleryAlbumPage = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Prevent body scroll when lightbox is open
   useEffect(() => {
     if (lightboxIndex !== null) {
       document.body.style.overflow = "hidden";
@@ -133,26 +111,20 @@ const GalleryAlbumPage = () => {
         </div>
       </div>
 
-      {/* Lightbox */}
       {lightboxIndex !== null && (
         <div
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={() => setLightboxIndex(null)}
         >
-          {/* Close button */}
           <button
             onClick={() => setLightboxIndex(null)}
             className="absolute top-4 right-4 z-10 p-2 text-white/70 hover:text-white transition-colors"
           >
             <X className="w-8 h-8" />
           </button>
-
-          {/* Counter */}
           <div className="absolute top-4 left-4 text-white/70 text-sm font-medium">
             {lightboxIndex + 1} / {album.photo_count}
           </div>
-
-          {/* Previous */}
           {lightboxIndex > 0 && (
             <button
               onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
@@ -161,8 +133,6 @@ const GalleryAlbumPage = () => {
               <ChevronLeft className="w-10 h-10" />
             </button>
           )}
-
-          {/* Image */}
           <img
             src={getPhotoUrl(lightboxIndex)}
             alt={`${album.title} - zdjęcie ${lightboxIndex + 1}`}
@@ -170,8 +140,6 @@ const GalleryAlbumPage = () => {
             onClick={(e) => e.stopPropagation()}
             draggable={false}
           />
-
-          {/* Next */}
           {lightboxIndex < album.photo_count - 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}

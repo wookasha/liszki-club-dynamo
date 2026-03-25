@@ -1,55 +1,28 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Calendar, Tag } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useNewsList, useNewsPost, type NewsPost } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
 const categoriesFilter = ["Wszystkie", "Mecze", "Klub", "Młodzież"];
-
-interface NewsPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  image_url: string | null;
-  created_at: string;
-  slug: string;
-}
 
 const NewsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("Wszystkie");
-  const [posts, setPosts] = useState<NewsPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const { data: posts = [], isLoading: loading } = useNewsList();
+  const { data: fetchedPost } = useNewsPost(id);
+
+  const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
 
   useEffect(() => {
     if (id && posts.length > 0) {
       const post = posts.find((p) => p.slug === id);
-      if (post) setSelectedPost(post);
-      else {
-        // Fetch single post by slug if not in list
-        supabase.from("news_posts").select("*").eq("slug", id).single()
-          .then(({ data }) => { if (data) setSelectedPost(data as NewsPost); });
-      }
+      if (post) setSelectedPost(post as NewsPost);
+      else if (fetchedPost) setSelectedPost(fetchedPost);
     }
-  }, [id, posts]);
-
-  const fetchPosts = async () => {
-    const { data } = await supabase
-      .from("news_posts")
-      .select("*")
-      .eq("published", true)
-      .order("created_at", { ascending: false });
-    setPosts((data as NewsPost[]) || []);
-    setLoading(false);
-  };
+  }, [id, posts, fetchedPost]);
 
   const filtered = activeCategory === "Wszystkie"
     ? posts
@@ -108,7 +81,7 @@ const NewsPage = () => {
                 {relatedPosts.map((post) => (
                   <article
                     key={post.id}
-                    onClick={() => { setSelectedPost(post); navigate(`/aktualnosci/${post.slug}`); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    onClick={() => { setSelectedPost(post as NewsPost); navigate(`/aktualnosci/${post.slug}`); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     className="glass-card rounded-xl overflow-hidden hover-lift cursor-pointer flex flex-col"
                   >
                     {post.image_url ? (
@@ -174,7 +147,7 @@ const NewsPage = () => {
             {filtered.map((item, i) => (
               <ScrollAnimation key={item.id} delay={i * 0.05}>
                  <article
-                  onClick={() => { setSelectedPost(item); navigate(`/aktualnosci/${item.slug}`); }}
+                  onClick={() => { setSelectedPost(item as NewsPost); navigate(`/aktualnosci/${item.slug}`); }}
                   className="glass-card rounded-xl overflow-hidden hover-lift cursor-pointer flex flex-col sm:flex-row"
                 >
                   {item.image_url ? (
