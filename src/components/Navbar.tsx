@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Users, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { useHasTimelineEvents } from "@/hooks/use-queries";
 import clubLogo from "@/assets/club-logo.png";
 
 interface NavItem {
@@ -42,14 +42,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
-  const [hasTimelineEvents, setHasTimelineEvents] = useState(false);
+  const { data: hasTimelineEvents = false } = useHasTimelineEvents();
   const location = useLocation();
-
-  useEffect(() => {
-    supabase.from("timeline_events").select("id", { count: "exact", head: true }).then(({ count }) => {
-      setHasTimelineEvents((count ?? 0) > 0);
-    });
-  }, []);
 
   // Filter nav links based on data availability
   const filteredNavLinks = navLinks.map((link) => {

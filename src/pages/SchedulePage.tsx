@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { useMatches, useTeamLogos } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import MatchCard from "@/components/schedule/MatchCard";
 
@@ -25,34 +25,15 @@ interface Match {
   scorers: Scorer[] | null;
 }
 
-interface TeamLogoMap {
-  [team: string]: string | null;
-}
-
 const INITIAL_COUNT = 5;
 
 const SchedulePage = () => {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [logos, setLogos] = useState<TeamLogoMap>({});
-  const [loading, setLoading] = useState(true);
+  const { data: matchesRaw = [], isLoading: loading } = useMatches();
+  const { data: logos = {} } = useTeamLogos();
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [matchesRes, leagueRes] = await Promise.all([
-        supabase.from("matches").select("*").order("match_date", { ascending: true }),
-        supabase.from("league_table").select("team, logo_url"),
-      ]);
-      setMatches((matchesRes.data as unknown as Match[]) || []);
-      const logoMap: TeamLogoMap = {};
-      ((leagueRes.data as any[]) || []).forEach((r: any) => { logoMap[r.team] = r.logo_url; });
-      setLogos(logoMap);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
-
+  const matches = matchesRaw as unknown as Match[];
   const upcoming = matches.filter((m) => !m.is_played);
   const results = matches.filter((m) => m.is_played).reverse();
 

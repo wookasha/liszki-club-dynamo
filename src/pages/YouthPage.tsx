@@ -1,36 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, Clock, MapPin, CheckCircle, User } from "lucide-react";
+import { useYouthGroups } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import PrivacyClause from "@/components/PrivacyClause";
 
-interface YouthGroup {
-  id: string;
-  name: string;
-  ages: string;
-  schedule: string;
-  location: string;
-  coach: string;
-  sort_order: number;
-}
-
 const YouthPage = () => {
-  const [groups, setGroups] = useState<YouthGroup[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: groups = [], isLoading: loading } = useYouthGroups();
   const [formData, setFormData] = useState({ childName: "", age: "", parentName: "", phone: "", email: "", group: "" });
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchGroups = async () => {
-      const { data } = await supabase.from("youth_groups").select("*").order("sort_order");
-      if (data) setGroups(data);
-      setLoading(false);
-    };
-    fetchGroups();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,12 +41,11 @@ const YouthPage = () => {
           <div className="section-heading-accent mb-10" />
         </ScrollAnimation>
 
-        {/* Age Groups */}
         {loading ? (
           <p className="text-muted-foreground text-sm mb-16">Ładowanie grup...</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {groups.map((g, i) => (
+            {groups.map((g: any, i: number) => (
               <ScrollAnimation key={g.id} delay={i * 0.1}>
                 <div className="glass-card rounded-xl p-6 hover-lift">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
@@ -84,11 +64,9 @@ const YouthPage = () => {
           </div>
         )}
 
-        {/* Registration Form */}
         <ScrollAnimation>
           <div className="max-w-2xl mx-auto">
             <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Zapisz dziecko na trening</h2>
-
             {submitted ? (
               <div className="glass-card rounded-xl p-8 text-center">
                 <CheckCircle className="w-16 h-16 text-pitch-green mx-auto mb-4" />
@@ -125,7 +103,7 @@ const YouthPage = () => {
                   <label className="block text-sm font-medium text-foreground mb-1">Preferowana grupa</label>
                   <select required value={formData.group} onChange={(e) => setFormData({ ...formData, group: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                     <option value="">Wybierz grupę...</option>
-                    {groups.map((g) => (
+                    {groups.map((g: any) => (
                       <option key={g.id} value={g.name}>{g.name} ({g.ages})</option>
                     ))}
                   </select>

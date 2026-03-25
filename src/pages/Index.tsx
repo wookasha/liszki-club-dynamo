@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { useHomeNews, useNextMatch, useLastResults, useLeagueTable, useSponsors } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import CountdownTimer from "@/components/CountdownTimer";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -37,12 +37,44 @@ const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z"); // 19:48 CET = 18:48 UTC
 const Index = () => {
   const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
   const [showTransition, setShowTransition] = useState(false);
-  const [news, setNews] = useState(demoNews);
-  const [nextMatch, setNextMatch] = useState<NextMatchData | null>(null);
-  const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
-  const [lastResults, setLastResults] = useState<LastResult[]>([]);
-  const [sponsors, setSponsors] = useState<SponsorData[]>([]);
-  const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({});
+
+  const { data: fetchedNews = [] } = useHomeNews();
+  const { data: nextMatchRaw } = useNextMatch();
+  const { data: lastResultsRaw = [] } = useLastResults();
+  const { data: allLeagueRows = [] } = useLeagueTable();
+  const { data: fetchedSponsors = [] } = useSponsors();
+
+  const news = fetchedNews.length > 0 ? fetchedNews : demoNews;
+  const nextMatch = nextMatchRaw ? {
+    date: nextMatchRaw.match_date,
+    home: nextMatchRaw.home_team,
+    away: nextMatchRaw.away_team,
+    venue: nextMatchRaw.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd",
+    stadium_address: nextMatchRaw.stadium_address || "",
+  } : null;
+  const lastResults = lastResultsRaw.map((m: any) => ({
+    home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away, match_date: m.match_date,
+  }));
+  const sponsors = fetchedSponsors as SponsorData[];
+
+  const { leagueTable, teamLogos } = useMemo(() => {
+    if (allLeagueRows.length === 0) return { leagueTable: [] as LeagueRow[], teamLogos: {} as Record<string, string | null> };
+    const ownIndex = allLeagueRows.findIndex((r) => r.is_own_team);
+    let slice: LeagueRow[];
+    if (ownIndex === -1) {
+      slice = allLeagueRows.slice(0, 5);
+    } else {
+      const total = allLeagueRows.length;
+      const windowSize = Math.min(5, total);
+      let start = Math.max(0, ownIndex - Math.floor(windowSize / 2));
+      const end = Math.min(total, start + windowSize);
+      start = Math.max(0, end - windowSize);
+      slice = allLeagueRows.slice(start, end);
+    }
+    const logoMap: Record<string, string | null> = {};
+    allLeagueRows.forEach((r) => { logoMap[r.team] = r.logo_url; });
+    return { leagueTable: slice, teamLogos: logoMap };
+  }, [allLeagueRows]);
 
   // Fire confetti burst
   const fireConfetti = async () => {
@@ -100,60 +132,7 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [isLaunched]);
 
-  useEffect(() => {
-    // Fetch news
-    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url, slug").
-    eq("published", true).order("created_at", { ascending: false }).limit(3).
-    then(({ data }) => {if (data && data.length > 0) setNews(data);});
-
-    // Fetch next match
-    supabase.from("matches").select("*").
-    eq("is_played", false).order("match_date", { ascending: true }).limit(1).
-    then(({ data }) => {
-      if (data && data.length > 0) {
-        const m = data[0] as any;
-        setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd", stadium_address: m.stadium_address || "" });
-      }
-    });
-
-    // Fetch last results
-    supabase.from("matches").select("*").
-    eq("is_played", true).order("match_date", { ascending: false }).limit(5).
-    then(({ data }) => {
-      if (data && data.length > 0) {
-        setLastResults((data as any[]).map((m) => ({ home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away, match_date: m.match_date })));
-      }
-    });
-
-    // Fetch league table centered on own team
-    supabase.from("league_table").select("*").
-    order("position", { ascending: true }).
-    then(({ data }) => {
-      if (data && data.length > 0) {
-        const allRows = data as LeagueRow[];
-        const ownIndex = allRows.findIndex((r) => r.is_own_team);
-        let slice: LeagueRow[];
-        if (ownIndex === -1) {
-          slice = allRows.slice(0, 5);
-        } else {
-          const total = allRows.length;
-          const windowSize = Math.min(5, total);
-          let start = Math.max(0, ownIndex - Math.floor(windowSize / 2));
-          const end = Math.min(total, start + windowSize);
-          start = Math.max(0, end - windowSize);
-          slice = allRows.slice(start, end);
-        }
-        setLeagueTable(slice);
-        const logoMap: Record<string, string | null> = {};
-        allRows.forEach((r) => {logoMap[r.team] = r.logo_url;});
-        setTeamLogos(logoMap);
-      }
-    });
-
-    // Fetch sponsors
-    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true }).
-    then(({ data }) => {if (data) setSponsors(data as SponsorData[]);});
-  }, []);
+  // Data is now fetched via React Query hooks above
   // Transition overlay after countdown hits zero
   if (showTransition) {
     return (

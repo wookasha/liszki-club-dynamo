@@ -1,21 +1,5 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useLeagueTable } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
-
-interface LeagueRow {
-  id: string;
-  position: number;
-  team: string;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goals_for: number;
-  goals_against: number;
-  points: number;
-  is_own_team: boolean;
-  logo_url: string | null;
-}
 
 const TeamLogo = ({ url, name }: { url: string | null; name: string }) => (
   url ? (
@@ -28,17 +12,7 @@ const TeamLogo = ({ url, name }: { url: string | null; name: string }) => (
 );
 
 const LeagueTablePage = () => {
-  const [table, setTable] = useState<LeagueRow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.from("league_table").select("*").order("position", { ascending: true });
-      setTable((data as LeagueRow[]) || []);
-      setLoading(false);
-    };
-    fetch();
-  }, []);
+  const { data: table = [], isLoading: loading } = useLeagueTable();
 
   return (
     <div className="pt-24 pb-16">
@@ -82,9 +56,9 @@ const LeagueTablePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {table.map((row, index) => (
+                  {table.map((row) => (
                     <tr key={row.id} className={`border-b border-border/50 last:border-0 transition-colors hover:bg-muted/30 ${row.is_own_team ? "bg-primary/10 border-l-2 border-l-primary" : ""}`}>
-                      <td className="py-3 px-1 md:px-3 text-sm font-medium text-muted-foreground">{index + 1}</td>
+                      <td className="py-3 px-1 md:px-3 text-sm font-medium text-muted-foreground">{row.position}</td>
                       <td className="py-3 px-1 md:px-2">
                         <TeamLogo url={row.logo_url} name={row.team} />
                       </td>

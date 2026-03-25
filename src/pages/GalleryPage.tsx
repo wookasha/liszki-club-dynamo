@@ -1,19 +1,10 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Image } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useGalleryAlbums } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
 const R2_BASE = "https://pub-d35a7dceb96745ed8eda4586e984ca7f.r2.dev";
-
-interface GalleryAlbum {
-  id: string;
-  title: string;
-  r2_folder_path: string;
-  cover_image_url: string | null;
-  photo_count: number;
-  sort_order: number;
-}
 
 const CoverImage = ({ url, title }: { url: string | null; title: string }) => {
   const [error, setError] = useState(false);
@@ -39,19 +30,7 @@ const CoverImage = ({ url, title }: { url: string | null; title: string }) => {
 };
 
 const GalleryPage = () => {
-  const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase
-      .from("gallery_albums")
-      .select("*")
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => {
-        setAlbums((data as GalleryAlbum[]) || []);
-        setLoading(false);
-      });
-  }, []);
+  const { data: albums = [], isLoading: loading } = useGalleryAlbums();
 
   return (
     <div className="pt-24 pb-16">
@@ -74,7 +53,7 @@ const GalleryPage = () => {
           <p className="text-muted-foreground text-center py-12">Galeria jest pusta. Wkrótce pojawią się albumy!</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {albums.map((album, i) => {
+            {albums.map((album: any, i: number) => {
               const coverUrl = album.cover_image_url || (album.photo_count > 0
                 ? `${R2_BASE}/${album.r2_folder_path}/photo_1.webp`
                 : null);

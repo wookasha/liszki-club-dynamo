@@ -1,34 +1,15 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Calendar } from "lucide-react";
+import { useTimelineEvents } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
-interface TimelineEvent {
-  id: string;
-  year_label: string;
-  title: string;
-  description: string;
-  sort_order: number;
-}
-
 const TimelinePage = () => {
-  const [events, setEvents] = useState<TimelineEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: events = [], isLoading: loading } = useTimelineEvents();
   const [openId, setOpenId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.from("timeline_events").select("*").order("sort_order");
-      if (data) setEvents(data);
-      setLoading(false);
-    };
-    fetch();
-  }, []);
 
   return (
     <div className="pt-24 pb-16">
-      {/* Header */}
       <div className="container mx-auto px-4 max-w-3xl mb-10">
         <ScrollAnimation>
           <div className="flex items-center gap-3 mb-2">
@@ -52,19 +33,15 @@ const TimelinePage = () => {
           </div>
         ) : (
           <div className="relative">
-            {/* Vertical line */}
             <div className="absolute left-[19px] sm:left-[23px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-primary/40 via-primary/20 to-primary/5" />
 
             <div className="space-y-3">
-              {events.map((event, index) => {
+              {events.map((event: any, index: number) => {
                 const isOpen = openId === event.id;
-                const isFirst = index === 0;
-                const isLast = index === events.length - 1;
 
                 return (
                   <ScrollAnimation key={event.id} delay={index * 0.04}>
                     <div className="relative pl-12 sm:pl-14">
-                      {/* Dot / circle */}
                       <div className="absolute left-0 top-0 flex flex-col items-center">
                         <div
                           className={`relative z-10 w-[14px] h-[14px] sm:w-4 sm:h-4 rounded-full border-[2.5px] transition-all duration-300 mt-[18px] ${
@@ -87,9 +64,7 @@ const TimelinePage = () => {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2.5 mb-1">
                               <span className={`inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
-                                isOpen
-                                  ? "bg-primary/15 text-primary"
-                                  : "bg-muted text-muted-foreground"
+                                isOpen ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
                               }`}>
                                 {event.year_label}
                               </span>
