@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { useHomeNews, useNextMatch, useLastResults, useLeagueTable, useSponsors } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import CountdownTimer from "@/components/CountdownTimer";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
