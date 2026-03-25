@@ -132,60 +132,7 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [isLaunched]);
 
-  useEffect(() => {
-    // Fetch news
-    supabase.from("news_posts").select("id, title, excerpt, category, created_at, image_url, slug").
-    eq("published", true).order("created_at", { ascending: false }).limit(3).
-    then(({ data }) => {if (data && data.length > 0) setNews(data);});
-
-    // Fetch next match
-    supabase.from("matches").select("*").
-    eq("is_played", false).order("match_date", { ascending: true }).limit(1).
-    then(({ data }) => {
-      if (data && data.length > 0) {
-        const m = data[0] as any;
-        setNextMatch({ date: m.match_date, home: m.home_team, away: m.away_team, venue: m.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd", stadium_address: m.stadium_address || "" });
-      }
-    });
-
-    // Fetch last results
-    supabase.from("matches").select("*").
-    eq("is_played", true).order("match_date", { ascending: false }).limit(5).
-    then(({ data }) => {
-      if (data && data.length > 0) {
-        setLastResults((data as any[]).map((m) => ({ home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away, match_date: m.match_date })));
-      }
-    });
-
-    // Fetch league table centered on own team
-    supabase.from("league_table").select("*").
-    order("position", { ascending: true }).
-    then(({ data }) => {
-      if (data && data.length > 0) {
-        const allRows = data as LeagueRow[];
-        const ownIndex = allRows.findIndex((r) => r.is_own_team);
-        let slice: LeagueRow[];
-        if (ownIndex === -1) {
-          slice = allRows.slice(0, 5);
-        } else {
-          const total = allRows.length;
-          const windowSize = Math.min(5, total);
-          let start = Math.max(0, ownIndex - Math.floor(windowSize / 2));
-          const end = Math.min(total, start + windowSize);
-          start = Math.max(0, end - windowSize);
-          slice = allRows.slice(start, end);
-        }
-        setLeagueTable(slice);
-        const logoMap: Record<string, string | null> = {};
-        allRows.forEach((r) => {logoMap[r.team] = r.logo_url;});
-        setTeamLogos(logoMap);
-      }
-    });
-
-    // Fetch sponsors
-    supabase.from("sponsors").select("id, name, logo_url, website_url").order("sort_order", { ascending: true }).
-    then(({ data }) => {if (data) setSponsors(data as SponsorData[]);});
-  }, []);
+  // Data is now fetched via React Query hooks above
   // Transition overlay after countdown hits zero
   if (showTransition) {
     return (
