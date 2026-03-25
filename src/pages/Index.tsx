@@ -37,12 +37,44 @@ const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z"); // 19:48 CET = 18:48 UTC
 const Index = () => {
   const [isLaunched, setIsLaunched] = useState(() => Date.now() >= LAUNCH_DATE.getTime());
   const [showTransition, setShowTransition] = useState(false);
-  const [news, setNews] = useState(demoNews);
-  const [nextMatch, setNextMatch] = useState<NextMatchData | null>(null);
-  const [leagueTable, setLeagueTable] = useState<LeagueRow[]>([]);
-  const [lastResults, setLastResults] = useState<LastResult[]>([]);
-  const [sponsors, setSponsors] = useState<SponsorData[]>([]);
-  const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({});
+
+  const { data: fetchedNews = [] } = useHomeNews();
+  const { data: nextMatchRaw } = useNextMatch();
+  const { data: lastResultsRaw = [] } = useLastResults();
+  const { data: allLeagueRows = [] } = useLeagueTable();
+  const { data: fetchedSponsors = [] } = useSponsors();
+
+  const news = fetchedNews.length > 0 ? fetchedNews : demoNews;
+  const nextMatch = nextMatchRaw ? {
+    date: nextMatchRaw.match_date,
+    home: nextMatchRaw.home_team,
+    away: nextMatchRaw.away_team,
+    venue: nextMatchRaw.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd",
+    stadium_address: nextMatchRaw.stadium_address || "",
+  } : null;
+  const lastResults = lastResultsRaw.map((m: any) => ({
+    home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away, match_date: m.match_date,
+  }));
+  const sponsors = fetchedSponsors as SponsorData[];
+
+  const { leagueTable, teamLogos } = useMemo(() => {
+    if (allLeagueRows.length === 0) return { leagueTable: [] as LeagueRow[], teamLogos: {} as Record<string, string | null> };
+    const ownIndex = allLeagueRows.findIndex((r) => r.is_own_team);
+    let slice: LeagueRow[];
+    if (ownIndex === -1) {
+      slice = allLeagueRows.slice(0, 5);
+    } else {
+      const total = allLeagueRows.length;
+      const windowSize = Math.min(5, total);
+      let start = Math.max(0, ownIndex - Math.floor(windowSize / 2));
+      const end = Math.min(total, start + windowSize);
+      start = Math.max(0, end - windowSize);
+      slice = allLeagueRows.slice(start, end);
+    }
+    const logoMap: Record<string, string | null> = {};
+    allLeagueRows.forEach((r) => { logoMap[r.team] = r.logo_url; });
+    return { leagueTable: slice, teamLogos: logoMap };
+  }, [allLeagueRows]);
 
   // Fire confetti burst
   const fireConfetti = async () => {
