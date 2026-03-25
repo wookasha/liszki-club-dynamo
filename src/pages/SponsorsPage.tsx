@@ -1,15 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CheckCircle, Star, Award, Shield, ArrowRight, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useSponsors } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import PrivacyClause from "@/components/PrivacyClause";
-
-interface Sponsor {
-  id: string;
-  name: string;
-  logo_url: string | null;
-  website_url: string | null;
-}
 
 const packages = [
   {
@@ -47,18 +40,10 @@ const packages = [
 ];
 
 const SponsorsPage = () => {
-  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  const { data: sponsors = [] } = useSponsors();
   const [formData, setFormData] = useState({ name: "", company: "", email: "", phone: "", message: "" });
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    supabase
-      .from("sponsors")
-      .select("id, name, logo_url, website_url")
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => setSponsors((data as Sponsor[]) || []));
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,13 +59,10 @@ const SponsorsPage = () => {
           <div className="section-heading-accent mb-10" />
         </ScrollAnimation>
 
-        {/* Packages */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {packages.map((pkg, i) => (
             <ScrollAnimation key={pkg.name} delay={i * 0.1}>
-              <div
-                className={`glass-card rounded-xl p-6 relative hover-lift ${pkg.popular ? "border-primary ring-1 ring-primary/50" : ""}`}
-              >
+              <div className={`glass-card rounded-xl p-6 relative hover-lift ${pkg.popular ? "border-primary ring-1 ring-primary/50" : ""}`}>
                 {pkg.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold uppercase rounded-full">
                     Najpopularniejszy
@@ -102,7 +84,6 @@ const SponsorsPage = () => {
           ))}
         </div>
 
-        {/* Contact Form */}
         <ScrollAnimation>
           <div className="max-w-2xl mx-auto mb-16">
             <h2 className="font-heading text-2xl font-bold text-foreground mb-6">Formularz kontaktowy</h2>
@@ -117,61 +98,29 @@ const SponsorsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Imię i nazwisko</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Firma</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="text" required value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Email</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Telefon</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">Wiadomość</label>
-                  <textarea
-                    rows={4}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                  />
+                  <textarea rows={4} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
                 </div>
                 <PrivacyClause accepted={privacyAccepted} onChange={setPrivacyAccepted} />
-                <button
-                  type="submit"
-                  disabled={!privacyAccepted}
-                  className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                >
+                <button type="submit" disabled={!privacyAccepted} className="w-full py-3 bg-primary text-primary-foreground font-heading font-semibold uppercase rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
                   Wyślij zapytanie <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
@@ -179,12 +128,11 @@ const SponsorsPage = () => {
           </div>
         </ScrollAnimation>
 
-        {/* Current Sponsors */}
         {sponsors.length > 0 && (
           <ScrollAnimation>
             <h2 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">Nasi partnerzy</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
-              {sponsors.map((sponsor) => {
+              {sponsors.map((sponsor: any) => {
                 const url = sponsor.website_url
                   ? sponsor.website_url.startsWith("http") ? sponsor.website_url : `https://${sponsor.website_url}`
                   : null;

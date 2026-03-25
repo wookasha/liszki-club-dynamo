@@ -42,14 +42,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
-  const [hasTimelineEvents, setHasTimelineEvents] = useState(false);
+  const { data: hasTimelineEvents = false } = useHasTimelineEvents();
   const location = useLocation();
-
-  useEffect(() => {
-    supabase.from("timeline_events").select("id", { count: "exact", head: true }).then(({ count }) => {
-      setHasTimelineEvents((count ?? 0) > 0);
-    });
-  }, []);
 
   // Filter nav links based on data availability
   const filteredNavLinks = navLinks.map((link) => {
