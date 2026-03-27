@@ -294,7 +294,7 @@ const Index = () => {
               <CountdownTimer targetDate={nextMatch.date} />
             </div>
             <p className="text-xs text-muted-foreground mt-3">
-              {nextMatch.home} vs {nextMatch.away} • {nextMatch.venue}
+              {nextMatch.home} vs {nextMatch.away}
             </p>
           </motion.div>
           }
