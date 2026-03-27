@@ -28,8 +28,17 @@ const AdminNews = () => {
     title: "", content: "", excerpt: "", category: "Klub", image_url: "", published: false,
   });
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const historyRef = useRef<string[]>([""]);
   const historyIndexRef = useRef(0);
+
+  const handleEditorScroll = () => {
+    const ta = contentRef.current;
+    const preview = previewRef.current;
+    if (!ta || !preview) return;
+    const ratio = ta.scrollTop / (ta.scrollHeight - ta.clientHeight || 1);
+    preview.scrollTop = ratio * (preview.scrollHeight - preview.clientHeight);
+  };
 
   const pushHistory = (val: string) => {
     const h = historyRef.current;
@@ -60,6 +69,7 @@ const AdminNews = () => {
   const wrapSelection = (wrapper: string) => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const text = form.content;
@@ -68,6 +78,7 @@ const AdminNews = () => {
     updateContent(newText);
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = start + wrapper.length;
       ta.selectionEnd = end + wrapper.length;
     }, 0);
@@ -76,6 +87,7 @@ const AdminNews = () => {
   const prefixLine = (prefix: string) => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const start = ta.selectionStart;
     const text = form.content;
     const lineStart = text.lastIndexOf("\n", start - 1) + 1;
@@ -83,6 +95,7 @@ const AdminNews = () => {
     updateContent(newText);
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = ta.selectionEnd = start + prefix.length;
     }, 0);
   };
@@ -90,6 +103,7 @@ const AdminNews = () => {
   const insertLink = () => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const text = form.content;
@@ -101,6 +115,7 @@ const AdminNews = () => {
     const urlStart = start + linkText.length + 3;
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = urlStart;
       ta.selectionEnd = urlStart + 8;
     }, 0);
@@ -109,6 +124,7 @@ const AdminNews = () => {
   const insertSeparator = () => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const pos = ta.selectionStart;
     const text = form.content;
     const insert = "\n---\n";
@@ -116,6 +132,7 @@ const AdminNews = () => {
     updateContent(newText);
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = ta.selectionEnd = pos + insert.length;
     }, 0);
   };
@@ -257,8 +274,8 @@ const AdminNews = () => {
                 <button type="button" onClick={insertSeparator} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Separator"><Minus className="w-4 h-4" /></button>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => updateContent(e.target.value)} onKeyDown={handleKeyDown} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
-                <div className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
+                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => updateContent(e.target.value)} onKeyDown={handleKeyDown} onScroll={handleEditorScroll} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
+                <div ref={previewRef} className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">Podgląd</p>
                   {form.content ? (
                     <div
