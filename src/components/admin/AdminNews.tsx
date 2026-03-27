@@ -238,18 +238,26 @@ const AdminNews = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Treść</label>
-              <div className="flex gap-1 mb-1 flex-wrap">
-                <button type="button" onClick={() => wrapSelection("**")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Pogrubienie"><Bold className="w-4 h-4" /></button>
-                <button type="button" onClick={() => wrapSelection("*")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Kursywa"><Italic className="w-4 h-4" /></button>
-                <div className="w-px bg-border mx-0.5" />
+              <div className="flex gap-1 mb-1 flex-wrap items-center">
+                <button type="button" onClick={undo} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Cofnij (Ctrl+Z)"><Undo2 className="w-4 h-4" /></button>
+                <button type="button" onClick={redo} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Ponów (Ctrl+Y)"><Redo2 className="w-4 h-4" /></button>
+                <div className="w-px h-6 bg-border mx-0.5" />
+                <button type="button" onClick={() => wrapSelection("**")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Pogrubienie (Ctrl+B)"><Bold className="w-4 h-4" /></button>
+                <button type="button" onClick={() => wrapSelection("*")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Kursywa (Ctrl+I)"><Italic className="w-4 h-4" /></button>
+                <button type="button" onClick={() => wrapSelection("~~")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Przekreślenie"><Strikethrough className="w-4 h-4" /></button>
+                <div className="w-px h-6 bg-border mx-0.5" />
                 <button type="button" onClick={() => prefixLine("## ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Nagłówek H2"><Heading2 className="w-4 h-4" /></button>
                 <button type="button" onClick={() => prefixLine("### ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Nagłówek H3"><Heading3 className="w-4 h-4" /></button>
-                <div className="w-px bg-border mx-0.5" />
+                <div className="w-px h-6 bg-border mx-0.5" />
                 <button type="button" onClick={() => prefixLine("- ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista punktowana"><List className="w-4 h-4" /></button>
                 <button type="button" onClick={() => prefixLine("1. ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista numerowana"><ListOrdered className="w-4 h-4" /></button>
+                <div className="w-px h-6 bg-border mx-0.5" />
+                <button type="button" onClick={insertLink} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Link (Ctrl+K)"><Link2 className="w-4 h-4" /></button>
+                <button type="button" onClick={() => prefixLine("> ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Cytat"><Quote className="w-4 h-4" /></button>
+                <button type="button" onClick={insertSeparator} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Separator"><Minus className="w-4 h-4" /></button>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
+                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => updateContent(e.target.value)} onKeyDown={handleKeyDown} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
                 <div className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">Podgląd</p>
                   {form.content ? (
