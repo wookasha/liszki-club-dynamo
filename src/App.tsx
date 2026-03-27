@@ -49,6 +49,7 @@ const App = () => (
             <Route path="/statystyki" element={<StatsPage />} />
             <Route path="/historia" element={<HistoryPage />} />
             <Route path="/os-czasu" element={<TimelinePage />} />
+            <Route path="/kadra" element={<SquadPage />} />
             <Route path="/polityka-prywatnosci" element={<PrivacyPolicyPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />

@@ -18,6 +18,7 @@ const navLinks: NavItem[] = [
     href: "#",
     label: "Seniorzy",
     children: [
+      { href: "/kadra", label: "Kadra" },
       { href: "/tabela", label: "Tabela" },
       { href: "/terminarz", label: "Terminarz" },
       { href: "/statystyki", label: "Statystyki indywidualne" },

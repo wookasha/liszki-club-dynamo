@@ -195,6 +195,7 @@ const AdminPage = () => {
         {activeTab === "news" && <AdminNews />}
         {activeTab === "matches" && <AdminMatches />}
         {activeTab === "league" && <AdminLeague />}
+        {activeTab === "squad" && <AdminSquad />}
         {activeTab === "gallery" && <AdminGallery />}
         {activeTab === "sponsors" && <AdminSponsors />}
         {activeTab === "youth" && <AdminYouth />}
