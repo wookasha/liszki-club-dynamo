@@ -33,6 +33,8 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/aktualnosci" element={<NewsPage />} />
@@ -44,8 +46,6 @@ const App = () => (
             <Route path="/galeria/:id" element={<GalleryAlbumPage />} />
             <Route path="/sponsorzy" element={<SponsorsPage />} />
             <Route path="/kontakt" element={<ContactPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={<AdminPage />} />
             <Route path="/statystyki" element={<StatsPage />} />
             <Route path="/historia" element={<HistoryPage />} />
             <Route path="/os-czasu" element={<TimelinePage />} />
