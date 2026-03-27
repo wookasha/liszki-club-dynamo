@@ -332,10 +332,10 @@ const Index = () => {
                 </div>
                 <div>
                   <p className="font-heading text-3xl md:text-4xl font-bold text-muted-foreground">VS</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {new Date(nextMatch.date).toLocaleDateString("pl-PL", { day: "numeric", month: "long", year: "numeric" })}
+                  <p className="text-xs text-muted-foreground mt-1 capitalize">
+                    {new Date(nextMatch.date).toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" })}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-semibold text-foreground">
                     {new Date(nextMatch.date).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
@@ -350,12 +350,24 @@ const Index = () => {
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.away}</p>
                 </div>
               </div>
-              {nextMatch.stadium_address &&
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4 shrink-0" />
-                {nextMatch.stadium_address}
+              <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+                {nextMatch.isHome ? (
+                  <Home className="w-4 h-4 shrink-0" />
+                ) : (
+                  <Plane className="w-4 h-4 shrink-0" />
+                )}
+                {nextMatch.stadium_address ? (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(nextMatch.stadium_address)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    {nextMatch.stadium_address}
+                  </a>
+                ) : null}
               </div>
-              }
             </div>
           </ScrollAnimation>
         </div>
