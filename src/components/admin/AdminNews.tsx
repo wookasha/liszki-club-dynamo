@@ -87,6 +87,7 @@ const AdminNews = () => {
   const prefixLine = (prefix: string) => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const start = ta.selectionStart;
     const text = form.content;
     const lineStart = text.lastIndexOf("\n", start - 1) + 1;
@@ -94,6 +95,7 @@ const AdminNews = () => {
     updateContent(newText);
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = ta.selectionEnd = start + prefix.length;
     }, 0);
   };
