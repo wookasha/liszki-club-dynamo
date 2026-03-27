@@ -10,7 +10,7 @@ export const renderNewsContent = (content: string): string => {
   const inlineFormat = (line: string) =>
     escape(line)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "<em>$1</em>")
       .replace(/~~(.+?)~~/g, "<del>$1</del>")
       .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>');
 
