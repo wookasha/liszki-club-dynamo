@@ -81,12 +81,27 @@ const PrivacyPolicyPage = () => {
             </section>
 
             <section>
-              <h2 className="font-heading text-xl font-bold text-foreground">7. Pliki cookies</h2>
+              <h2 className="font-heading text-xl font-bold text-foreground">7. Pliki cookies i Google Analytics</h2>
               <p>
                 Strona internetowa Klubu wykorzystuje pliki cookies w celu zapewnienia prawidłowego
-                działania serwisu oraz analizy ruchu na stronie. Użytkownik może zarządzać ustawieniami
-                plików cookies w swojej przeglądarce internetowej. Szczegółowe informacje na temat plików
-                cookies dostępne są w ustawieniach przeglądarki.
+                działania serwisu oraz analizy ruchu na stronie.
+              </p>
+              <p>
+                Korzystamy z usługi <strong>Google Analytics</strong> (identyfikator: G-SE7BB2DDBM), która
+                wykorzystuje pliki cookies do zbierania anonimowych danych statystycznych dotyczących
+                sposobu korzystania ze strony, takich jak: liczba odwiedzin, czas spędzony na stronie,
+                źródło ruchu oraz przeglądane podstrony. Dane te są przetwarzane przez Google LLC
+                (z siedzibą w USA) zgodnie z ich{" "}
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  polityką prywatności
+                </a>.
+              </p>
+              <p>
+                Użytkownik może zarządzać ustawieniami plików cookies w swojej przeglądarce internetowej
+                lub zrezygnować ze śledzenia przez Google Analytics, instalując{" "}
+                <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  dodatek do przeglądarki blokujący Google Analytics
+                </a>.
               </p>
             </section>
 
