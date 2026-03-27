@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3, History, ShieldCheck } from "lucide-react";
-import ScrollAnimation from "@/components/ScrollAnimation";
+import {
+  LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake,
+  Users, RefreshCw, Settings, Save, BarChart3, History,
+  ShieldCheck, Menu, X, ChevronDown,
+} from "lucide-react";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
 import AdminLeague from "@/components/admin/AdminLeague";
@@ -14,19 +17,45 @@ import AdminHistory from "@/components/admin/AdminHistory";
 import AdminTimeline from "@/components/admin/AdminTimeline";
 import AdminSquad from "@/components/admin/AdminSquad";
 
-const tabs = [
-  { id: "news", label: "Aktualności", icon: Newspaper },
-  { id: "matches", label: "Terminarz", icon: Calendar },
-  { id: "league", label: "Tabela", icon: Trophy },
-  { id: "squad", label: "Kadra", icon: ShieldCheck },
-  { id: "gallery", label: "Galeria", icon: ImageIcon },
-  { id: "sponsors", label: "Sponsorzy", icon: Handshake },
-  { id: "youth", label: "Młodzież", icon: Users },
-  { id: "stats", label: "Statystyki", icon: BarChart3 },
-  { id: "history", label: "Historia", icon: History },
-] as const;
+interface SidebarItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
 
-type TabId = typeof tabs[number]["id"];
+interface SidebarGroup {
+  label: string;
+  items: SidebarItem[];
+}
+
+const sidebarGroups: SidebarGroup[] = [
+  {
+    label: "Treści",
+    items: [
+      { id: "news", label: "Aktualności", icon: Newspaper },
+      { id: "gallery", label: "Galeria", icon: ImageIcon },
+    ],
+  },
+  {
+    label: "Rozgrywki",
+    items: [
+      { id: "matches", label: "Terminarz", icon: Calendar },
+      { id: "league", label: "Tabela", icon: Trophy },
+      { id: "stats", label: "Statystyki", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Klub",
+    items: [
+      { id: "squad", label: "Kadra", icon: ShieldCheck },
+      { id: "youth", label: "Młodzież", icon: Users },
+      { id: "sponsors", label: "Sponsorzy", icon: Handshake },
+      { id: "history", label: "Historia", icon: History },
+    ],
+  },
+];
+
+type TabId = "news" | "matches" | "league" | "stats" | "squad" | "youth" | "sponsors" | "gallery" | "history";
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -37,6 +66,7 @@ const AdminPage = () => {
   const [mzpnTableUrl, setMzpnTableUrl] = useState("");
   const [mzpnScheduleUrl, setMzpnScheduleUrl] = useState("");
   const [savingSettings, setSavingSettings] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -76,9 +106,7 @@ const AdminPage = () => {
     setSyncing(true);
     setSyncResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke("sync-mzpn", {
-        body: { type: "all" },
-      });
+      const { data, error } = await supabase.functions.invoke("sync-mzpn", { body: { type: "all" } });
       if (error) throw error;
       if (data?.success) {
         const t = data.results?.table;
@@ -101,35 +129,112 @@ const AdminPage = () => {
     navigate("/");
   };
 
-  return (
-    <div className="pt-24 pb-16">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <ScrollAnimation>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="section-heading text-3xl mb-1">Panel CMS</h1>
-              <p className="text-muted-foreground text-sm">Zarządzaj treścią strony klubu</p>
-            </div>
-            <div className="flex items-center gap-2">
+  const selectTab = (id: string) => {
+    setActiveTab(id as TabId);
+    setMobileOpen(false);
+  };
+
+  const activeLabel = sidebarGroups.flatMap((g) => g.items).find((i: any) => i.id === activeTab)?.label ?? "";
+
+  const sidebarContent = (
+    <nav className="flex flex-col h-full">
+      <div className="p-4 border-b border-border">
+        <h1 className="font-heading text-lg font-bold text-foreground">Panel CMS</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">Zarządzaj treścią klubu</p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto py-2">
+        {sidebarGroups.map((group) => (
+          <div key={group.label} className="mb-1">
+            <p className="px-4 py-2 text-[10px] uppercase tracking-widest text-muted-foreground/60 font-semibold">
+              {group.label}
+            </p>
+            {group.items.map((item) => (
               <button
-                onClick={() => setShowSettings(!showSettings)}
-                className={`flex items-center gap-2 px-3 py-2 font-medium text-sm rounded-md transition-colors ${showSettings ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                key={item.id}
+                onClick={() => selectTab(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
+                  activeTab === item.id
+                    ? "bg-primary/10 text-primary border-r-2 border-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                }`}
               >
-                <Settings className="w-4 h-4" />
+                <item.icon className="w-4 h-4 shrink-0" />
+                {item.label}
               </button>
-              <button
-                onClick={handleSync}
-                disabled={syncing}
-                className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground font-heading font-semibold text-sm rounded-md hover:bg-secondary/90 transition-colors disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
-                <span className="hidden sm:inline">{syncing ? "Synchronizuję..." : "Synchronizuj z MZPN"}</span>
-              </button>
-              <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-muted text-muted-foreground font-medium text-sm rounded-md hover:text-foreground transition-colors">
-                <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Wyloguj</span>
-              </button>
-            </div>
+            ))}
           </div>
+        ))}
+      </div>
+
+      <div className="p-3 border-t border-border space-y-1.5">
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            showSettings ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          }`}
+        >
+          <Settings className="w-4 h-4" /> Ustawienia MZPN
+        </button>
+        <button
+          onClick={handleSync}
+          disabled={syncing}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
+          {syncing ? "Synchronizuję..." : "Sync MZPN"}
+        </button>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+        >
+          <LogOut className="w-4 h-4" /> Wyloguj
+        </button>
+      </div>
+    </nav>
+  );
+
+  return (
+    <div className="pt-20 min-h-screen flex">
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex w-60 shrink-0 border-r border-border bg-card/50 flex-col fixed top-20 bottom-0 left-0 z-30">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile drawer overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden" onClick={() => setMobileOpen(false)}>
+          <div className="absolute inset-0 bg-black/60" />
+          <aside
+            className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-end p-2">
+              <button onClick={() => setMobileOpen(false)} className="p-2 text-muted-foreground hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Main content */}
+      <main className="flex-1 lg:ml-60">
+        {/* Mobile header */}
+        <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-card/50 sticky top-20 z-20">
+          <button onClick={() => setMobileOpen(true)} className="p-2 text-muted-foreground hover:text-foreground">
+            <Menu className="w-5 h-5" />
+          </button>
+          <span className="font-heading font-bold text-foreground text-sm">{activeLabel}</span>
+        </div>
+
+        <div className="p-4 md:p-6 lg:p-8 max-w-5xl">
+          {syncResult && (
+            <div className={`mb-4 px-4 py-3 rounded-lg text-sm ${syncResult.startsWith("✅") ? "bg-pitch-green/10 text-pitch-green" : "bg-destructive/10 text-destructive"}`}>
+              {syncResult}
+            </div>
+          )}
 
           {showSettings && (
             <div className="glass-card rounded-xl p-6 mb-6">
@@ -138,75 +243,35 @@ const AdminPage = () => {
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-foreground mb-1">Link do tabeli</label>
-                  <input
-                    type="url"
-                    value={mzpnTableUrl}
-                    onChange={(e) => setMzpnTableUrl(e.target.value)}
-                    placeholder="https://malopolskizpn.pl/rozgrywki/..."
-                    className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input type="url" value={mzpnTableUrl} onChange={(e) => setMzpnTableUrl(e.target.value)} placeholder="https://malopolskizpn.pl/rozgrywki/..." className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-foreground mb-1">Link do terminarza</label>
-                  <input
-                    type="url"
-                    value={mzpnScheduleUrl}
-                    onChange={(e) => setMzpnScheduleUrl(e.target.value)}
-                    placeholder="https://malopolskizpn.pl/rozgrywki/..."
-                    className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input type="url" value={mzpnScheduleUrl} onChange={(e) => setMzpnScheduleUrl(e.target.value)} placeholder="https://malopolskizpn.pl/rozgrywki/..." className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
-                <button
-                  onClick={saveSettings}
-                  disabled={savingSettings}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
+                <button onClick={saveSettings} disabled={savingSettings} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
                   <Save className="w-4 h-4" /> {savingSettings ? "Zapisuję..." : "Zapisz linki"}
                 </button>
               </div>
             </div>
           )}
 
-          {syncResult && (
-            <div className={`mb-4 px-4 py-3 rounded-lg text-sm ${syncResult.startsWith("✅") ? "bg-pitch-green/10 text-pitch-green" : "bg-destructive/10 text-destructive"}`}>
-              {syncResult}
+          {activeTab === "news" && <AdminNews />}
+          {activeTab === "matches" && <AdminMatches />}
+          {activeTab === "league" && <AdminLeague />}
+          {activeTab === "squad" && <AdminSquad />}
+          {activeTab === "gallery" && <AdminGallery />}
+          {activeTab === "sponsors" && <AdminSponsors />}
+          {activeTab === "youth" && <AdminYouth />}
+          {activeTab === "stats" && <AdminStats />}
+          {activeTab === "history" && (
+            <div className="space-y-6">
+              <AdminHistory />
+              <AdminTimeline />
             </div>
           )}
-
-          {/* Tabs */}
-          <div className="flex gap-1 mb-8 bg-muted/50 p-1 rounded-lg overflow-x-auto scrollbar-hide">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
-                  activeTab === tab.id
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <tab.icon className="w-4 h-4 shrink-0" />
-                <span className="hidden md:inline">{tab.label}</span>
-              </button>
-            ))}
-          </div>
-        </ScrollAnimation>
-
-        {activeTab === "news" && <AdminNews />}
-        {activeTab === "matches" && <AdminMatches />}
-        {activeTab === "league" && <AdminLeague />}
-        {activeTab === "squad" && <AdminSquad />}
-        {activeTab === "gallery" && <AdminGallery />}
-        {activeTab === "sponsors" && <AdminSponsors />}
-        {activeTab === "youth" && <AdminYouth />}
-        {activeTab === "stats" && <AdminStats />}
-        {activeTab === "history" && (
-          <div className="space-y-6">
-            <AdminHistory />
-            <AdminTimeline />
-          </div>
-        )}
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
