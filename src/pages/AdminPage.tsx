@@ -44,7 +44,7 @@ const sidebarGroups = [
   },
 ] as const;
 
-type TabId = typeof sidebarGroups[number]["items"][number]["id"];
+type TabId = "news" | "matches" | "league" | "stats" | "squad" | "youth" | "sponsors" | "gallery" | "history";
 
 const AdminPage = () => {
   const navigate = useNavigate();
