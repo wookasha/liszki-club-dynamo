@@ -247,6 +247,32 @@ export const useYouthGroups = () =>
     staleTime: 10 * 60 * 1000,
   });
 
+// ── Squad Members ───────────────────────────────────────────────────
+export const useSquadMembers = () =>
+  useQuery({
+    queryKey: ["squad_members"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("squad_members")
+        .select("*")
+        .order("sort_order");
+      return data || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+export const useHasSquadMembers = () =>
+  useQuery({
+    queryKey: ["squad_members", "count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("squad_members")
+        .select("id", { count: "exact", head: true });
+      return (count ?? 0) > 0;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
 // ── Home page news (limited) ────────────────────────────────────────
 export const useHomeNews = () =>
   useQuery({

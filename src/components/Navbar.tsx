@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Users, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHasTimelineEvents } from "@/hooks/use-queries";
+import { useHasTimelineEvents, useHasSquadMembers } from "@/hooks/use-queries";
 import clubLogo from "@/assets/club-logo.png";
 
 interface NavItem {
@@ -18,6 +18,7 @@ const navLinks: NavItem[] = [
     href: "#",
     label: "Seniorzy",
     children: [
+      { href: "/kadra", label: "Kadra" },
       { href: "/tabela", label: "Tabela" },
       { href: "/terminarz", label: "Terminarz" },
       { href: "/statystyki", label: "Statystyki indywidualne" },
@@ -43,10 +44,15 @@ const Navbar = () => {
   const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const { data: hasTimelineEvents = false } = useHasTimelineEvents();
+  const { data: hasSquadMembers = false } = useHasSquadMembers();
   const location = useLocation();
 
   // Filter nav links based on data availability
   const filteredNavLinks = navLinks.map((link) => {
+    if (link.label === "Seniorzy" && link.children) {
+      const children = link.children.filter((c) => c.href !== "/kadra" || hasSquadMembers);
+      return { ...link, children };
+    }
     if (link.label === "Historia" && link.children) {
       const children = link.children.filter((c) => c.href !== "/os-czasu" || hasTimelineEvents);
       if (children.length === 0) return null;

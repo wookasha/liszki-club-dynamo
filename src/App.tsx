@@ -19,6 +19,7 @@ import AdminPage from "./pages/AdminPage";
 import StatsPage from "./pages/StatsPage";
 import HistoryPage from "./pages/HistoryPage";
 import TimelinePage from "./pages/TimelinePage";
+import SquadPage from "./pages/SquadPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import NotFound from "./pages/NotFound";
 
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/statystyki" element={<StatsPage />} />
             <Route path="/historia" element={<HistoryPage />} />
             <Route path="/os-czasu" element={<TimelinePage />} />
+            <Route path="/kadra" element={<SquadPage />} />
             <Route path="/polityka-prywatnosci" element={<PrivacyPolicyPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />

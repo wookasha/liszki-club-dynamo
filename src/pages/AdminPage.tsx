@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3, History } from "lucide-react";
+import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3, History, ShieldCheck } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
@@ -12,11 +12,13 @@ import AdminYouth from "@/components/admin/AdminYouth";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminHistory from "@/components/admin/AdminHistory";
 import AdminTimeline from "@/components/admin/AdminTimeline";
+import AdminSquad from "@/components/admin/AdminSquad";
 
 const tabs = [
   { id: "news", label: "Aktualności", icon: Newspaper },
   { id: "matches", label: "Terminarz", icon: Calendar },
   { id: "league", label: "Tabela", icon: Trophy },
+  { id: "squad", label: "Kadra", icon: ShieldCheck },
   { id: "gallery", label: "Galeria", icon: ImageIcon },
   { id: "sponsors", label: "Sponsorzy", icon: Handshake },
   { id: "youth", label: "Młodzież", icon: Users },
@@ -193,6 +195,7 @@ const AdminPage = () => {
         {activeTab === "news" && <AdminNews />}
         {activeTab === "matches" && <AdminMatches />}
         {activeTab === "league" && <AdminLeague />}
+        {activeTab === "squad" && <AdminSquad />}
         {activeTab === "gallery" && <AdminGallery />}
         {activeTab === "sponsors" && <AdminSponsors />}
         {activeTab === "youth" && <AdminYouth />}
