@@ -69,6 +69,7 @@ const AdminNews = () => {
   const wrapSelection = (wrapper: string) => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const text = form.content;
@@ -77,6 +78,7 @@ const AdminNews = () => {
     updateContent(newText);
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = start + wrapper.length;
       ta.selectionEnd = end + wrapper.length;
     }, 0);
