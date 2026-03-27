@@ -44,6 +44,20 @@ const AdminNews = () => {
     }, 0);
   };
 
+  const prefixLine = (prefix: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const text = form.content;
+    const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+    const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+    setForm((p) => ({ ...p, content: newText }));
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = start + prefix.length;
+    }, 0);
+  };
+
   useEffect(() => { fetchPosts(); }, []);
 
   const fetchPosts = async () => {
