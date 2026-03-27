@@ -124,6 +124,7 @@ const AdminNews = () => {
   const insertSeparator = () => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const pos = ta.selectionStart;
     const text = form.content;
     const insert = "\n---\n";
@@ -131,6 +132,7 @@ const AdminNews = () => {
     updateContent(newText);
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = ta.selectionEnd = pos + insert.length;
     }, 0);
   };
