@@ -12,6 +12,7 @@ import AdminYouth from "@/components/admin/AdminYouth";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminHistory from "@/components/admin/AdminHistory";
 import AdminTimeline from "@/components/admin/AdminTimeline";
+import AdminSquad from "@/components/admin/AdminSquad";
 
 const tabs = [
   { id: "news", label: "Aktualności", icon: Newspaper },
