@@ -44,10 +44,15 @@ const Navbar = () => {
   const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const { data: hasTimelineEvents = false } = useHasTimelineEvents();
+  const { data: hasSquadMembers = false } = useHasSquadMembers();
   const location = useLocation();
 
   // Filter nav links based on data availability
   const filteredNavLinks = navLinks.map((link) => {
+    if (link.label === "Seniorzy" && link.children) {
+      const children = link.children.filter((c) => c.href !== "/kadra" || hasSquadMembers);
+      return { ...link, children };
+    }
     if (link.label === "Historia" && link.children) {
       const children = link.children.filter((c) => c.href !== "/os-czasu" || hasTimelineEvents);
       if (children.length === 0) return null;
