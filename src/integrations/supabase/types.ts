@@ -334,6 +334,42 @@ export type Database = {
         }
         Relationships: []
       }
+      squad_members: {
+        Row: {
+          birth_year: number | null
+          created_at: string
+          full_name: string
+          id: string
+          is_captain: boolean
+          photo_url: string | null
+          position: string
+          shirt_number: number | null
+          sort_order: number
+        }
+        Insert: {
+          birth_year?: number | null
+          created_at?: string
+          full_name: string
+          id?: string
+          is_captain?: boolean
+          photo_url?: string | null
+          position?: string
+          shirt_number?: number | null
+          sort_order?: number
+        }
+        Update: {
+          birth_year?: number | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          is_captain?: boolean
+          photo_url?: string | null
+          position?: string
+          shirt_number?: number | null
+          sort_order?: number
+        }
+        Relationships: []
+      }
       timeline_events: {
         Row: {
           created_at: string
