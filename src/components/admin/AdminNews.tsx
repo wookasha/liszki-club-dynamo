@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Save, X, Upload, Eye, EyeOff, Bold, Italic, Heading2, Heading3, List, ListOrdered } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload, Eye, EyeOff, Bold, Italic, Heading2, Heading3, List, ListOrdered, Link2, Quote, Minus, Strikethrough, Undo2, Redo2 } from "lucide-react";
 import { renderNewsContent } from "@/lib/renderNewsContent";
 
 interface NewsPost {
@@ -28,6 +28,34 @@ const AdminNews = () => {
     title: "", content: "", excerpt: "", category: "Klub", image_url: "", published: false,
   });
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const historyRef = useRef<string[]>([""]);
+  const historyIndexRef = useRef(0);
+
+  const pushHistory = (val: string) => {
+    const h = historyRef.current;
+    const idx = historyIndexRef.current;
+    historyRef.current = [...h.slice(0, idx + 1), val];
+    historyIndexRef.current = historyRef.current.length - 1;
+  };
+
+  const undo = () => {
+    if (historyIndexRef.current > 0) {
+      historyIndexRef.current--;
+      setForm((p) => ({ ...p, content: historyRef.current[historyIndexRef.current] }));
+    }
+  };
+
+  const redo = () => {
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      historyIndexRef.current++;
+      setForm((p) => ({ ...p, content: historyRef.current[historyIndexRef.current] }));
+    }
+  };
+
+  const updateContent = (val: string) => {
+    setForm((p) => ({ ...p, content: val }));
+    pushHistory(val);
+  };
 
   const wrapSelection = (wrapper: string) => {
     const ta = contentRef.current;
@@ -37,7 +65,7 @@ const AdminNews = () => {
     const text = form.content;
     const selected = text.substring(start, end);
     const newText = text.substring(0, start) + wrapper + selected + wrapper + text.substring(end);
-    setForm((p) => ({ ...p, content: newText }));
+    updateContent(newText);
     setTimeout(() => {
       ta.focus();
       ta.selectionStart = start + wrapper.length;
@@ -52,11 +80,53 @@ const AdminNews = () => {
     const text = form.content;
     const lineStart = text.lastIndexOf("\n", start - 1) + 1;
     const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
-    setForm((p) => ({ ...p, content: newText }));
+    updateContent(newText);
     setTimeout(() => {
       ta.focus();
       ta.selectionStart = ta.selectionEnd = start + prefix.length;
     }, 0);
+  };
+
+  const insertLink = () => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const text = form.content;
+    const selected = text.substring(start, end);
+    const linkText = selected || "tekst linku";
+    const insert = `[${linkText}](https://)`;
+    const newText = text.substring(0, start) + insert + text.substring(end);
+    updateContent(newText);
+    const urlStart = start + linkText.length + 3;
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = urlStart;
+      ta.selectionEnd = urlStart + 8;
+    }, 0);
+  };
+
+  const insertSeparator = () => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const pos = ta.selectionStart;
+    const text = form.content;
+    const insert = "\n---\n";
+    const newText = text.substring(0, pos) + insert + text.substring(pos);
+    updateContent(newText);
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = pos + insert.length;
+    }, 0);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === "b") { e.preventDefault(); wrapSelection("**"); }
+    else if (mod && e.key === "i") { e.preventDefault(); wrapSelection("*"); }
+    else if (mod && e.key === "k") { e.preventDefault(); insertLink(); }
+    else if (mod && e.key === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
+    else if (mod && (e.key === "y" || (e.key === "z" && e.shiftKey))) { e.preventDefault(); redo(); }
   };
 
   useEffect(() => { fetchPosts(); }, []);
@@ -168,18 +238,26 @@ const AdminNews = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Treść</label>
-              <div className="flex gap-1 mb-1 flex-wrap">
-                <button type="button" onClick={() => wrapSelection("**")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Pogrubienie"><Bold className="w-4 h-4" /></button>
-                <button type="button" onClick={() => wrapSelection("*")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Kursywa"><Italic className="w-4 h-4" /></button>
-                <div className="w-px bg-border mx-0.5" />
+              <div className="flex gap-1 mb-1 flex-wrap items-center">
+                <button type="button" onClick={undo} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Cofnij (Ctrl+Z)"><Undo2 className="w-4 h-4" /></button>
+                <button type="button" onClick={redo} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Ponów (Ctrl+Y)"><Redo2 className="w-4 h-4" /></button>
+                <div className="w-px h-6 bg-border mx-0.5" />
+                <button type="button" onClick={() => wrapSelection("**")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Pogrubienie (Ctrl+B)"><Bold className="w-4 h-4" /></button>
+                <button type="button" onClick={() => wrapSelection("*")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Kursywa (Ctrl+I)"><Italic className="w-4 h-4" /></button>
+                <button type="button" onClick={() => wrapSelection("~~")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Przekreślenie"><Strikethrough className="w-4 h-4" /></button>
+                <div className="w-px h-6 bg-border mx-0.5" />
                 <button type="button" onClick={() => prefixLine("## ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Nagłówek H2"><Heading2 className="w-4 h-4" /></button>
                 <button type="button" onClick={() => prefixLine("### ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Nagłówek H3"><Heading3 className="w-4 h-4" /></button>
-                <div className="w-px bg-border mx-0.5" />
+                <div className="w-px h-6 bg-border mx-0.5" />
                 <button type="button" onClick={() => prefixLine("- ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista punktowana"><List className="w-4 h-4" /></button>
                 <button type="button" onClick={() => prefixLine("1. ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista numerowana"><ListOrdered className="w-4 h-4" /></button>
+                <div className="w-px h-6 bg-border mx-0.5" />
+                <button type="button" onClick={insertLink} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Link (Ctrl+K)"><Link2 className="w-4 h-4" /></button>
+                <button type="button" onClick={() => prefixLine("> ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Cytat"><Quote className="w-4 h-4" /></button>
+                <button type="button" onClick={insertSeparator} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Separator"><Minus className="w-4 h-4" /></button>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
+                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => updateContent(e.target.value)} onKeyDown={handleKeyDown} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
                 <div className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">Podgląd</p>
                   {form.content ? (
