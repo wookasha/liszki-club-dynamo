@@ -103,6 +103,7 @@ const AdminNews = () => {
   const insertLink = () => {
     const ta = contentRef.current;
     if (!ta) return;
+    const scrollTop = ta.scrollTop;
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const text = form.content;
@@ -114,6 +115,7 @@ const AdminNews = () => {
     const urlStart = start + linkText.length + 3;
     setTimeout(() => {
       ta.focus();
+      ta.scrollTop = scrollTop;
       ta.selectionStart = urlStart;
       ta.selectionEnd = urlStart + 8;
     }, 0);
