@@ -28,6 +28,34 @@ const AdminNews = () => {
     title: "", content: "", excerpt: "", category: "Klub", image_url: "", published: false,
   });
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const historyRef = useRef<string[]>([""]);
+  const historyIndexRef = useRef(0);
+
+  const pushHistory = (val: string) => {
+    const h = historyRef.current;
+    const idx = historyIndexRef.current;
+    historyRef.current = [...h.slice(0, idx + 1), val];
+    historyIndexRef.current = historyRef.current.length - 1;
+  };
+
+  const undo = () => {
+    if (historyIndexRef.current > 0) {
+      historyIndexRef.current--;
+      setForm((p) => ({ ...p, content: historyRef.current[historyIndexRef.current] }));
+    }
+  };
+
+  const redo = () => {
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      historyIndexRef.current++;
+      setForm((p) => ({ ...p, content: historyRef.current[historyIndexRef.current] }));
+    }
+  };
+
+  const updateContent = (val: string) => {
+    setForm((p) => ({ ...p, content: val }));
+    pushHistory(val);
+  };
 
   const wrapSelection = (wrapper: string) => {
     const ta = contentRef.current;
@@ -37,7 +65,7 @@ const AdminNews = () => {
     const text = form.content;
     const selected = text.substring(start, end);
     const newText = text.substring(0, start) + wrapper + selected + wrapper + text.substring(end);
-    setForm((p) => ({ ...p, content: newText }));
+    updateContent(newText);
     setTimeout(() => {
       ta.focus();
       ta.selectionStart = start + wrapper.length;
@@ -52,11 +80,53 @@ const AdminNews = () => {
     const text = form.content;
     const lineStart = text.lastIndexOf("\n", start - 1) + 1;
     const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
-    setForm((p) => ({ ...p, content: newText }));
+    updateContent(newText);
     setTimeout(() => {
       ta.focus();
       ta.selectionStart = ta.selectionEnd = start + prefix.length;
     }, 0);
+  };
+
+  const insertLink = () => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const text = form.content;
+    const selected = text.substring(start, end);
+    const linkText = selected || "tekst linku";
+    const insert = `[${linkText}](https://)`;
+    const newText = text.substring(0, start) + insert + text.substring(end);
+    updateContent(newText);
+    const urlStart = start + linkText.length + 3;
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = urlStart;
+      ta.selectionEnd = urlStart + 8;
+    }, 0);
+  };
+
+  const insertSeparator = () => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const pos = ta.selectionStart;
+    const text = form.content;
+    const insert = "\n---\n";
+    const newText = text.substring(0, pos) + insert + text.substring(pos);
+    updateContent(newText);
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = pos + insert.length;
+    }, 0);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === "b") { e.preventDefault(); wrapSelection("**"); }
+    else if (mod && e.key === "i") { e.preventDefault(); wrapSelection("*"); }
+    else if (mod && e.key === "k") { e.preventDefault(); insertLink(); }
+    else if (mod && e.key === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
+    else if (mod && (e.key === "y" || (e.key === "z" && e.shiftKey))) { e.preventDefault(); redo(); }
   };
 
   useEffect(() => { fetchPosts(); }, []);
