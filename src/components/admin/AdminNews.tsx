@@ -274,8 +274,8 @@ const AdminNews = () => {
                 <button type="button" onClick={insertSeparator} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Separator"><Minus className="w-4 h-4" /></button>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => updateContent(e.target.value)} onKeyDown={handleKeyDown} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
-                <div className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
+                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => updateContent(e.target.value)} onKeyDown={handleKeyDown} onScroll={handleEditorScroll} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
+                <div ref={previewRef} className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">Podgląd</p>
                   {form.content ? (
                     <div
