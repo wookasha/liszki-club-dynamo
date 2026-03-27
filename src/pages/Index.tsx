@@ -49,7 +49,7 @@ const Index = () => {
     date: nextMatchRaw.match_date,
     home: nextMatchRaw.home_team,
     away: nextMatchRaw.away_team,
-    venue: nextMatchRaw.venue === "dom" ? "Stadion w Liszkach" : "Wyjazd",
+    isHome: nextMatchRaw.venue === "dom",
     stadium_address: nextMatchRaw.stadium_address || "",
   } : null;
   const lastResults = lastResultsRaw.map((m: any) => ({
