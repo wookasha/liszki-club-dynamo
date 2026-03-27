@@ -17,7 +17,18 @@ import AdminHistory from "@/components/admin/AdminHistory";
 import AdminTimeline from "@/components/admin/AdminTimeline";
 import AdminSquad from "@/components/admin/AdminSquad";
 
-const sidebarGroups = [
+interface SidebarItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface SidebarGroup {
+  label: string;
+  items: SidebarItem[];
+}
+
+const sidebarGroups: SidebarGroup[] = [
   {
     label: "Treści",
     items: [
@@ -42,7 +53,7 @@ const sidebarGroups = [
       { id: "history", label: "Historia", icon: History },
     ],
   },
-] as const;
+];
 
 type TabId = "news" | "matches" | "league" | "stats" | "squad" | "youth" | "sponsors" | "gallery" | "history";
 
