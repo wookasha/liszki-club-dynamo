@@ -294,7 +294,7 @@ const Index = () => {
               <CountdownTimer targetDate={nextMatch.date} />
             </div>
             <p className="text-xs text-muted-foreground mt-3">
-              {nextMatch.home} vs {nextMatch.away} • {nextMatch.venue}
+              {nextMatch.home} vs {nextMatch.away}
             </p>
           </motion.div>
           }
@@ -350,15 +350,12 @@ const Index = () => {
                   <p className="font-heading text-sm md:text-base font-bold text-foreground">{nextMatch.away}</p>
                 </div>
               </div>
-              <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  {nextMatch.venue}
-                </div>
-                {nextMatch.stadium_address &&
-                <p className="text-xs text-muted-foreground">{nextMatch.stadium_address}</p>
-                }
+              {nextMatch.stadium_address &&
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4 shrink-0" />
+                {nextMatch.stadium_address}
               </div>
+              }
             </div>
           </ScrollAnimation>
         </div>
