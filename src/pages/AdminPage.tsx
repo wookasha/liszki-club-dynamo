@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3, History } from "lucide-react";
+import { LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake, Users, RefreshCw, Settings, Save, BarChart3, History, ShieldCheck } from "lucide-react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
