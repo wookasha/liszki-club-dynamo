@@ -28,8 +28,17 @@ const AdminNews = () => {
     title: "", content: "", excerpt: "", category: "Klub", image_url: "", published: false,
   });
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const historyRef = useRef<string[]>([""]);
   const historyIndexRef = useRef(0);
+
+  const handleEditorScroll = () => {
+    const ta = contentRef.current;
+    const preview = previewRef.current;
+    if (!ta || !preview) return;
+    const ratio = ta.scrollTop / (ta.scrollHeight - ta.clientHeight || 1);
+    preview.scrollTop = ratio * (preview.scrollHeight - preview.clientHeight);
+  };
 
   const pushHistory = (val: string) => {
     const h = historyRef.current;
