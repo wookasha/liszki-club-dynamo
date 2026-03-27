@@ -34,7 +34,8 @@ const CookieConsent = () => {
                 Ta strona używa plików cookies
               </p>
               <p className="text-xs text-muted-foreground mb-3">
-                Używamy cookies, aby zapewnić najlepsze doświadczenia na naszej stronie.
+                Używamy cookies oraz Google Analytics do analizy ruchu na stronie i zapewnienia najlepszych doświadczeń.{" "}
+                <a href="/polityka-prywatnosci" className="text-primary hover:underline">Polityka prywatności</a>
               </p>
               <button
                 onClick={accept}
