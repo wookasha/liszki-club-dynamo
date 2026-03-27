@@ -129,8 +129,8 @@ const AdminPage = () => {
     navigate("/");
   };
 
-  const selectTab = (id: TabId) => {
-    setActiveTab(id);
+  const selectTab = (id: string) => {
+    setActiveTab(id as TabId);
     setMobileOpen(false);
   };
 
