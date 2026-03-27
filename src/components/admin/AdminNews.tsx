@@ -178,7 +178,20 @@ const AdminNews = () => {
                 <button type="button" onClick={() => prefixLine("- ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista punktowana"><List className="w-4 h-4" /></button>
                 <button type="button" onClick={() => prefixLine("1. ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista numerowana"><ListOrdered className="w-4 h-4" /></button>
               </div>
-              <textarea ref={contentRef} rows={8} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <textarea ref={contentRef} rows={12} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono" placeholder="Wpisz treść..." />
+                <div className="border border-border rounded-md p-4 bg-muted/30 overflow-auto max-h-80">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">Podgląd</p>
+                  {form.content ? (
+                    <div
+                      className="prose prose-invert prose-sm max-w-none text-muted-foreground leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: renderNewsContent(form.content) }}
+                    />
+                  ) : (
+                    <p className="text-sm text-muted-foreground/50 italic">Podgląd treści pojawi się tutaj...</p>
+                  )}
+                </div>
+              </div>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} className="w-4 h-4 rounded" />
