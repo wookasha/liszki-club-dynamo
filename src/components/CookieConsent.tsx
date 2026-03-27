@@ -2,18 +2,32 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cookie } from "lucide-react";
 
+declare global {
+  interface Window {
+    loadGA?: () => void;
+  }
+}
+
 const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const accepted = localStorage.getItem("cookies-accepted");
-    if (!accepted) {
+    const decided = localStorage.getItem("cookies-analytics");
+    if (decided === null) {
       const timer = setTimeout(() => setVisible(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
 
   const accept = () => {
+    localStorage.setItem("cookies-analytics", "true");
+    localStorage.setItem("cookies-accepted", "true");
+    setVisible(false);
+    window.loadGA?.();
+  };
+
+  const reject = () => {
+    localStorage.setItem("cookies-analytics", "false");
     localStorage.setItem("cookies-accepted", "true");
     setVisible(false);
   };
@@ -34,15 +48,25 @@ const CookieConsent = () => {
                 Ta strona używa plików cookies
               </p>
               <p className="text-xs text-muted-foreground mb-3">
-                Używamy cookies oraz Google Analytics do analizy ruchu na stronie i zapewnienia najlepszych doświadczeń.{" "}
-                <a href="/polityka-prywatnosci" className="text-primary hover:underline">Polityka prywatności</a>
+                Używamy cookies analitycznych (Google Analytics) do analizy ruchu na stronie.{" "}
+                <a href="/polityka-prywatnosci" className="text-primary hover:underline">
+                  Polityka prywatności
+                </a>
               </p>
-              <button
-                onClick={accept}
-                className="px-4 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 transition-colors"
-              >
-                Rozumiem
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={accept}
+                  className="px-4 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  Akceptuję
+                </button>
+                <button
+                  onClick={reject}
+                  className="px-4 py-1.5 bg-muted text-muted-foreground text-sm font-medium rounded-md hover:bg-muted/80 transition-colors"
+                >
+                  Odrzucam
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>
