@@ -123,7 +123,7 @@ const AdminPage = () => {
     setMobileOpen(false);
   };
 
-  const activeLabel = sidebarGroups.flatMap((g) => g.items).find((i) => i.id === activeTab)?.label ?? "";
+  const activeLabel = sidebarGroups.flatMap((g) => g.items).find((i: any) => i.id === activeTab)?.label ?? "";
 
   const sidebarContent = (
     <nav className="flex flex-col h-full">
