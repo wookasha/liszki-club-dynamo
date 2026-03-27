@@ -19,6 +19,7 @@ import AdminPage from "./pages/AdminPage";
 import StatsPage from "./pages/StatsPage";
 import HistoryPage from "./pages/HistoryPage";
 import TimelinePage from "./pages/TimelinePage";
+import SquadPage from "./pages/SquadPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import NotFound from "./pages/NotFound";
 
