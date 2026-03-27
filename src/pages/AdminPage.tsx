@@ -18,6 +18,7 @@ const tabs = [
   { id: "news", label: "Aktualności", icon: Newspaper },
   { id: "matches", label: "Terminarz", icon: Calendar },
   { id: "league", label: "Tabela", icon: Trophy },
+  { id: "squad", label: "Kadra", icon: ShieldCheck },
   { id: "gallery", label: "Galeria", icon: ImageIcon },
   { id: "sponsors", label: "Sponsorzy", icon: Handshake },
   { id: "youth", label: "Młodzież", icon: Users },
