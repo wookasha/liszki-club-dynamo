@@ -73,7 +73,7 @@ export const renderNewsContent = (content: string): string => {
 
     closeList();
 
-    if (line.trim() === "") { html.push(""); continue; }
+    if (line.trim() === "") { html.push('<div class="h-4"></div>'); continue; }
 
     html.push(`<p>${inlineFormat(line)}</p>`);
   }
