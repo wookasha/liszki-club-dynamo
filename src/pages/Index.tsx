@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight, ExternalLink } from "lucide-react";
+import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight, ExternalLink, Home, Plane } from "lucide-react";
 import { motion } from "framer-motion";
 import { useHomeNews, useNextMatch, useLastResults, useLeagueTable, useSponsors } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
