@@ -195,9 +195,9 @@ const AdminPage = () => {
   );
 
   return (
-    <div className="pt-20 min-h-screen flex">
+    <div className="h-screen flex bg-background">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-60 shrink-0 border-r border-border bg-card/50 flex-col fixed top-20 bottom-0 left-0 z-30">
+      <aside className="hidden lg:flex w-60 shrink-0 border-r border-border bg-card/50 flex-col">
         {sidebarContent}
       </aside>
 
@@ -220,16 +220,16 @@ const AdminPage = () => {
       )}
 
       {/* Main content */}
-      <main className="flex-1 lg:ml-60">
+      <main className="flex-1 overflow-y-auto">
         {/* Mobile header */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-card/50 sticky top-20 z-20">
+        <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-card/50 sticky top-0 z-20">
           <button onClick={() => setMobileOpen(true)} className="p-2 text-muted-foreground hover:text-foreground">
             <Menu className="w-5 h-5" />
           </button>
           <span className="font-heading font-bold text-foreground text-sm">{activeLabel}</span>
         </div>
 
-        <div className="p-4 md:p-6 lg:p-8 max-w-5xl">
+        <div className="p-4 md:p-6 lg:p-8 max-w-5xl mx-auto">
           {syncResult && (
             <div className={`mb-4 px-4 py-3 rounded-lg text-sm ${syncResult.startsWith("✅") ? "bg-pitch-green/10 text-pitch-green" : "bg-destructive/10 text-destructive"}`}>
               {syncResult}
