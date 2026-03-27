@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Mail, Facebook, Youtube } from "lucide-react";
+import { MapPin, Mail, Facebook, Youtube, Cookie } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -94,10 +94,21 @@ const Footer = () => {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} LKS Liszczanka Liszki. Wszelkie prawa zastrzeżone.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <Link to="/polityka-prywatnosci" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Polityka prywatności
             </Link>
+            <button
+              onClick={() => {
+                localStorage.removeItem("cookies-analytics");
+                localStorage.removeItem("cookies-accepted");
+                window.location.reload();
+              }}
+              className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+            >
+              <Cookie className="w-3 h-3" />
+              Ustawienia cookies
+            </button>
             <Link to="/login" className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
               Admin
             </Link>
