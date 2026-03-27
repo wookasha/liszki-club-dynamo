@@ -1,13 +1,25 @@
 <!doctype html>
 <html lang="pl" class="dark">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SE7BB2DDBM"></script>
+    <!-- Google Analytics - loaded only after cookie consent -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-SE7BB2DDBM');
+
+      function loadGA() {
+        if (document.querySelector('script[src*="googletagmanager"]')) return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-SE7BB2DDBM';
+        document.head.appendChild(s);
+        gtag('js', new Date());
+        gtag('config', 'G-SE7BB2DDBM');
+      }
+
+      // Auto-load if already accepted
+      if (localStorage.getItem('cookies-analytics') === 'true') {
+        loadGA();
+      }
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
