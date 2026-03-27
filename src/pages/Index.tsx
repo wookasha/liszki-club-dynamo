@@ -27,7 +27,7 @@ const demoNews = [
 
 interface SponsorData {id: string;name: string;logo_url: string | null;website_url: string | null;}
 
-interface NextMatchData {date: string;home: string;away: string;venue: string;stadium_address: string;}
+interface NextMatchData {date: string;home: string;away: string;isHome: boolean;stadium_address: string;}
 interface LeagueRow {position: number;team: string;played: number;points: number;is_own_team: boolean;logo_url: string | null;}
 interface LastResult {home: string;away: string;score_home: number;score_away: number;match_date: string;}
 
