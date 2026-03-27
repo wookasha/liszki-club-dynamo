@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Save, X, Upload, Eye, EyeOff, Bold, Italic } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload, Eye, EyeOff, Bold, Italic, Heading2, Heading3, List, ListOrdered } from "lucide-react";
 
 interface NewsPost {
   id: string;
@@ -41,6 +41,20 @@ const AdminNews = () => {
       ta.focus();
       ta.selectionStart = start + wrapper.length;
       ta.selectionEnd = end + wrapper.length;
+    }, 0);
+  };
+
+  const prefixLine = (prefix: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const text = form.content;
+    const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+    const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+    setForm((p) => ({ ...p, content: newText }));
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = start + prefix.length;
     }, 0);
   };
 
@@ -153,9 +167,15 @@ const AdminNews = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">Treść</label>
-              <div className="flex gap-1 mb-1">
+              <div className="flex gap-1 mb-1 flex-wrap">
                 <button type="button" onClick={() => wrapSelection("**")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Pogrubienie"><Bold className="w-4 h-4" /></button>
                 <button type="button" onClick={() => wrapSelection("*")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Kursywa"><Italic className="w-4 h-4" /></button>
+                <div className="w-px bg-border mx-0.5" />
+                <button type="button" onClick={() => prefixLine("## ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Nagłówek H2"><Heading2 className="w-4 h-4" /></button>
+                <button type="button" onClick={() => prefixLine("### ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Nagłówek H3"><Heading3 className="w-4 h-4" /></button>
+                <div className="w-px bg-border mx-0.5" />
+                <button type="button" onClick={() => prefixLine("- ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista punktowana"><List className="w-4 h-4" /></button>
+                <button type="button" onClick={() => prefixLine("1. ")} className="p-1.5 rounded bg-muted border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors" title="Lista numerowana"><ListOrdered className="w-4 h-4" /></button>
               </div>
               <textarea ref={contentRef} rows={8} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full px-4 py-2.5 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
             </div>
