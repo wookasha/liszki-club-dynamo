@@ -174,19 +174,19 @@ const AdminPage = () => {
           )}
 
           {/* Tabs */}
-          <div className="flex gap-1 mb-8 bg-muted/50 p-1 rounded-lg">
+          <div className="flex gap-1 mb-8 bg-muted/50 p-1 rounded-lg overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-colors flex-1 justify-center ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
                   activeTab === tab.id
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <tab.icon className="w-4 h-4 shrink-0" />
+                <span className="hidden md:inline">{tab.label}</span>
               </button>
             ))}
           </div>
