@@ -245,8 +245,8 @@ const PaniniCard = ({
 
             <div className="absolute inset-0 flex flex-col">
               {/* Top bar */}
-              <div className="flex items-center justify-between px-3 py-1.5 bg-gradient-to-r from-blue-800 to-blue-600">
-                <span className="font-heading font-bold text-xs text-white/90 tracking-wider uppercase">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-black/50 backdrop-blur-sm">
+                <span className="font-heading font-bold text-xs text-white/80 tracking-wider uppercase">
                   {positionShort}
                 </span>
                 {player.shirt_number && (
