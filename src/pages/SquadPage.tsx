@@ -265,11 +265,11 @@ const PaniniCard = ({
                   </div>
                 )}
 
-                <h4 className="font-heading font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-1 text-center leading-tight">
+                <h4 className="font-heading font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-1 text-center leading-tight drop-shadow-md">
                   {player.full_name}
                 </h4>
                 {age && (
-                  <p className="text-[10px] text-blue-300/70 mb-4">
+                  <p className="text-[10px] text-white/60 mb-4">
                     {age} lat · rocznik {player.birth_year}
                   </p>
                 )}
@@ -284,8 +284,8 @@ const PaniniCard = ({
                 </div>
               </div>
 
-              <div className="px-3 py-2 bg-gradient-to-r from-blue-800 to-blue-600">
-                <p className="font-heading font-bold text-[9px] text-white/60 text-center uppercase tracking-widest">
+              <div className="px-3 py-2 bg-black/50 backdrop-blur-sm">
+                <p className="font-heading font-bold text-[9px] text-white/50 text-center uppercase tracking-widest">
                   Sezon 2024/2025
                 </p>
               </div>
