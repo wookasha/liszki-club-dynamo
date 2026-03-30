@@ -21,21 +21,21 @@ const POSITION_SHORT: Record<string, string> = {
   coach: "SZT",
 };
 
-// Club colors: red, white, blue
+// Club colors: predominantly blue with white & red accents
 const POSITION_GRADIENT: Record<string, string> = {
-  goalkeeper: "from-club-blue via-sky-500 to-club-blue",
-  defender: "from-club-blue via-blue-600 to-indigo-700",
-  midfielder: "from-club-red via-red-600 to-rose-700",
-  forward: "from-club-red via-rose-500 to-club-red",
-  coach: "from-slate-600 via-slate-500 to-slate-400",
+  goalkeeper: "from-blue-800 via-blue-600 to-sky-500",
+  defender: "from-blue-900 via-blue-700 to-blue-500",
+  midfielder: "from-indigo-800 via-blue-600 to-sky-500",
+  forward: "from-blue-700 via-indigo-600 to-blue-800",
+  coach: "from-slate-700 via-slate-600 to-slate-500",
 };
 
 const POSITION_BORDER: Record<string, string> = {
-  goalkeeper: "from-sky-300 via-white to-sky-400",
-  defender: "from-blue-300 via-white to-blue-400",
-  midfielder: "from-rose-300 via-white to-rose-400",
-  forward: "from-red-300 via-white to-red-400",
-  coach: "from-slate-300 via-white to-slate-400",
+  goalkeeper: "from-sky-400 via-blue-200 to-sky-500",
+  defender: "from-blue-400 via-blue-200 to-blue-500",
+  midfielder: "from-blue-400 via-sky-200 to-indigo-400",
+  forward: "from-indigo-400 via-blue-200 to-blue-400",
+  coach: "from-slate-400 via-slate-300 to-slate-400",
 };
 
 interface PlayerStatsMap {
