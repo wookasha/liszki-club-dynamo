@@ -65,10 +65,10 @@ const CardPattern = () => (
     <path d="M30 300 Q80 200 40 100 Q10 40 70 -20 L50 -20 Q-10 40 20 100 Q60 200 10 300Z" fill="#dc2626" opacity="0.35" />
     <path d="M50 300 Q100 200 60 100 Q30 40 90 -20 L70 -20 Q10 40 40 100 Q80 200 30 300Z" fill="#1e3a8a" opacity="0.25" />
 
-    {/* Bottom corner accent — red, white, blue */}
-    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#1e3a8a" opacity="0.45" />
-    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#ffffff" opacity="0.3" />
-    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#dc2626" opacity="0.35" />
+    {/* Bottom corner accent — red, white, blue (outermost to innermost) */}
+    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#dc2626" opacity="0.45" />
+    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#ffffff" opacity="0.35" />
+    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#1e3a8a" opacity="0.4" />
 
     {/* Top-right geometric block — red, white, blue */}
     <rect x="140" y="0" width="60" height="10" fill="#dc2626" opacity="0.5" />
@@ -171,13 +171,13 @@ const PaniniCard = ({
               <img src={clubLogo} alt="Herb klubu" className="w-8 h-8 object-contain drop-shadow-md" />
             </div>
 
-            {/* Player photo — centered, large */}
-            <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
+            {/* Player photo — top 5% start, filling card */}
+            <div className="absolute left-0 right-0 bottom-0 z-20 pointer-events-none" style={{ top: "5%" }}>
               {player.photo_url ? (
                 <img
                   src={player.photo_url}
                   alt={player.full_name}
-                  className="w-[90%] h-[82%] object-cover object-[center_20%] drop-shadow-lg"
+                  className="w-full h-full object-cover object-top drop-shadow-lg"
                   style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }}
                   loading="lazy"
                 />
