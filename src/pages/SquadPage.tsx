@@ -138,11 +138,9 @@ const PaniniCard = ({
             className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
             style={{ backfaceVisibility: "hidden" }}
           >
-            {/* White base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-blue-50" />
-
-            {/* Geometric pattern overlay */}
-            <CardPattern />
+            {/* Card background image */}
+            <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/20" />
 
             {/* Position badge — top-left */}
             <div className="absolute top-2 left-2 z-30 px-2 py-0.5 bg-blue-900/90 rounded-sm">
