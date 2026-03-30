@@ -107,7 +107,7 @@ const AdminPage = () => {
     setSyncing(true);
     setSyncResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke("sync-mzpn", { body: { type: "all" } });
+      const { data, error } = await supabase.functions.invoke("sync-mzpn", { body: { type: "all", source: syncSource } });
       if (error) throw error;
       if (data?.success) {
         const t = data.results?.table;
