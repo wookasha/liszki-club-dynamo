@@ -245,8 +245,8 @@ const PaniniCard = ({
 
             <div className="absolute inset-0 flex flex-col">
               {/* Top bar */}
-              <div className="flex items-center justify-between px-3 py-1.5 bg-gradient-to-r from-blue-800 to-blue-600">
-                <span className="font-heading font-bold text-xs text-white/90 tracking-wider uppercase">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-black/50 backdrop-blur-sm">
+                <span className="font-heading font-bold text-xs text-white/80 tracking-wider uppercase">
                   {positionShort}
                 </span>
                 {player.shirt_number && (
@@ -265,11 +265,11 @@ const PaniniCard = ({
                   </div>
                 )}
 
-                <h4 className="font-heading font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-1 text-center leading-tight">
+                <h4 className="font-heading font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-1 text-center leading-tight drop-shadow-md">
                   {player.full_name}
                 </h4>
                 {age && (
-                  <p className="text-[10px] text-blue-300/70 mb-4">
+                  <p className="text-[10px] text-white/60 mb-4">
                     {age} lat · rocznik {player.birth_year}
                   </p>
                 )}
@@ -284,8 +284,8 @@ const PaniniCard = ({
                 </div>
               </div>
 
-              <div className="px-3 py-2 bg-gradient-to-r from-blue-800 to-blue-600">
-                <p className="font-heading font-bold text-[9px] text-white/60 text-center uppercase tracking-widest">
+              <div className="px-3 py-2 bg-black/50 backdrop-blur-sm">
+                <p className="font-heading font-bold text-[9px] text-white/50 text-center uppercase tracking-widest">
                   Sezon 2024/2025
                 </p>
               </div>
@@ -314,9 +314,9 @@ const StatRow = ({ icon, label, value, suffix = "" }: { icon: React.ReactNode; l
   <div className="flex items-center justify-between gap-2 text-xs">
     <div className="flex items-center gap-2">
       {icon}
-      <span className="text-blue-200/70">{label}</span>
+      <span className="text-white/60">{label}</span>
     </div>
-    <span className="font-heading font-bold text-white">{value}{suffix}</span>
+    <span className="font-heading font-bold text-white drop-shadow-sm">{value}{suffix}</span>
   </div>
 );
 
