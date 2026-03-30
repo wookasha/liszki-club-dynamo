@@ -67,6 +67,7 @@ const AdminPage = () => {
   const [mzpnScheduleUrl, setMzpnScheduleUrl] = useState("");
   const [savingSettings, setSavingSettings] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [syncSource, setSyncSource] = useState<"auto" | "mzpn" | "regiowyniki">("auto");
 
   useEffect(() => {
     checkAuth();
