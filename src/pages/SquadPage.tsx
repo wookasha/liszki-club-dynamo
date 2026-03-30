@@ -146,7 +146,7 @@ const PaniniCard = ({
             <div className="absolute inset-0 bg-black/20" />
 
             {/* Position badge — top-left */}
-            <div className="absolute top-2 left-2 z-30 px-2 py-0.5 bg-blue-900/90 rounded-sm">
+            <div className="absolute top-2 left-2 z-30 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-sm">
               <span className="font-heading font-bold text-[10px] text-white tracking-widest">
                 {positionShort}
               </span>
@@ -155,7 +155,7 @@ const PaniniCard = ({
             {/* Shirt number — top-left under position (lowered 10px) */}
             {player.shirt_number && (
               <div className="absolute top-11 left-2 z-30">
-                <span className="font-heading font-black text-2xl text-blue-900/80 drop-shadow-sm leading-none">
+                <span className="font-heading font-black text-2xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-none">
                   {player.shirt_number}
                 </span>
               </div>
