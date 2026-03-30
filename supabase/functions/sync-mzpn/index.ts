@@ -378,6 +378,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const syncType = body.type || "all";
+    const preferredSource = body.source || "auto"; // "auto" | "mzpn" | "regiowyniki"
 
     const { data: settings } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url"]);
     const settingsMap: Record<string, string> = {};
