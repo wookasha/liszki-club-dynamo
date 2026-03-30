@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake,
   Users, RefreshCw, Settings, Save, BarChart3, History,
-  ShieldCheck, Menu, X, ChevronDown,
+  ShieldCheck, Menu, X, ChevronDown, Database,
 } from "lucide-react";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
