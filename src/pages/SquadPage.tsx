@@ -21,23 +21,6 @@ const POSITION_SHORT: Record<string, string> = {
   coach: "SZT",
 };
 
-// Club colors: predominantly blue with white & red accents
-const POSITION_GRADIENT: Record<string, string> = {
-  goalkeeper: "from-blue-800 via-blue-600 to-sky-500",
-  defender: "from-blue-900 via-blue-700 to-blue-500",
-  midfielder: "from-indigo-800 via-blue-600 to-sky-500",
-  forward: "from-blue-700 via-indigo-600 to-blue-800",
-  coach: "from-slate-700 via-slate-600 to-slate-500",
-};
-
-const POSITION_BORDER: Record<string, string> = {
-  goalkeeper: "from-sky-400 via-blue-200 to-sky-500",
-  defender: "from-blue-400 via-blue-200 to-blue-500",
-  midfielder: "from-blue-400 via-sky-200 to-indigo-400",
-  forward: "from-indigo-400 via-blue-200 to-blue-400",
-  coach: "from-slate-400 via-slate-300 to-slate-400",
-};
-
 interface PlayerStatsMap {
   [playerName: string]: {
     goals: number;
@@ -66,11 +49,36 @@ function getAge(birthYear: number | null): number | null {
   return new Date().getFullYear() - birthYear;
 }
 
+/* ─── Geometric SVG background pattern (club colors) ─── */
+const CardPattern = () => (
+  <svg
+    className="absolute inset-0 w-full h-full"
+    viewBox="0 0 200 300"
+    preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Bold curved stripes — red, white, blue */}
+    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#1e3a8a" opacity="0.7" />
+    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.5" />
+    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#dc2626" opacity="0.55" />
+    <path d="M30 300 Q80 200 40 100 Q10 40 70 -20 L50 -20 Q-10 40 20 100 Q60 200 10 300Z" fill="#1e3a8a" opacity="0.4" />
+    <path d="M50 300 Q100 200 60 100 Q30 40 90 -20 L70 -20 Q10 40 40 100 Q80 200 30 300Z" fill="#ffffff" opacity="0.3" />
+
+    {/* Bottom corner accent */}
+    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#dc2626" opacity="0.4" />
+    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#1e3a8a" opacity="0.35" />
+    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#ffffff" opacity="0.25" />
+
+    {/* Top-right geometric block */}
+    <rect x="140" y="0" width="60" height="10" fill="#dc2626" opacity="0.45" />
+    <rect x="160" y="10" width="40" height="8" fill="#1e3a8a" opacity="0.35" />
+    <rect x="170" y="18" width="30" height="6" fill="#ffffff" opacity="0.25" />
+  </svg>
+);
+
 const PaniniCard = ({
   player,
   stats,
-  positionGradient,
-  positionBorder,
   positionShort,
   delay,
 }: {
@@ -84,8 +92,6 @@ const PaniniCard = ({
     position: string;
   };
   stats: { goals: number; assists: number; yellow_cards: number; red_cards: number } | undefined;
-  positionGradient: string;
-  positionBorder: string;
   positionShort: string;
   delay: number;
 }) => {
@@ -112,7 +118,7 @@ const PaniniCard = ({
     >
       <div
         ref={cardRef}
-        className="relative w-full aspect-[2.5/3.8] cursor-pointer"
+        className="relative w-full aspect-[2.5/3.8] cursor-pointer group"
         onClick={() => !isCoach && setFlipped((v) => !v)}
         onMouseEnter={() => !isCoach && setFlipped(true)}
         onMouseLeave={() => { setFlipped(false); setHoloPos({ x: 50, y: 50 }); }}
@@ -127,81 +133,100 @@ const PaniniCard = ({
         >
           {/* ═══════ FRONT ═══════ */}
           <div
-            className="absolute inset-0 rounded-lg overflow-hidden shadow-lg transition-shadow duration-500"
+            className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
             style={{ backfaceVisibility: "hidden" }}
           >
-            {/* Border */}
-            <div className={`absolute inset-0 rounded-lg bg-gradient-to-br ${positionBorder} p-[3px] z-10 pointer-events-none`}>
-              <div className="w-full h-full rounded-[5px] border border-white/20" />
+            {/* White base */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-blue-50" />
+
+            {/* Geometric pattern overlay */}
+            <CardPattern />
+
+            {/* Position badge — top-left */}
+            <div className="absolute top-2 left-2 z-30 px-2 py-0.5 bg-blue-900/90 rounded-sm">
+              <span className="font-heading font-bold text-[10px] text-white tracking-widest">
+                {positionShort}
+              </span>
             </div>
 
-            <div className="absolute inset-[3px] rounded-[5px] overflow-hidden bg-gradient-to-b from-muted to-card">
-              {/* Top bar */}
-              <div className={`relative z-20 flex items-center justify-between px-3 py-1.5 bg-gradient-to-r ${positionGradient}`}>
-                <span className="font-heading font-bold text-xs text-white/90 tracking-wider uppercase">
-                  {positionShort}
+            {/* Shirt number — top-left under position */}
+            {player.shirt_number && (
+              <div className="absolute top-8 left-2 z-30">
+                <span className="font-heading font-black text-2xl text-blue-900/80 drop-shadow-sm leading-none">
+                  {player.shirt_number}
                 </span>
-                {player.shirt_number && (
-                  <span className="font-heading font-black text-lg text-white leading-none drop-shadow-md">
-                    {player.shirt_number}
+              </div>
+            )}
+
+            {/* Captain star */}
+            {player.is_captain && (
+              <div className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
+                <Star className="w-3.5 h-3.5 text-white fill-white" />
+              </div>
+            )}
+
+            {/* Club shield — top-right (if not captain) */}
+            {!player.is_captain && (
+              <div className="absolute top-2 right-2 z-30 opacity-50">
+                <Shield className="w-5 h-5 text-blue-900" />
+              </div>
+            )}
+
+            {/* Player photo — centered, large */}
+            <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
+              {player.photo_url ? (
+                <img
+                  src={player.photo_url}
+                  alt={player.full_name}
+                  className="w-[85%] h-[80%] object-cover object-top drop-shadow-lg"
+                  style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }}
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-[75%] flex items-center justify-center">
+                  <span className="text-7xl font-heading font-black text-blue-900/10">
+                    {player.shirt_number || "?"}
                   </span>
-                )}
-              </div>
-
-              {/* Photo */}
-              <div className="relative overflow-hidden" style={{ height: "calc(100% - 72px)" }}>
-                {player.photo_url ? (
-                  <img
-                    src={player.photo_url}
-                    alt={player.full_name}
-                    className="w-full h-full object-cover object-top"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted via-card to-muted">
-                    <span className="text-6xl font-heading font-black text-muted-foreground/20">
-                      {player.shirt_number || "?"}
-                    </span>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
-
-                {player.is_captain && (
-                  <div className="absolute top-2 left-2 z-30 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg ring-2 ring-amber-300/50">
-                    <Star className="w-4 h-4 text-white fill-white" />
-                  </div>
-                )}
-
-                <div className="absolute top-2 right-2 z-30 opacity-40 w-6 h-6 rounded-sm bg-gradient-to-br from-white/80 to-white/40 flex items-center justify-center">
-                  <Shield className="w-3.5 h-3.5 text-club-red" />
                 </div>
-              </div>
-
-              {/* Name plate */}
-              <div className={`relative z-20 px-3 py-2 bg-gradient-to-r ${positionGradient}`}>
-                <h3 className="font-heading font-bold text-[11px] sm:text-xs text-white text-center leading-tight truncate uppercase tracking-wide drop-shadow-sm">
-                  {player.full_name}
-                </h3>
-                {age && !isCoach && (
-                  <p className="text-[9px] text-white/70 text-center font-medium mt-0.5">
-                    rocznik {player.birth_year}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
 
-            {/* Holographic overlay - visible when not flipped */}
+            {/* Bottom name bar */}
+            <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 px-3 py-2">
+              <h3 className="font-heading font-bold text-[10px] sm:text-xs text-white text-center leading-tight truncate uppercase tracking-wider">
+                {player.full_name}
+              </h3>
+              {age && !isCoach && (
+                <div className="flex items-center justify-center gap-3 mt-0.5">
+                  <span className="text-[8px] text-blue-200/70 font-medium">
+                    rocznik {player.birth_year}
+                  </span>
+                  {stats && (stats.goals > 0 || stats.assists > 0) && (
+                    <div className="flex gap-1.5">
+                      {stats.goals > 0 && (
+                        <span className="text-[8px] bg-amber-500/80 text-white px-1 rounded-sm font-bold">{stats.goals}⚽</span>
+                      )}
+                      {stats.assists > 0 && (
+                        <span className="text-[8px] bg-emerald-500/80 text-white px-1 rounded-sm font-bold">{stats.assists}🅰</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Holographic overlay */}
             {!flipped && (
               <div
-                className="absolute inset-0 rounded-lg z-20 pointer-events-none transition-opacity duration-300"
+                className="absolute inset-0 rounded-xl z-40 pointer-events-none transition-opacity duration-300"
                 style={{
                   opacity: holoPos.x !== 50 || holoPos.y !== 50 ? 1 : 0,
                   background: `radial-gradient(circle at ${holoPos.x}% ${holoPos.y}%, 
-                    rgba(255,0,80,0.18) 0%, 
-                    rgba(0,100,255,0.14) 20%, 
-                    rgba(255,255,255,0.12) 35%, 
-                    rgba(0,200,255,0.1) 50%, 
-                    rgba(255,50,100,0.07) 65%, 
+                    rgba(255,0,80,0.15) 0%, 
+                    rgba(0,100,255,0.12) 20%, 
+                    rgba(255,255,255,0.15) 35%, 
+                    rgba(0,200,255,0.08) 50%, 
+                    rgba(255,50,100,0.05) 65%, 
                     transparent 80%)`,
                   mixBlendMode: "screen",
                 }}
@@ -211,15 +236,15 @@ const PaniniCard = ({
 
           {/* ═══════ BACK ═══════ */}
           <div
-            className="absolute inset-0 rounded-lg overflow-hidden shadow-lg"
+            className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <div className={`absolute inset-0 rounded-lg bg-gradient-to-br ${positionBorder} p-[3px] z-10 pointer-events-none`}>
-              <div className="w-full h-full rounded-[5px] border border-white/20" />
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[hsl(222,47%,10%)] to-blue-900" />
+            <CardPattern />
 
-            <div className="absolute inset-[3px] rounded-[5px] overflow-hidden bg-gradient-to-b from-[hsl(222,47%,8%)] to-[hsl(222,44%,6%)] flex flex-col">
-              <div className={`flex items-center justify-between px-3 py-1.5 bg-gradient-to-r ${positionGradient}`}>
+            <div className="absolute inset-0 flex flex-col">
+              {/* Top bar */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-gradient-to-r from-blue-800 to-blue-600">
                 <span className="font-heading font-bold text-xs text-white/90 tracking-wider uppercase">
                   {positionShort}
                 </span>
@@ -239,16 +264,16 @@ const PaniniCard = ({
                   </div>
                 )}
 
-                <h4 className="font-heading font-bold text-xs sm:text-sm text-foreground uppercase tracking-wider mb-1 text-center leading-tight">
+                <h4 className="font-heading font-bold text-xs sm:text-sm text-white uppercase tracking-wider mb-1 text-center leading-tight">
                   {player.full_name}
                 </h4>
                 {age && (
-                  <p className="text-[10px] text-muted-foreground mb-4">
+                  <p className="text-[10px] text-blue-300/70 mb-4">
                     {age} lat · rocznik {player.birth_year}
                   </p>
                 )}
 
-                <div className={`w-12 h-0.5 rounded bg-gradient-to-r ${positionGradient} mb-4`} />
+                <div className="w-12 h-0.5 rounded bg-gradient-to-r from-red-500 via-white to-blue-500 mb-4" />
 
                 <div className="w-full space-y-3">
                   <StatRow icon={<Target className="w-4 h-4 text-amber-400" />} label="Bramki" value={stats?.goals ?? 0} />
@@ -258,16 +283,16 @@ const PaniniCard = ({
                 </div>
               </div>
 
-              <div className={`px-3 py-2 bg-gradient-to-r ${positionGradient}`}>
+              <div className="px-3 py-2 bg-gradient-to-r from-blue-800 to-blue-600">
                 <p className="font-heading font-bold text-[9px] text-white/60 text-center uppercase tracking-widest">
                   Sezon 2024/2025
                 </p>
               </div>
             </div>
 
-            {/* Holographic overlay on back too */}
+            {/* Holographic overlay on back */}
             <div
-              className="absolute inset-0 rounded-lg z-20 pointer-events-none transition-opacity duration-300"
+              className="absolute inset-0 rounded-xl z-20 pointer-events-none transition-opacity duration-300"
               style={{
                 background: `radial-gradient(circle at ${100 - holoPos.x}% ${holoPos.y}%, 
                   rgba(0,100,255,0.12) 0%, 
@@ -288,9 +313,9 @@ const StatRow = ({ icon, label, value, suffix = "" }: { icon: React.ReactNode; l
   <div className="flex items-center justify-between gap-2 text-xs">
     <div className="flex items-center gap-2">
       {icon}
-      <span className="text-muted-foreground">{label}</span>
+      <span className="text-blue-200/70">{label}</span>
     </div>
-    <span className="font-heading font-bold text-foreground">{value}{suffix}</span>
+    <span className="font-heading font-bold text-white">{value}{suffix}</span>
   </div>
 );
 
@@ -323,8 +348,6 @@ const SquadPage = () => {
     .map((pos) => ({
       position: pos,
       label: POSITION_LABELS[pos],
-      gradient: POSITION_GRADIENT[pos],
-      border: POSITION_BORDER[pos],
       short: POSITION_SHORT[pos],
       players: members.filter((m) => m.position === pos),
     }))
@@ -353,8 +376,6 @@ const SquadPage = () => {
                   <PaniniCard
                     player={player}
                     stats={statsMap[player.full_name]}
-                    positionGradient={group.gradient}
-                    positionBorder={group.border}
                     positionShort={group.short}
                     delay={gi * 0.08 + i * 0.04}
                   />
