@@ -237,8 +237,8 @@ const PaniniCard = ({
             className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[hsl(222,47%,10%)] to-blue-900" />
-            <CardPattern />
+            <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40" />
 
             <div className="absolute inset-0 flex flex-col">
               {/* Top bar */}
