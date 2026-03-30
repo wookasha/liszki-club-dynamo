@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
 import { Shield, Star, Target, Handshake } from "lucide-react";
+import clubLogo from "@/assets/club-logo.png";
 
 const POSITION_ORDER = ["goalkeeper", "defender", "midfielder", "forward", "coach"] as const;
 const POSITION_LABELS: Record<string, string> = {
@@ -57,22 +58,22 @@ const CardPattern = () => (
     preserveAspectRatio="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Bold curved stripes — red, white, blue */}
-    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#1e3a8a" opacity="0.7" />
-    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.5" />
-    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#dc2626" opacity="0.55" />
-    <path d="M30 300 Q80 200 40 100 Q10 40 70 -20 L50 -20 Q-10 40 20 100 Q60 200 10 300Z" fill="#1e3a8a" opacity="0.4" />
-    <path d="M50 300 Q100 200 60 100 Q30 40 90 -20 L70 -20 Q10 40 40 100 Q80 200 30 300Z" fill="#ffffff" opacity="0.3" />
+    {/* Bold curved stripes — red, white, blue (in order) */}
+    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#dc2626" opacity="0.65" />
+    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.6" />
+    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#1e3a8a" opacity="0.6" />
+    <path d="M30 300 Q80 200 40 100 Q10 40 70 -20 L50 -20 Q-10 40 20 100 Q60 200 10 300Z" fill="#dc2626" opacity="0.35" />
+    <path d="M50 300 Q100 200 60 100 Q30 40 90 -20 L70 -20 Q10 40 40 100 Q80 200 30 300Z" fill="#1e3a8a" opacity="0.25" />
 
-    {/* Bottom corner accent */}
-    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#dc2626" opacity="0.4" />
-    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#1e3a8a" opacity="0.35" />
-    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#ffffff" opacity="0.25" />
+    {/* Bottom corner accent — red, white, blue */}
+    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#1e3a8a" opacity="0.45" />
+    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#ffffff" opacity="0.3" />
+    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#dc2626" opacity="0.35" />
 
-    {/* Top-right geometric block */}
-    <rect x="140" y="0" width="60" height="10" fill="#dc2626" opacity="0.45" />
-    <rect x="160" y="10" width="40" height="8" fill="#1e3a8a" opacity="0.35" />
-    <rect x="170" y="18" width="30" height="6" fill="#ffffff" opacity="0.25" />
+    {/* Top-right geometric block — red, white, blue */}
+    <rect x="140" y="0" width="60" height="10" fill="#dc2626" opacity="0.5" />
+    <rect x="160" y="10" width="40" height="8" fill="#ffffff" opacity="0.35" />
+    <rect x="170" y="18" width="30" height="6" fill="#1e3a8a" opacity="0.4" />
   </svg>
 );
 
@@ -149,9 +150,9 @@ const PaniniCard = ({
               </span>
             </div>
 
-            {/* Shirt number — top-left under position */}
+            {/* Shirt number — top-left under position (lowered 10px) */}
             {player.shirt_number && (
-              <div className="absolute top-8 left-2 z-30">
+              <div className="absolute top-11 left-2 z-30">
                 <span className="font-heading font-black text-2xl text-blue-900/80 drop-shadow-sm leading-none">
                   {player.shirt_number}
                 </span>
@@ -160,17 +161,15 @@ const PaniniCard = ({
 
             {/* Captain star */}
             {player.is_captain && (
-              <div className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
+              <div className="absolute top-10 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
                 <Star className="w-3.5 h-3.5 text-white fill-white" />
               </div>
             )}
 
-            {/* Club shield — top-right (if not captain) */}
-            {!player.is_captain && (
-              <div className="absolute top-2 right-2 z-30 opacity-50">
-                <Shield className="w-5 h-5 text-blue-900" />
-              </div>
-            )}
+            {/* Club logo — top-right corner */}
+            <div className="absolute top-2 right-1.5 z-30">
+              <img src={clubLogo} alt="Herb klubu" className="w-8 h-8 object-contain drop-shadow-md" />
+            </div>
 
             {/* Player photo — centered, large */}
             <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
@@ -178,7 +177,7 @@ const PaniniCard = ({
                 <img
                   src={player.photo_url}
                   alt={player.full_name}
-                  className="w-[85%] h-[80%] object-cover object-top drop-shadow-lg"
+                  className="w-[90%] h-[82%] object-cover object-[center_20%] drop-shadow-lg"
                   style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }}
                   loading="lazy"
                 />
