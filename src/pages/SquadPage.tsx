@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
@@ -14,19 +14,28 @@ const POSITION_LABELS: Record<string, string> = {
 };
 
 const POSITION_SHORT: Record<string, string> = {
-  goalkeeper: "BR",
-  defender: "OB",
-  midfielder: "PO",
-  forward: "NA",
+  goalkeeper: "BRM",
+  defender: "OBR",
+  midfielder: "POM",
+  forward: "NAP",
   coach: "SZT",
 };
 
+// Club colors: red, white, blue
 const POSITION_GRADIENT: Record<string, string> = {
-  goalkeeper: "from-amber-600 via-amber-500 to-yellow-400",
-  defender: "from-blue-700 via-blue-500 to-sky-400",
-  midfielder: "from-emerald-700 via-emerald-500 to-green-400",
-  forward: "from-red-700 via-red-500 to-rose-400",
+  goalkeeper: "from-club-blue via-sky-500 to-club-blue",
+  defender: "from-club-blue via-blue-600 to-indigo-700",
+  midfielder: "from-club-red via-red-600 to-rose-700",
+  forward: "from-club-red via-rose-500 to-club-red",
   coach: "from-slate-600 via-slate-500 to-slate-400",
+};
+
+const POSITION_BORDER: Record<string, string> = {
+  goalkeeper: "from-sky-300 via-white to-sky-400",
+  defender: "from-blue-300 via-white to-blue-400",
+  midfielder: "from-rose-300 via-white to-rose-400",
+  forward: "from-red-300 via-white to-red-400",
+  coach: "from-slate-300 via-white to-slate-400",
 };
 
 interface PlayerStatsMap {
@@ -61,6 +70,7 @@ const PaniniCard = ({
   player,
   stats,
   positionGradient,
+  positionBorder,
   positionShort,
   delay,
 }: {
@@ -75,16 +85,23 @@ const PaniniCard = ({
   };
   stats: { goals: number; assists: number; yellow_cards: number; red_cards: number } | undefined;
   positionGradient: string;
+  positionBorder: string;
   positionShort: string;
   delay: number;
 }) => {
   const [flipped, setFlipped] = useState(false);
+  const [holoPos, setHoloPos] = useState({ x: 50, y: 50 });
+  const cardRef = useRef<HTMLDivElement>(null);
   const age = getAge(player.birth_year);
   const isCoach = player.position === "coach";
 
-  const toggle = () => {
-    if (!isCoach) setFlipped((v) => !v);
-  };
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setHoloPos({ x, y });
+  }, []);
 
   return (
     <motion.div
@@ -94,12 +111,13 @@ const PaniniCard = ({
       className="perspective-1000"
     >
       <div
+        ref={cardRef}
         className="relative w-full aspect-[2.5/3.8] cursor-pointer"
-        onClick={toggle}
+        onClick={() => !isCoach && setFlipped((v) => !v)}
         onMouseEnter={() => !isCoach && setFlipped(true)}
-        onMouseLeave={() => setFlipped(false)}
+        onMouseLeave={() => { setFlipped(false); setHoloPos({ x: 50, y: 50 }); }}
+        onMouseMove={handleMouseMove}
       >
-        {/* 3D flip wrapper */}
         <div
           className="relative w-full h-full transition-transform duration-700 ease-in-out"
           style={{
@@ -109,12 +127,12 @@ const PaniniCard = ({
         >
           {/* ═══════ FRONT ═══════ */}
           <div
-            className="absolute inset-0 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-amber-500/20 transition-shadow duration-500"
+            className="absolute inset-0 rounded-lg overflow-hidden shadow-lg transition-shadow duration-500"
             style={{ backfaceVisibility: "hidden" }}
           >
-            {/* Golden border */}
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-300 via-yellow-500 to-amber-700 p-[3px] z-10 pointer-events-none">
-              <div className="w-full h-full rounded-[5px] border-2 border-amber-400/30" />
+            {/* Border */}
+            <div className={`absolute inset-0 rounded-lg bg-gradient-to-br ${positionBorder} p-[3px] z-10 pointer-events-none`}>
+              <div className="w-full h-full rounded-[5px] border border-white/20" />
             </div>
 
             <div className="absolute inset-[3px] rounded-[5px] overflow-hidden bg-gradient-to-b from-muted to-card">
@@ -154,8 +172,8 @@ const PaniniCard = ({
                   </div>
                 )}
 
-                <div className="absolute top-2 right-2 z-30 opacity-40 w-6 h-6 rounded-sm bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                  <Shield className="w-3.5 h-3.5 text-white" />
+                <div className="absolute top-2 right-2 z-30 opacity-40 w-6 h-6 rounded-sm bg-gradient-to-br from-white/80 to-white/40 flex items-center justify-center">
+                  <Shield className="w-3.5 h-3.5 text-club-red" />
                 </div>
               </div>
 
@@ -171,6 +189,21 @@ const PaniniCard = ({
                 )}
               </div>
             </div>
+
+            {/* Holographic overlay */}
+            <div
+              className="absolute inset-0 rounded-lg z-20 pointer-events-none opacity-0 hover-parent-holo transition-opacity duration-300"
+              style={{
+                background: `radial-gradient(circle at ${holoPos.x}% ${holoPos.y}%, 
+                  rgba(255,0,80,0.15) 0%, 
+                  rgba(0,100,255,0.12) 25%, 
+                  rgba(255,255,255,0.1) 40%, 
+                  rgba(0,200,255,0.08) 55%, 
+                  rgba(255,50,100,0.06) 70%, 
+                  transparent 85%)`,
+                mixBlendMode: "screen",
+              }}
+            />
           </div>
 
           {/* ═══════ BACK ═══════ */}
@@ -178,13 +211,11 @@ const PaniniCard = ({
             className="absolute inset-0 rounded-lg overflow-hidden shadow-lg"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            {/* Golden border */}
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-300 via-yellow-500 to-amber-700 p-[3px] z-10 pointer-events-none">
-              <div className="w-full h-full rounded-[5px] border-2 border-amber-400/30" />
+            <div className={`absolute inset-0 rounded-lg bg-gradient-to-br ${positionBorder} p-[3px] z-10 pointer-events-none`}>
+              <div className="w-full h-full rounded-[5px] border border-white/20" />
             </div>
 
             <div className="absolute inset-[3px] rounded-[5px] overflow-hidden bg-gradient-to-b from-[hsl(222,47%,8%)] to-[hsl(222,44%,6%)] flex flex-col">
-              {/* Top gradient bar */}
               <div className={`flex items-center justify-between px-3 py-1.5 bg-gradient-to-r ${positionGradient}`}>
                 <span className="font-heading font-bold text-xs text-white/90 tracking-wider uppercase">
                   {positionShort}
@@ -196,9 +227,7 @@ const PaniniCard = ({
                 )}
               </div>
 
-              {/* Stats content */}
               <div className="flex-1 flex flex-col items-center justify-center px-4 py-3 relative">
-                {/* Large faded number background */}
                 {player.shirt_number && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <span className="font-heading font-black text-[100px] leading-none text-white/[0.04]">
@@ -216,40 +245,35 @@ const PaniniCard = ({
                   </p>
                 )}
 
-                {/* Separator */}
                 <div className={`w-12 h-0.5 rounded bg-gradient-to-r ${positionGradient} mb-4`} />
 
                 <div className="w-full space-y-3">
-                  <StatRow
-                    icon={<Target className="w-4 h-4 text-amber-400" />}
-                    label="Bramki"
-                    value={stats?.goals ?? 0}
-                  />
-                  <StatRow
-                    icon={<Handshake className="w-4 h-4 text-emerald-400" />}
-                    label="Asysty"
-                    value={stats?.assists ?? 0}
-                  />
-                  <StatRow
-                    icon={<div className="w-3 h-4 rounded-[1px] bg-yellow-400" />}
-                    label="Żółte kartki"
-                    value={stats?.yellow_cards ?? 0}
-                  />
-                  <StatRow
-                    icon={<div className="w-3 h-4 rounded-[1px] bg-red-500" />}
-                    label="Czerwone"
-                    value={stats?.red_cards ?? 0}
-                  />
+                  <StatRow icon={<Target className="w-4 h-4 text-amber-400" />} label="Bramki" value={stats?.goals ?? 0} />
+                  <StatRow icon={<Handshake className="w-4 h-4 text-emerald-400" />} label="Asysty" value={stats?.assists ?? 0} />
+                  <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-yellow-400" />} label="Żółte kartki" value={stats?.yellow_cards ?? 0} />
+                  <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-red-500" />} label="Czerwone" value={stats?.red_cards ?? 0} />
                 </div>
               </div>
 
-              {/* Bottom gradient bar */}
               <div className={`px-3 py-2 bg-gradient-to-r ${positionGradient}`}>
                 <p className="font-heading font-bold text-[9px] text-white/60 text-center uppercase tracking-widest">
                   Sezon 2024/2025
                 </p>
               </div>
             </div>
+
+            {/* Holographic overlay on back too */}
+            <div
+              className="absolute inset-0 rounded-lg z-20 pointer-events-none transition-opacity duration-300"
+              style={{
+                background: `radial-gradient(circle at ${100 - holoPos.x}% ${holoPos.y}%, 
+                  rgba(0,100,255,0.12) 0%, 
+                  rgba(255,0,80,0.1) 30%, 
+                  rgba(255,255,255,0.08) 50%, 
+                  transparent 80%)`,
+                mixBlendMode: "screen",
+              }}
+            />
           </div>
         </div>
       </div>
@@ -257,25 +281,13 @@ const PaniniCard = ({
   );
 };
 
-const StatRow = ({
-  icon,
-  label,
-  value,
-  suffix = "",
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  suffix?: string;
-}) => (
+const StatRow = ({ icon, label, value, suffix = "" }: { icon: React.ReactNode; label: string; value: number; suffix?: string }) => (
   <div className="flex items-center justify-between gap-2 text-xs">
     <div className="flex items-center gap-2">
       {icon}
       <span className="text-muted-foreground">{label}</span>
     </div>
-    <span className="font-heading font-bold text-foreground">
-      {value}{suffix}
-    </span>
+    <span className="font-heading font-bold text-foreground">{value}{suffix}</span>
   </div>
 );
 
@@ -309,6 +321,7 @@ const SquadPage = () => {
       position: pos,
       label: POSITION_LABELS[pos],
       gradient: POSITION_GRADIENT[pos],
+      border: POSITION_BORDER[pos],
       short: POSITION_SHORT[pos],
       players: members.filter((m) => m.position === pos),
     }))
@@ -338,6 +351,7 @@ const SquadPage = () => {
                     player={player}
                     stats={statsMap[player.full_name]}
                     positionGradient={group.gradient}
+                    positionBorder={group.border}
                     positionShort={group.short}
                     delay={gi * 0.08 + i * 0.04}
                   />
