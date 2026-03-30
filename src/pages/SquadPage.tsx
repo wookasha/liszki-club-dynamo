@@ -190,20 +190,23 @@ const PaniniCard = ({
               </div>
             </div>
 
-            {/* Holographic overlay */}
-            <div
-              className="absolute inset-0 rounded-lg z-20 pointer-events-none opacity-0 hover-parent-holo transition-opacity duration-300"
-              style={{
-                background: `radial-gradient(circle at ${holoPos.x}% ${holoPos.y}%, 
-                  rgba(255,0,80,0.15) 0%, 
-                  rgba(0,100,255,0.12) 25%, 
-                  rgba(255,255,255,0.1) 40%, 
-                  rgba(0,200,255,0.08) 55%, 
-                  rgba(255,50,100,0.06) 70%, 
-                  transparent 85%)`,
-                mixBlendMode: "screen",
-              }}
-            />
+            {/* Holographic overlay - visible when not flipped */}
+            {!flipped && (
+              <div
+                className="absolute inset-0 rounded-lg z-20 pointer-events-none transition-opacity duration-300"
+                style={{
+                  opacity: holoPos.x !== 50 || holoPos.y !== 50 ? 1 : 0,
+                  background: `radial-gradient(circle at ${holoPos.x}% ${holoPos.y}%, 
+                    rgba(255,0,80,0.18) 0%, 
+                    rgba(0,100,255,0.14) 20%, 
+                    rgba(255,255,255,0.12) 35%, 
+                    rgba(0,200,255,0.1) 50%, 
+                    rgba(255,50,100,0.07) 65%, 
+                    transparent 80%)`,
+                  mixBlendMode: "screen",
+                }}
+              />
+            )}
           </div>
 
           {/* ═══════ BACK ═══════ */}
