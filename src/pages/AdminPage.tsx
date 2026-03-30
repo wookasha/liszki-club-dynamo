@@ -177,13 +177,31 @@ const AdminPage = () => {
         >
           <Settings className="w-4 h-4" /> Ustawienia MZPN
         </button>
+        <div className="px-3">
+          <label className="block text-[10px] uppercase tracking-widest text-muted-foreground/60 font-semibold mb-1.5">Źródło danych</label>
+          <div className="flex rounded-md overflow-hidden border border-border text-xs">
+            {([["auto", "Auto"], ["mzpn", "MZPN"], ["regiowyniki", "Regio"]] as const).map(([val, lbl]) => (
+              <button
+                key={val}
+                onClick={() => setSyncSource(val)}
+                className={`flex-1 py-1.5 font-medium transition-colors ${
+                  syncSource === val
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/50 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {lbl}
+              </button>
+            ))}
+          </div>
+        </div>
         <button
           onClick={handleSync}
           disabled={syncing}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
-          {syncing ? "Synchronizuję..." : "Sync MZPN"}
+          {syncing ? "Synchronizuję..." : "Synchronizuj"}
         </button>
         <button
           onClick={handleLogout}
