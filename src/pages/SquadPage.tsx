@@ -386,7 +386,7 @@ const SquadPage = () => {
                     player={player}
                     stats={statsMap[player.full_name]}
                     positionShort={group.short}
-                    delay={gi * 0.08 + i * 0.04}
+                    delay={i * 0.12}
                     cardBg={cardBg}
                   />
                 </ScrollAnimation>
