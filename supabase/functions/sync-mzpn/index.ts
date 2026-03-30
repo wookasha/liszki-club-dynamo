@@ -393,31 +393,33 @@ Deno.serve(async (req) => {
       let tableRows: TableRow[] = [];
       let source = "";
 
-      // Try MZPN first
-      try {
+      // Try sources based on preference
+      const tryMzpn = async () => {
         console.log("Fetching league table from MZPN:", TABLE_URL);
         const tableHtml = await fetchPage(TABLE_URL);
-        tableRows = parseTableFromHtml(tableHtml);
-        if (tableRows.length === 0) {
-          tableRows = parseTable(htmlToText(tableHtml));
-        }
-        if (tableRows.length > 0) source = "mzpn";
-        console.log(`MZPN table: ${tableRows.length} teams`);
-      } catch (e) {
-        console.warn("MZPN table failed:", e instanceof Error ? e.message : e);
-      }
+        let rows = parseTableFromHtml(tableHtml);
+        if (rows.length === 0) rows = parseTable(htmlToText(tableHtml));
+        console.log(`MZPN table: ${rows.length} teams`);
+        return rows;
+      };
+      const tryRegio = async () => {
+        console.log("Fetching table from regiowyniki.pl");
+        const regioHtml = await fetchPage(REGIO_URL);
+        const rows = parseRegioTableHtml(regioHtml);
+        console.log(`Regiowyniki table: ${rows.length} teams`);
+        return rows;
+      };
 
-      // Fallback to regiowyniki.pl
-      if (tableRows.length === 0) {
-        try {
-          console.log("Fallback: fetching table from regiowyniki.pl");
-          const regioHtml = await fetchPage(REGIO_URL);
-          tableRows = parseRegioTableHtml(regioHtml);
-          if (tableRows.length > 0) source = "regiowyniki";
-          console.log(`Regiowyniki table: ${tableRows.length} teams`);
-        } catch (e) {
-          console.warn("Regiowyniki table failed:", e instanceof Error ? e.message : e);
-        }
+      if (preferredSource === "mzpn") {
+        try { tableRows = await tryMzpn(); if (tableRows.length > 0) source = "mzpn"; } catch (e) { console.warn("MZPN table failed:", e); }
+        if (tableRows.length === 0) { try { tableRows = await tryRegio(); if (tableRows.length > 0) source = "regiowyniki"; } catch (e) { console.warn("Regiowyniki table failed:", e); } }
+      } else if (preferredSource === "regiowyniki") {
+        try { tableRows = await tryRegio(); if (tableRows.length > 0) source = "regiowyniki"; } catch (e) { console.warn("Regiowyniki table failed:", e); }
+        if (tableRows.length === 0) { try { tableRows = await tryMzpn(); if (tableRows.length > 0) source = "mzpn"; } catch (e) { console.warn("MZPN table failed:", e); } }
+      } else {
+        // auto: MZPN first, fallback regio
+        try { tableRows = await tryMzpn(); if (tableRows.length > 0) source = "mzpn"; } catch (e) { console.warn("MZPN table failed:", e); }
+        if (tableRows.length === 0) { try { tableRows = await tryRegio(); if (tableRows.length > 0) source = "regiowyniki"; } catch (e) { console.warn("Regiowyniki table failed:", e); } }
       }
 
       if (tableRows.length > 0) {
