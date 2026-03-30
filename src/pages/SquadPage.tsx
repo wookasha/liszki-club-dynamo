@@ -314,9 +314,9 @@ const StatRow = ({ icon, label, value, suffix = "" }: { icon: React.ReactNode; l
   <div className="flex items-center justify-between gap-2 text-xs">
     <div className="flex items-center gap-2">
       {icon}
-      <span className="text-blue-200/70">{label}</span>
+      <span className="text-white/60">{label}</span>
     </div>
-    <span className="font-heading font-bold text-white">{value}{suffix}</span>
+    <span className="font-heading font-bold text-white drop-shadow-sm">{value}{suffix}</span>
   </div>
 );
 
