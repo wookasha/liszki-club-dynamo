@@ -91,6 +91,10 @@ const AdminSquad = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [cardBgUrl, setCardBgUrl] = useState<string | null>(null);
+  const [cardBgFile, setCardBgFile] = useState<File | null>(null);
+  const [cardBgPreview, setCardBgPreview] = useState<string | null>(null);
+  const [savingBg, setSavingBg] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     position: "midfielder",
@@ -99,7 +103,7 @@ const AdminSquad = () => {
     is_captain: false,
   });
 
-  useEffect(() => { fetchMembers(); }, []);
+  useEffect(() => { fetchMembers(); loadCardBg(); }, []);
 
   const fetchMembers = async () => {
     const { data } = await supabase.from("squad_members").select("*").order("sort_order");
