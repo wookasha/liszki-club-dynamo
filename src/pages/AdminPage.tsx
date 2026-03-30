@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LogOut, Newspaper, Calendar, Trophy, ImageIcon, Handshake,
   Users, RefreshCw, Settings, Save, BarChart3, History,
-  ShieldCheck, Menu, X, ChevronDown,
+  ShieldCheck, Menu, X, ChevronDown, Database,
 } from "lucide-react";
 import AdminNews from "@/components/admin/AdminNews";
 import AdminMatches from "@/components/admin/AdminMatches";
@@ -67,6 +67,7 @@ const AdminPage = () => {
   const [mzpnScheduleUrl, setMzpnScheduleUrl] = useState("");
   const [savingSettings, setSavingSettings] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [syncSource, setSyncSource] = useState<"auto" | "mzpn" | "regiowyniki">("auto");
 
   useEffect(() => {
     checkAuth();
@@ -106,14 +107,14 @@ const AdminPage = () => {
     setSyncing(true);
     setSyncResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke("sync-mzpn", { body: { type: "all" } });
+      const { data, error } = await supabase.functions.invoke("sync-mzpn", { body: { type: "all", source: syncSource } });
       if (error) throw error;
       if (data?.success) {
         const t = data.results?.table;
         const s = data.results?.schedule;
         const parts: string[] = [];
-        if (t?.synced) parts.push(`Tabela: ${t.synced} drużyn`);
-        if (s?.synced) parts.push(`Mecze: ${s.synced} (rozegrane: ${s.played}, nadchodzące: ${s.upcoming})`);
+        if (t?.synced) parts.push(`Tabela: ${t.synced} drużyn (${t.source || "?"})`);
+        if (s?.synced) parts.push(`Mecze: ${s.synced} (${s.source || "?"}) — rozegrane: ${s.played}, nadchodzące: ${s.upcoming}`);
         setSyncResult(`✅ ${parts.join(" • ") || "Zsynchronizowano"}`);
       } else {
         setSyncResult(`❌ ${data?.error || "Błąd synchronizacji"}`);
@@ -176,13 +177,31 @@ const AdminPage = () => {
         >
           <Settings className="w-4 h-4" /> Ustawienia MZPN
         </button>
+        <div className="px-3">
+          <label className="block text-[10px] uppercase tracking-widest text-muted-foreground/60 font-semibold mb-1.5">Źródło danych</label>
+          <div className="flex rounded-md overflow-hidden border border-border text-xs">
+            {([["auto", "Auto"], ["mzpn", "MZPN"], ["regiowyniki", "Regio"]] as const).map(([val, lbl]) => (
+              <button
+                key={val}
+                onClick={() => setSyncSource(val)}
+                className={`flex-1 py-1.5 font-medium transition-colors ${
+                  syncSource === val
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/50 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {lbl}
+              </button>
+            ))}
+          </div>
+        </div>
         <button
           onClick={handleSync}
           disabled={syncing}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
-          {syncing ? "Synchronizuję..." : "Sync MZPN"}
+          {syncing ? "Synchronizuję..." : "Synchronizuj"}
         </button>
         <button
           onClick={handleLogout}
