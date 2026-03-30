@@ -287,7 +287,7 @@ const PaniniCard = ({
 
               <div className="px-3 py-2 bg-black/50 backdrop-blur-sm">
                 <p className="font-heading font-bold text-[9px] text-white/50 text-center uppercase tracking-widest">
-                  Sezon 2024/2025
+                  Sezon 2025/2026
                 </p>
               </div>
             </div>
@@ -367,7 +367,7 @@ const SquadPage = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         <ScrollAnimation>
           <h1 className="section-heading text-4xl text-center mb-2">Kadra</h1>
-          <p className="text-center text-muted-foreground mb-12">Sezon 2024/2025</p>
+          <p className="text-center text-muted-foreground mb-12">Sezon 2025/2026</p>
         </ScrollAnimation>
 
         {grouped.map((group, gi) => (
