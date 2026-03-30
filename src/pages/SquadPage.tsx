@@ -171,13 +171,13 @@ const PaniniCard = ({
               <img src={clubLogo} alt="Herb klubu" className="w-8 h-8 object-contain drop-shadow-md" />
             </div>
 
-            {/* Player photo — centered, large */}
-            <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
+            {/* Player photo — top 5% start, filling card */}
+            <div className="absolute left-0 right-0 bottom-0 z-20 pointer-events-none" style={{ top: "5%" }}>
               {player.photo_url ? (
                 <img
                   src={player.photo_url}
                   alt={player.full_name}
-                  className="w-[90%] h-[82%] object-cover object-[center_20%] drop-shadow-lg"
+                  className="w-full h-full object-cover object-top drop-shadow-lg"
                   style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }}
                   loading="lazy"
                 />
