@@ -461,31 +461,32 @@ Deno.serve(async (req) => {
       (leagueTeams || []).forEach((t: any) => { if (t.stadium_address) stadiumMap[t.team] = t.stadium_address; });
       knownTeams.sort((a: string, b: string) => b.length - a.length);
 
-      // Try MZPN first
-      try {
+      // Try sources based on preference
+      const tryMzpnSch = async () => {
         console.log("Fetching schedule from MZPN:", SCHEDULE_URL);
         const scheduleHtml = await fetchPage(SCHEDULE_URL);
-        matchRows = parseScheduleFromHtml(scheduleHtml, knownTeams);
-        if (matchRows.length === 0) {
-          matchRows = parseSchedule(htmlToText(scheduleHtml), knownTeams);
-        }
-        if (matchRows.length > 0) source = "mzpn";
-        console.log(`MZPN schedule: ${matchRows.length} matches`);
-      } catch (e) {
-        console.warn("MZPN schedule failed:", e instanceof Error ? e.message : e);
-      }
+        let rows = parseScheduleFromHtml(scheduleHtml, knownTeams);
+        if (rows.length === 0) rows = parseSchedule(htmlToText(scheduleHtml), knownTeams);
+        console.log(`MZPN schedule: ${rows.length} matches`);
+        return rows;
+      };
+      const tryRegioSch = async () => {
+        console.log("Fetching schedule from regiowyniki.pl");
+        const regioHtml = await fetchPage(REGIO_URL);
+        const rows = parseRegioScheduleHtml(regioHtml);
+        console.log(`Regiowyniki schedule: ${rows.length} matches`);
+        return rows;
+      };
 
-      // Fallback to regiowyniki.pl
-      if (matchRows.length === 0) {
-        try {
-          console.log("Fallback: fetching schedule from regiowyniki.pl");
-          const regioHtml = await fetchPage(REGIO_URL);
-          matchRows = parseRegioScheduleHtml(regioHtml);
-          if (matchRows.length > 0) source = "regiowyniki";
-          console.log(`Regiowyniki schedule: ${matchRows.length} matches`);
-        } catch (e) {
-          console.warn("Regiowyniki schedule failed:", e instanceof Error ? e.message : e);
-        }
+      if (preferredSource === "mzpn") {
+        try { matchRows = await tryMzpnSch(); if (matchRows.length > 0) source = "mzpn"; } catch (e) { console.warn("MZPN schedule failed:", e); }
+        if (matchRows.length === 0) { try { matchRows = await tryRegioSch(); if (matchRows.length > 0) source = "regiowyniki"; } catch (e) { console.warn("Regiowyniki schedule failed:", e); } }
+      } else if (preferredSource === "regiowyniki") {
+        try { matchRows = await tryRegioSch(); if (matchRows.length > 0) source = "regiowyniki"; } catch (e) { console.warn("Regiowyniki schedule failed:", e); }
+        if (matchRows.length === 0) { try { matchRows = await tryMzpnSch(); if (matchRows.length > 0) source = "mzpn"; } catch (e) { console.warn("MZPN schedule failed:", e); } }
+      } else {
+        try { matchRows = await tryMzpnSch(); if (matchRows.length > 0) source = "mzpn"; } catch (e) { console.warn("MZPN schedule failed:", e); }
+        if (matchRows.length === 0) { try { matchRows = await tryRegioSch(); if (matchRows.length > 0) source = "regiowyniki"; } catch (e) { console.warn("Regiowyniki schedule failed:", e); } }
       }
 
       const ownMatches = matchRows.filter(
