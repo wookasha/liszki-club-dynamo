@@ -253,6 +253,7 @@ const AdminSquad = () => {
               </label>
               {photoPreview && <img src={photoPreview} alt="Podgląd" className="mt-2 w-20 h-20 rounded-md object-cover" />}
             </div>
+            </div>
           </div>
           <div className="flex gap-2 mt-4">
             <button onClick={handleSave} disabled={saving || !form.full_name} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
