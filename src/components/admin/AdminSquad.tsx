@@ -15,12 +15,73 @@ interface SquadMember {
 }
 
 const POSITIONS = [
-  { value: "goalkeeper", label: "Bramkarz" },
-  { value: "defender", label: "Obrońca" },
-  { value: "midfielder", label: "Pomocnik" },
-  { value: "forward", label: "Napastnik" },
-  { value: "coach", label: "Sztab szkoleniowy" },
+  { value: "goalkeeper", label: "Bramkarz", short: "BRM" },
+  { value: "defender", label: "Obrońca", short: "OBR" },
+  { value: "midfielder", label: "Pomocnik", short: "POM" },
+  { value: "forward", label: "Napastnik", short: "NAP" },
+  { value: "coach", label: "Sztab szkoleniowy", short: "SZT" },
 ];
+
+/* Mini Panini card preview (front only) */
+const CardPreviewPattern = () => (
+  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#dc2626" opacity="0.65" />
+    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.6" />
+    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#1e3a8a" opacity="0.6" />
+    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#dc2626" opacity="0.45" />
+    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#ffffff" opacity="0.35" />
+    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#1e3a8a" opacity="0.4" />
+  </svg>
+);
+
+const CardPreview = ({ name, number, position, photoUrl, isCaptain }: {
+  name: string; number: string; position: string; photoUrl: string | null; isCaptain: boolean;
+}) => {
+  const posShort = POSITIONS.find(p => p.value === position)?.short || "—";
+  return (
+    <div className="w-44 aspect-[2.5/3.8] rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50 relative flex-shrink-0">
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-blue-50" />
+      <CardPreviewPattern />
+      {/* Position badge */}
+      <div className="absolute top-1.5 left-1.5 z-30 px-1.5 py-0.5 bg-blue-900/90 rounded-sm">
+        <span className="font-heading font-bold text-[8px] text-white tracking-widest">{posShort}</span>
+      </div>
+      {/* Number */}
+      {number && (
+        <div className="absolute top-7 left-1.5 z-30">
+          <span className="font-heading font-black text-lg text-blue-900/80 leading-none">{number}</span>
+        </div>
+      )}
+      {/* Captain */}
+      {isCaptain && (
+        <div className="absolute top-7 right-1.5 z-30 w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+          <Star className="w-2.5 h-2.5 text-white fill-white" />
+        </div>
+      )}
+      {/* Club logo */}
+      <div className="absolute top-1.5 right-1 z-30">
+        <img src={clubLogo} alt="Herb" className="w-6 h-6 object-contain drop-shadow" />
+      </div>
+      {/* Photo */}
+      <div className="absolute left-0 right-0 bottom-0 z-20" style={{ top: "5%" }}>
+        {photoUrl ? (
+          <img src={photoUrl} alt={name} className="w-full h-full object-cover object-top"
+            style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }} />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-4xl font-heading font-black text-blue-900/10">{number || "?"}</span>
+          </div>
+        )}
+      </div>
+      {/* Name bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 px-2 py-1.5">
+        <p className="font-heading font-bold text-[8px] text-white text-center truncate uppercase tracking-wider">
+          {name || "Imię i nazwisko"}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const AdminSquad = () => {
   const [members, setMembers] = useState<SquadMember[]>([]);
