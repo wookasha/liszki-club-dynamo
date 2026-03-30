@@ -1,10 +1,11 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
 import { Shield, Star, Target, Handshake } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import clubLogo from "@/assets/club-logo.png";
-import cardBg from "@/assets/card-bg.png";
+import cardBgDefault from "@/assets/card-bg.png";
 
 const POSITION_ORDER = ["goalkeeper", "defender", "midfielder", "forward", "coach"] as const;
 const POSITION_LABELS: Record<string, string> = {
