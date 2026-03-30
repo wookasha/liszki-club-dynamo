@@ -7,7 +7,7 @@ import ScrollAnimation from "@/components/ScrollAnimation";
 import CountdownTimer from "@/components/CountdownTimer";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import heroImage from "@/assets/hero-stadium.jpg";
+import heroImage from "@/assets/hero-stadium.webp";
 import clubLogo from "@/assets/club-logo.png";
 
 // Demo data
