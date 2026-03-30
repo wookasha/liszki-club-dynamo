@@ -58,22 +58,22 @@ const CardPattern = () => (
     preserveAspectRatio="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Bold curved stripes — red, white, blue */}
-    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#1e3a8a" opacity="0.7" />
-    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.5" />
-    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#dc2626" opacity="0.55" />
-    <path d="M30 300 Q80 200 40 100 Q10 40 70 -20 L50 -20 Q-10 40 20 100 Q60 200 10 300Z" fill="#1e3a8a" opacity="0.4" />
-    <path d="M50 300 Q100 200 60 100 Q30 40 90 -20 L70 -20 Q10 40 40 100 Q80 200 30 300Z" fill="#ffffff" opacity="0.3" />
+    {/* Bold curved stripes — red, white, blue (in order) */}
+    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#dc2626" opacity="0.65" />
+    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.6" />
+    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#1e3a8a" opacity="0.6" />
+    <path d="M30 300 Q80 200 40 100 Q10 40 70 -20 L50 -20 Q-10 40 20 100 Q60 200 10 300Z" fill="#dc2626" opacity="0.35" />
+    <path d="M50 300 Q100 200 60 100 Q30 40 90 -20 L70 -20 Q10 40 40 100 Q80 200 30 300Z" fill="#1e3a8a" opacity="0.25" />
 
-    {/* Bottom corner accent */}
-    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#dc2626" opacity="0.4" />
-    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#1e3a8a" opacity="0.35" />
-    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#ffffff" opacity="0.25" />
+    {/* Bottom corner accent — red, white, blue */}
+    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#1e3a8a" opacity="0.45" />
+    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#ffffff" opacity="0.3" />
+    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#dc2626" opacity="0.35" />
 
-    {/* Top-right geometric block */}
-    <rect x="140" y="0" width="60" height="10" fill="#dc2626" opacity="0.45" />
-    <rect x="160" y="10" width="40" height="8" fill="#1e3a8a" opacity="0.35" />
-    <rect x="170" y="18" width="30" height="6" fill="#ffffff" opacity="0.25" />
+    {/* Top-right geometric block — red, white, blue */}
+    <rect x="140" y="0" width="60" height="10" fill="#dc2626" opacity="0.5" />
+    <rect x="160" y="10" width="40" height="8" fill="#ffffff" opacity="0.35" />
+    <rect x="170" y="18" width="30" height="6" fill="#1e3a8a" opacity="0.4" />
   </svg>
 );
 
