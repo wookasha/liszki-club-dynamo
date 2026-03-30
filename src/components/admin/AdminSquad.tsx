@@ -209,7 +209,20 @@ const AdminSquad = () => {
       {showForm && (
         <div className="glass-card rounded-xl p-6 mb-6">
           <h3 className="font-heading font-bold text-foreground mb-4">{editingId ? "Edytuj" : "Nowy"} zawodnik</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex gap-6 flex-col sm:flex-row">
+            {/* Card preview */}
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-xs text-muted-foreground flex items-center gap-1"><Eye className="w-3 h-3" /> Podgląd karty</span>
+              <CardPreview
+                name={form.full_name}
+                number={form.shirt_number}
+                position={form.position}
+                photoUrl={photoPreview || (editingId ? members.find(m => m.id === editingId)?.photo_url ?? null : null)}
+                isCaptain={form.is_captain}
+              />
+            </div>
+            {/* Form fields */}
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-foreground mb-1">Imię i nazwisko *</label>
               <input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
