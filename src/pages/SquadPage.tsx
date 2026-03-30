@@ -4,6 +4,7 @@ import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
 import { Shield, Star, Target, Handshake } from "lucide-react";
 import clubLogo from "@/assets/club-logo.png";
+import cardBg from "@/assets/card-bg.png";
 
 const POSITION_ORDER = ["goalkeeper", "defender", "midfielder", "forward", "coach"] as const;
 const POSITION_LABELS: Record<string, string> = {
