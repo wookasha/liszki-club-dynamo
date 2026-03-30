@@ -313,7 +313,7 @@ function parseRegioScheduleHtml(html: string): MatchRow[] {
     if (!monthNum && monthFallback) monthNum = monthFallback[1];
     if (!monthNum) continue;
 
-    // Time
+    // Time - handle "?:?" as no time
     const timeMatch = li.match(/<div[^>]*col-xs-5[^>]*>\s*(\d{1,2}:\d{2})\s*<\/div>/);
     const time = timeMatch ? timeMatch[1] : null;
     const hasTime = !!time;
@@ -324,13 +324,23 @@ function parseRegioScheduleHtml(html: string): MatchRow[] {
     const offset = getPolishOffset(mn, parseInt(day), year);
     const dateStr = `${year}-${monthNum}-${day}T${time || "00:00"}:00${offset}`;
 
-    // Teams: look for <a href="/mecz/...">TeamName<a>
+    // Teams: either <a href="/mecz/...">TeamName<a> (played) or plain text in <div class="...team">TeamName</div> (upcoming)
     const teamRegex = /<a[^>]*href="\/mecz\/\d+[^"]*"[^>]*>([^<]+)<(?:\/a|a)>/g;
     const teams: string[] = [];
     let tm: RegExpExecArray | null;
     while ((tm = teamRegex.exec(li)) !== null) {
       const name = tm[1].trim();
       if (name && !teams.includes(name)) teams.push(name);
+    }
+
+    // Fallback: extract from <div class="...team">TeamName</div> (upcoming matches without links)
+    if (teams.length < 2) {
+      const teamDivRegex = /<div[^>]*\bteam\b[^>]*>\s*(?:<a[^>]*>)?([^<]+)(?:<\/?\s*a>)?\s*<\/div>/gi;
+      let tdm: RegExpExecArray | null;
+      while ((tdm = teamDivRegex.exec(li)) !== null) {
+        const name = tdm[1].trim();
+        if (name && name.length > 1 && !teams.includes(name)) teams.push(name);
+      }
     }
 
     // Score: <div class="goals digits">N</div>
