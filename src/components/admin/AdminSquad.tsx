@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, Save, X, Upload, Pencil, ArrowUp, ArrowDown, Star } from "lucide-react";
+import { Plus, Trash2, Save, X, Upload, Pencil, ArrowUp, ArrowDown, Star, Eye } from "lucide-react";
+import clubLogo from "@/assets/club-logo.png";
 
 interface SquadMember {
   id: string;
