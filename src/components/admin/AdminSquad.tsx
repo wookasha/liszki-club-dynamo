@@ -231,6 +231,37 @@ const AdminSquad = () => {
 
   return (
     <div>
+      {/* Card background setting */}
+      <div className="glass-card rounded-xl p-4 mb-6">
+        <h3 className="font-heading font-bold text-foreground mb-3 text-sm">Tło karty zawodnika</h3>
+        <div className="flex items-center gap-4 flex-wrap">
+          {cardBgPreview && (
+            <div className="w-20 h-28 rounded-lg overflow-hidden border border-border shadow-sm">
+              <img src={cardBgPreview} alt="Tło karty" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 px-3 py-2 bg-muted border border-border rounded-md text-sm cursor-pointer hover:bg-muted/70 transition-colors">
+              <Upload className="w-4 h-4" /> {cardBgFile ? cardBgFile.name : "Wybierz tło"}
+              <input type="file" accept="image/*" onChange={handleCardBgChange} className="hidden" />
+            </label>
+            <div className="flex gap-2">
+              {cardBgFile && (
+                <button onClick={saveCardBg} disabled={savingBg} className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground font-heading font-semibold text-xs rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
+                  <Save className="w-3 h-3" /> {savingBg ? "Zapisuję..." : "Zapisz tło"}
+                </button>
+              )}
+              {cardBgUrl && (
+                <button onClick={removeCardBg} className="flex items-center gap-1 px-3 py-1.5 bg-muted text-destructive text-xs rounded-md hover:bg-destructive/10 transition-colors">
+                  <Trash2 className="w-3 h-3" /> Usuń
+                </button>
+              )}
+            </div>
+            {!cardBgUrl && !cardBgFile && <span className="text-xs text-muted-foreground">Domyślne tło będzie użyte</span>}
+          </div>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-heading text-xl font-bold text-foreground">Kadra</h2>
         {!showForm && (
