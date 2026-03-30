@@ -313,7 +313,7 @@ function parseRegioScheduleHtml(html: string): MatchRow[] {
     if (!monthNum && monthFallback) monthNum = monthFallback[1];
     if (!monthNum) continue;
 
-    // Time
+    // Time - handle "?:?" as no time
     const timeMatch = li.match(/<div[^>]*col-xs-5[^>]*>\s*(\d{1,2}:\d{2})\s*<\/div>/);
     const time = timeMatch ? timeMatch[1] : null;
     const hasTime = !!time;
