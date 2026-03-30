@@ -367,7 +367,7 @@ const SquadPage = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         <ScrollAnimation>
           <h1 className="section-heading text-4xl text-center mb-2">Kadra</h1>
-          <p className="text-center text-muted-foreground mb-12">Sezon 2024/2025</p>
+          <p className="text-center text-muted-foreground mb-12">Sezon 2025/2026</p>
         </ScrollAnimation>
 
         {grouped.map((group, gi) => (
