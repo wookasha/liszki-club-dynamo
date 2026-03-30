@@ -84,6 +84,7 @@ const PaniniCard = ({
   stats,
   positionShort,
   delay,
+  cardBg,
 }: {
   player: {
     id: string;
@@ -97,6 +98,7 @@ const PaniniCard = ({
   stats: { goals: number; assists: number; yellow_cards: number; red_cards: number } | undefined;
   positionShort: string;
   delay: number;
+  cardBg: string;
 }) => {
   const [flipped, setFlipped] = useState(false);
   const [holoPos, setHoloPos] = useState({ x: 50, y: 50 });
