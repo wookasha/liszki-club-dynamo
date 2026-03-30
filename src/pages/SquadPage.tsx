@@ -177,7 +177,7 @@ const PaniniCard = ({
                 <img
                   src={player.photo_url}
                   alt={player.full_name}
-                  className="w-[85%] h-[80%] object-cover object-top drop-shadow-lg"
+                  className="w-[90%] h-[82%] object-cover object-[center_20%] drop-shadow-lg"
                   style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }}
                   loading="lazy"
                 />
