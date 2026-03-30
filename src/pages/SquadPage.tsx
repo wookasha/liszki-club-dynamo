@@ -165,7 +165,7 @@ const PaniniCard = ({
             {/* Captain star */}
             {player.is_captain && (
               <div className="absolute top-10 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
-                <Star className="w-3.5 h-3.5 text-white fill-white" />
+                <span className="font-heading font-black text-xs text-white leading-none">C</span>
               </div>
             )}
 
