@@ -185,7 +185,7 @@ const PaniniCard = ({
                 />
               ) : (
                 <div className="w-full h-[75%] flex items-center justify-center">
-                  <span className="text-7xl font-heading font-black text-blue-900/10">
+                  <span className="text-7xl font-heading font-black text-white/20">
                     {player.shirt_number || "?"}
                   </span>
                 </div>
