@@ -176,7 +176,7 @@ const Index = () => {
     return (
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-background">
-          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_25%] md:object-center" />
+          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_65%] md:object-[center_60%]" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/80 to-background" />
           <div className="absolute inset-0 bg-gradient-to-r from-club-red/15 via-transparent to-club-blue/15" />
         </div>
@@ -233,7 +233,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-background">
-          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_25%] md:object-center" fetchPriority="high" decoding="async" />
+          <img src={heroImage} alt="Stadion piłkarski" className="w-full h-full object-cover object-[center_65%] md:object-[center_60%]" fetchPriority="high" decoding="async" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/70 to-background md:from-background/70 md:via-background/60 md:to-background" />
           <div className="absolute inset-0 bg-gradient-to-r from-club-red/10 via-transparent to-club-blue/10" />
         </div>
