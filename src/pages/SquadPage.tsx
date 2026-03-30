@@ -116,8 +116,9 @@ const PaniniCard = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ delay, duration: 0.5, ease: "easeOut" }}
       className="perspective-1000"
     >
