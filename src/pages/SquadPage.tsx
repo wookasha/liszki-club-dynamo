@@ -4,6 +4,7 @@ import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
 import { Shield, Star, Target, Handshake } from "lucide-react";
 import clubLogo from "@/assets/club-logo.png";
+import cardBg from "@/assets/card-bg.png";
 
 const POSITION_ORDER = ["goalkeeper", "defender", "midfielder", "forward", "coach"] as const;
 const POSITION_LABELS: Record<string, string> = {
@@ -137,11 +138,9 @@ const PaniniCard = ({
             className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
             style={{ backfaceVisibility: "hidden" }}
           >
-            {/* White base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-blue-50" />
-
-            {/* Geometric pattern overlay */}
-            <CardPattern />
+            {/* Card background image */}
+            <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/20" />
 
             {/* Position badge — top-left */}
             <div className="absolute top-2 left-2 z-30 px-2 py-0.5 bg-blue-900/90 rounded-sm">
@@ -238,8 +237,8 @@ const PaniniCard = ({
             className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-[hsl(222,47%,10%)] to-blue-900" />
-            <CardPattern />
+            <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40" />
 
             <div className="absolute inset-0 flex flex-col">
               {/* Top bar */}
