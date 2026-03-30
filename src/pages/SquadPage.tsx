@@ -287,7 +287,7 @@ const PaniniCard = ({
 
               <div className="px-3 py-2 bg-black/50 backdrop-blur-sm">
                 <p className="font-heading font-bold text-[9px] text-white/50 text-center uppercase tracking-widest">
-                  Sezon 2024/2025
+                  Sezon 2025/2026
                 </p>
               </div>
             </div>
