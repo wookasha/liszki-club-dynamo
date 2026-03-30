@@ -113,8 +113,8 @@ const AdminPage = () => {
         const t = data.results?.table;
         const s = data.results?.schedule;
         const parts: string[] = [];
-        if (t?.synced) parts.push(`Tabela: ${t.synced} drużyn`);
-        if (s?.synced) parts.push(`Mecze: ${s.synced} (rozegrane: ${s.played}, nadchodzące: ${s.upcoming})`);
+        if (t?.synced) parts.push(`Tabela: ${t.synced} drużyn (${t.source || "?"})`);
+        if (s?.synced) parts.push(`Mecze: ${s.synced} (${s.source || "?"}) — rozegrane: ${s.played}, nadchodzące: ${s.upcoming}`);
         setSyncResult(`✅ ${parts.join(" • ") || "Zsynchronizowano"}`);
       } else {
         setSyncResult(`❌ ${data?.error || "Błąd synchronizacji"}`);
