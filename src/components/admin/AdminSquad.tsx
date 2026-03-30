@@ -111,6 +111,36 @@ const AdminSquad = () => {
     setLoading(false);
   };
 
+  const loadCardBg = async () => {
+    const { data } = await supabase.from("site_settings").select("value").eq("key", "squad_card_bg").single();
+    if (data?.value) { setCardBgUrl(data.value); setCardBgPreview(data.value); }
+  };
+
+  const handleCardBgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCardBgFile(file);
+    setCardBgPreview(URL.createObjectURL(file));
+  };
+
+  const saveCardBg = async () => {
+    if (!cardBgFile) return;
+    setSavingBg(true);
+    try {
+      const url = await uploadPhoto(cardBgFile);
+      await supabase.from("site_settings").upsert({ key: "squad_card_bg", value: url });
+      setCardBgUrl(url);
+      setCardBgFile(null);
+    } catch (err: any) { alert("Błąd: " + err.message); }
+    setSavingBg(false);
+  };
+
+  const removeCardBg = async () => {
+    await supabase.from("site_settings").upsert({ key: "squad_card_bg", value: "" });
+    setCardBgUrl(null);
+    setCardBgPreview(null);
+  };
+
   const uploadPhoto = async (file: File): Promise<string> => {
     const ext = file.name.split(".").pop();
     const path = `squad/${Date.now()}.${ext}`;
