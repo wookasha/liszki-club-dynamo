@@ -150,9 +150,9 @@ const PaniniCard = ({
               </span>
             </div>
 
-            {/* Shirt number — top-left under position */}
+            {/* Shirt number — top-left under position (lowered 10px) */}
             {player.shirt_number && (
-              <div className="absolute top-8 left-2 z-30">
+              <div className="absolute top-11 left-2 z-30">
                 <span className="font-heading font-black text-2xl text-blue-900/80 drop-shadow-sm leading-none">
                   {player.shirt_number}
                 </span>
@@ -161,17 +161,15 @@ const PaniniCard = ({
 
             {/* Captain star */}
             {player.is_captain && (
-              <div className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
+              <div className="absolute top-10 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
                 <Star className="w-3.5 h-3.5 text-white fill-white" />
               </div>
             )}
 
-            {/* Club shield — top-right (if not captain) */}
-            {!player.is_captain && (
-              <div className="absolute top-2 right-2 z-30 opacity-50">
-                <Shield className="w-5 h-5 text-blue-900" />
-              </div>
-            )}
+            {/* Club logo — top-right corner */}
+            <div className="absolute top-2 right-1.5 z-30">
+              <img src={clubLogo} alt="Herb klubu" className="w-8 h-8 object-contain drop-shadow-md" />
+            </div>
 
             {/* Player photo — centered, large */}
             <div className="absolute inset-0 flex items-end justify-center z-20 pointer-events-none">
