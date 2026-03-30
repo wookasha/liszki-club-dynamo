@@ -324,6 +324,13 @@ const SquadPage = () => {
   const { data: members = [], isLoading } = useSquadMembers();
   const { data: rawStats = [] } = usePlayerStats();
   const statsMap = buildStatsMap(rawStats);
+  const [cardBg, setCardBg] = useState(cardBgDefault);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "squad_card_bg").single().then(({ data }) => {
+      if (data?.value) setCardBg(data.value);
+    });
+  }, []);
 
   if (isLoading) {
     return (
