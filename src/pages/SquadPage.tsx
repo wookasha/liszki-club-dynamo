@@ -200,7 +200,7 @@ const PaniniCard = ({
               </h3>
               {age && !isCoach && (
                 <div className="flex items-center justify-center gap-3 mt-0.5">
-                  <span className="text-[8px] text-blue-200/70 font-semibold">
+                  <span className="text-blue-200/70 text-xs font-semibold">
                     rocznik {player.birth_year}
                   </span>
                   {stats && (stats.goals > 0 || stats.assists > 0) && (
