@@ -380,7 +380,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
             <span className="text-xs text-muted-foreground uppercase tracking-wider shrink-0 font-medium">
-              Ostatnie wyniki:
+              Ostatnie<br className="md:hidden" /> wyniki:
             </span>
             <Carousel
               opts={{ align: "start", loop: true }}
