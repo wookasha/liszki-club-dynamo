@@ -220,22 +220,21 @@ const PaniniCard = ({
               )}
             </div>
 
-            {/* Holographic overlay */}
+            {/* Holographic shimmer overlay */}
             {!flipped && (
               <div
-                className="absolute inset-0 rounded-xl z-40 pointer-events-none transition-opacity duration-300"
-                style={{
-                  opacity: holoPos.x !== 50 || holoPos.y !== 50 ? 1 : 0,
-                  background: `radial-gradient(circle at ${holoPos.x}% ${holoPos.y}%, 
-                    rgba(255,0,80,0.15) 0%, 
-                    rgba(0,100,255,0.12) 20%, 
-                    rgba(255,255,255,0.15) 35%, 
-                    rgba(0,200,255,0.08) 50%, 
-                    rgba(255,50,100,0.05) 65%, 
-                    transparent 80%)`,
-                  mixBlendMode: "screen",
-                }}
-              />
+                className="absolute inset-0 rounded-xl z-40 pointer-events-none overflow-hidden"
+              >
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(135deg, transparent 20%, rgba(255,0,80,0.13) 30%, rgba(0,100,255,0.12) 40%, rgba(255,255,255,0.18) 50%, rgba(0,200,255,0.10) 60%, rgba(255,50,100,0.08) 70%, transparent 80%)",
+                    backgroundSize: "200% 200%",
+                    animation: "holoShimmer 3.5s ease-in-out infinite",
+                    mixBlendMode: "screen",
+                  }}
+                />
+              </div>
             )}
           </div>
 
