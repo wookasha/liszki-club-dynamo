@@ -210,6 +210,7 @@ const AdminSquad = () => {
       shirt_number: m.shirt_number?.toString() || "",
       birth_year: m.birth_year?.toString() || "",
       is_captain: m.is_captain,
+      role_label: m.role_label || "",
     });
     setPhotoPreview(m.photo_url);
     setShowForm(true);
