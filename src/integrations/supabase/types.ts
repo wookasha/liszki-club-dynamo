@@ -343,6 +343,7 @@ export type Database = {
           is_captain: boolean
           photo_url: string | null
           position: string
+          role_label: string | null
           shirt_number: number | null
           sort_order: number
         }
@@ -354,6 +355,7 @@ export type Database = {
           is_captain?: boolean
           photo_url?: string | null
           position?: string
+          role_label?: string | null
           shirt_number?: number | null
           sort_order?: number
         }
@@ -365,6 +367,7 @@ export type Database = {
           is_captain?: boolean
           photo_url?: string | null
           position?: string
+          role_label?: string | null
           shirt_number?: number | null
           sort_order?: number
         }

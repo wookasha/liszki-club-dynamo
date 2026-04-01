@@ -1,0 +1,1 @@
+ALTER TABLE public.squad_members ADD COLUMN role_label TEXT DEFAULT NULL;
