@@ -216,7 +216,7 @@ const PaniniCard = ({
           {/* ═══════ BACK ═══════ */}
           <div
             className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
-            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg) translateZ(0)" }}
           >
             <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40" />
