@@ -1,6 +1,6 @@
 import { usePlayerStats } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
-import { Trophy, Star } from "lucide-react";
+import { Trophy, Star, ShieldCheck } from "lucide-react";
 import { useMemo } from "react";
 
 interface CardStat {
