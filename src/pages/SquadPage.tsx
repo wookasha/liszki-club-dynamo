@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
-import { Shield, Star, Target, Handshake } from "lucide-react";
+import { Shield, Star, Target, Handshake, ShieldCheck, UserCog } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import clubLogo from "@/assets/club-logo.png";
 import cardBgDefault from "@/assets/card-bg.png";
