@@ -30,6 +30,7 @@ interface PlayerStatsMap {
     assists: number;
     yellow_cards: number;
     red_cards: number;
+    clean_sheets: number;
   };
 }
 
@@ -37,12 +38,13 @@ function buildStatsMap(stats: { player_name: string; stat_type: string; count: n
   const map: PlayerStatsMap = {};
   for (const s of stats) {
     if (!map[s.player_name]) {
-      map[s.player_name] = { goals: 0, assists: 0, yellow_cards: 0, red_cards: 0 };
+      map[s.player_name] = { goals: 0, assists: 0, yellow_cards: 0, red_cards: 0, clean_sheets: 0 };
     }
     if (s.stat_type === "goals") map[s.player_name].goals = s.count;
     if (s.stat_type === "assists") map[s.player_name].assists = s.count;
     if (s.stat_type === "yellow_cards") map[s.player_name].yellow_cards = s.count;
     if (s.stat_type === "red_cards") map[s.player_name].red_cards = s.count;
+    if (s.stat_type === "clean_sheets") map[s.player_name].clean_sheets = s.count;
   }
   return map;
 }
