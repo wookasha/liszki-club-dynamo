@@ -121,7 +121,7 @@ const PaniniCard = ({
         className="relative w-full aspect-[2.5/3.8] cursor-pointer group"
         onClick={() => !isCoach && setFlipped((v) => !v)}
         onMouseEnter={() => !isCoach && setFlipped(true)}
-        onMouseLeave={() => { setFlipped(false); setHoloPos({ x: 50, y: 50 }); }}
+        onMouseLeave={() => setFlipped(false)}
         onMouseMove={handleMouseMove}
       >
         <div
