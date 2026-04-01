@@ -12,6 +12,7 @@ interface SquadMember {
   birth_year: number | null;
   is_captain: boolean;
   sort_order: number;
+  role_label: string | null;
 }
 
 const POSITIONS = [
