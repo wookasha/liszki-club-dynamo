@@ -192,22 +192,10 @@ const PaniniCard = ({
               <h3 className="font-heading font-bold text-[10px] sm:text-xs text-white text-center leading-tight truncate uppercase tracking-wider">
                 {player.full_name}
               </h3>
-              {age && !isCoach && (
-                <div className="flex items-center justify-center gap-3 mt-0.5">
-                  <span className="text-blue-200/70 text-xs font-semibold">
-                    rocznik {player.birth_year}
-                  </span>
-                  {stats && (stats.goals > 0 || stats.assists > 0) && (
-                    <div className="flex gap-1.5">
-                      {stats.goals > 0 && (
-                        <span className="text-[8px] bg-amber-500/80 text-white px-1 rounded-sm font-bold">{stats.goals}⚽</span>
-                      )}
-                      {stats.assists > 0 && (
-                        <span className="text-[8px] bg-emerald-500/80 text-white px-1 rounded-sm font-bold">{stats.assists}🅰</span>
-                      )}
-                    </div>
-                  )}
-                </div>
+              {player.birth_year && !isCoach && (
+                <span className="text-blue-200/70 text-xs font-semibold">
+                  rocznik {player.birth_year}
+                </span>
               )}
             </div>
 
