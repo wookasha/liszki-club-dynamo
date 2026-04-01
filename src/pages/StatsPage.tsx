@@ -51,7 +51,7 @@ const StatsPage = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-16">#</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Zawodnik</th>
                   <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider w-24">
-                    {title === "Strzelcy" ? "Bramki" : "Asysty"}
+                    {title === "Strzelcy" ? "Bramki" : title === "Asystenci" ? "Asysty" : "Czyste konta"}
                   </th>
                 </tr>
               </thead>
