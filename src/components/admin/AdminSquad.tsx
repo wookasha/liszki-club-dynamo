@@ -314,6 +314,17 @@ const AdminSquad = () => {
               <input type="checkbox" checked={form.is_captain} onChange={(e) => setForm({ ...form, is_captain: e.target.checked })} id="captain-check" className="rounded" />
               <label htmlFor="captain-check" className="text-sm text-foreground flex items-center gap-1"><Star className="w-4 h-4 text-amber-500" /> Kapitan</label>
             </div>
+            {form.position === "coach" && (
+              <div>
+                <label className="block text-xs font-medium text-foreground mb-1">Rola w sztabie</label>
+                <input
+                  value={form.role_label}
+                  onChange={(e) => setForm({ ...form, role_label: e.target.value })}
+                  placeholder="np. Trener, Kierownik, Fizjoterapeuta"
+                  className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-xs font-medium text-foreground mb-1">Zdjęcie</label>
               <label className="flex items-center gap-2 px-3 py-2 bg-muted border border-border rounded-md text-sm cursor-pointer hover:bg-muted/70 transition-colors">
