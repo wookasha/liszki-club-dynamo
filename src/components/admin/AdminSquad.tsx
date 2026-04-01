@@ -219,7 +219,7 @@ const AdminSquad = () => {
   const cancel = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ full_name: "", position: "midfielder", shirt_number: "", birth_year: "", is_captain: false });
+    setForm({ full_name: "", position: "midfielder", shirt_number: "", birth_year: "", is_captain: false, role_label: "" });
     setPhotoFile(null);
     setPhotoPreview(null);
   };
