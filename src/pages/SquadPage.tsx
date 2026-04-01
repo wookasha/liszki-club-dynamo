@@ -135,7 +135,7 @@ const PaniniCard = ({
           {/* ═══════ FRONT ═══════ */}
           <div
             className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
-            style={{ backfaceVisibility: "hidden" }}
+            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
           >
             {/* Card background image */}
             <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
