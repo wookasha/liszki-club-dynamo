@@ -312,18 +312,18 @@ const PaniniCard = ({
               </div>
             </div>
 
-            {/* Holographic overlay on back */}
-            <div
-              className="absolute inset-0 rounded-xl z-20 pointer-events-none transition-opacity duration-300"
-              style={{
-                background: `radial-gradient(circle at ${100 - holoPos.x}% ${holoPos.y}%, 
-                  rgba(0,100,255,0.12) 0%, 
-                  rgba(255,0,80,0.1) 30%, 
-                  rgba(255,255,255,0.08) 50%, 
-                  transparent 80%)`,
-                mixBlendMode: "screen",
-              }}
-            />
+            {/* Holographic shimmer on back */}
+            <div className="absolute inset-0 rounded-xl z-20 pointer-events-none overflow-hidden">
+              <div
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(135deg, transparent 20%, rgba(0,100,255,0.12) 35%, rgba(255,255,255,0.14) 50%, rgba(255,0,80,0.10) 65%, transparent 80%)",
+                  backgroundSize: "200% 200%",
+                  animation: "holoShimmer 3.5s ease-in-out infinite",
+                  mixBlendMode: "screen",
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
