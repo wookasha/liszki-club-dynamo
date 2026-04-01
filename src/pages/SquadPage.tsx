@@ -122,7 +122,7 @@ const PaniniCard = ({
         onClick={() => !isCoach && setFlipped((v) => !v)}
         onMouseEnter={() => !isCoach && setFlipped(true)}
         onMouseLeave={() => setFlipped(false)}
-        onMouseMove={handleMouseMove}
+        
       >
         <div
           className="relative w-full h-full transition-transform duration-700 ease-in-out"
