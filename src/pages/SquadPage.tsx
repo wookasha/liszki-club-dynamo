@@ -279,12 +279,32 @@ const PaniniCard = ({
 
                 <div className="w-12 h-0.5 rounded bg-gradient-to-r from-red-500 via-white to-blue-500 mb-4" />
 
-                <div className="w-full space-y-3">
-                  <StatRow icon={<Target className="w-4 h-4 text-amber-400" />} label="Bramki" value={stats?.goals ?? 0} />
-                  <StatRow icon={<Handshake className="w-4 h-4 text-emerald-400" />} label="Asysty" value={stats?.assists ?? 0} />
-                  <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-yellow-400" />} label="Żółte kartki" value={stats?.yellow_cards ?? 0} />
-                  <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-red-500" />} label="Czerwone kartki" value={stats?.red_cards ?? 0} />
-                </div>
+                {isCoach ? (
+                  <div className="w-full space-y-3">
+                    <div className="flex items-center justify-center gap-2 text-xs">
+                      <UserCog className="w-4 h-4 text-blue-300" />
+                      <span className="text-white/80 font-heading font-bold uppercase tracking-wider">
+                        {player.full_name.toLowerCase().includes("kierownik") ? "Kierownik" :
+                         player.full_name.toLowerCase().includes("asystent") ? "Asystent trenera" :
+                         "Trener"}
+                      </span>
+                    </div>
+                  </div>
+                ) : player.position === "goalkeeper" ? (
+                  <div className="w-full space-y-3">
+                    <StatRow icon={<ShieldCheck className="w-4 h-4 text-amber-400" />} label="Czyste konta" value={stats?.clean_sheets ?? 0} />
+                    <StatRow icon={<Handshake className="w-4 h-4 text-emerald-400" />} label="Asysty" value={stats?.assists ?? 0} />
+                    <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-yellow-400" />} label="Żółte kartki" value={stats?.yellow_cards ?? 0} />
+                    <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-red-500" />} label="Czerwone kartki" value={stats?.red_cards ?? 0} />
+                  </div>
+                ) : (
+                  <div className="w-full space-y-3">
+                    <StatRow icon={<Target className="w-4 h-4 text-amber-400" />} label="Bramki" value={stats?.goals ?? 0} />
+                    <StatRow icon={<Handshake className="w-4 h-4 text-emerald-400" />} label="Asysty" value={stats?.assists ?? 0} />
+                    <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-yellow-400" />} label="Żółte kartki" value={stats?.yellow_cards ?? 0} />
+                    <StatRow icon={<div className="w-3 h-4 rounded-[1px] bg-red-500" />} label="Czerwone kartki" value={stats?.red_cards ?? 0} />
+                  </div>
+                )}
               </div>
 
               <div className="px-3 py-2 bg-black/50 backdrop-blur-sm">
