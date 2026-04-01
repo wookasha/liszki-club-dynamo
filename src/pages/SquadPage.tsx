@@ -155,8 +155,6 @@ const PaniniCard = ({
               border: "2px solid rgba(148,163,184,0.25)",
             }}
           >
-            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
-          >
             {/* Card background image */}
             <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/20" />
