@@ -11,11 +11,12 @@ interface PlayerStat {
   sort_order: number;
 }
 
-type StatType = "goals" | "assists" | "yellow_cards" | "red_cards";
+type StatType = "goals" | "assists" | "yellow_cards" | "red_cards" | "clean_sheets";
 
 const typeLabels: Record<StatType, { label: string; addLabel: string; countLabel: string; emptyLabel: string }> = {
   goals: { label: "Strzelcy", addLabel: "strzelca", countLabel: "Bramki", emptyLabel: "strzelców" },
   assists: { label: "Asystenci", addLabel: "asystenta", countLabel: "Asysty", emptyLabel: "asystentów" },
+  clean_sheets: { label: "Czyste konta", addLabel: "bramkarza", countLabel: "Czyste konta", emptyLabel: "czystych kont" },
   yellow_cards: { label: "Żółte kartki", addLabel: "zawodnika", countLabel: "Żółte", emptyLabel: "żółtych kartek" },
   red_cards: { label: "Czerwone kartki", addLabel: "zawodnika", countLabel: "Czerwone", emptyLabel: "czerwonych kartek" },
 };
