@@ -145,6 +145,7 @@ const StatsPage = () => {
         <div className="space-y-8">
           {renderTable("Strzelcy", <Trophy className="w-5 h-5 text-yellow-500" />, scorers, "Brak danych o strzelcach")}
           {renderTable("Asystenci", <Star className="w-5 h-5 text-primary" />, assisters, "Brak danych o asystentach")}
+          {renderTable("Czyste konta", <ShieldCheck className="w-5 h-5 text-emerald-500" />, cleanSheets, "Brak danych o czystych kontach")}
           {renderCardsTable()}
         </div>
       </div>
