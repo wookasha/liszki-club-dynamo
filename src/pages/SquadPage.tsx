@@ -120,6 +120,7 @@ const PaniniCard = ({
       <div
         ref={cardRef}
         className="relative w-full aspect-[2.5/3.8] cursor-pointer group"
+        style={{ transformStyle: "preserve-3d", WebkitTransformStyle: "preserve-3d" as any }}
         onTouchStart={() => { isTouchDevice.current = true; }}
         onClick={() => {
           if (isCoach) return;
@@ -145,8 +146,14 @@ const PaniniCard = ({
         >
           {/* ═══════ FRONT ═══════ */}
           <div
-            className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
-            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
+            className="absolute inset-0 rounded-xl overflow-hidden"
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "translateZ(0)",
+              boxShadow: "0 6px 20px -4px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3)",
+              border: "2px solid rgba(148,163,184,0.25)",
+            }}
           >
             {/* Card background image */}
             <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -226,8 +233,14 @@ const PaniniCard = ({
 
           {/* ═══════ BACK ═══════ */}
           <div
-            className="absolute inset-0 rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50"
-            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg) translateZ(0)" }}
+            className="absolute inset-0 rounded-xl overflow-hidden"
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "rotateY(180deg) translateZ(0)",
+              boxShadow: "0 6px 20px -4px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3)",
+              border: "2px solid rgba(148,163,184,0.25)",
+            }}
           >
             <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40" />
