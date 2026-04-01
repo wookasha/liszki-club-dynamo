@@ -105,6 +105,7 @@ const PaniniCard = ({
 }) => {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const isTouchDevice = useRef(false);
   const age = getAge(player.birth_year);
   const isCoach = player.position === "coach";
 
@@ -119,9 +120,19 @@ const PaniniCard = ({
       <div
         ref={cardRef}
         className="relative w-full aspect-[2.5/3.8] cursor-pointer group"
-        onClick={() => !isCoach && setFlipped((v) => !v)}
-        onMouseEnter={() => !isCoach && setFlipped(true)}
-        onMouseLeave={() => setFlipped(false)}
+        onTouchStart={() => { isTouchDevice.current = true; }}
+        onClick={() => {
+          if (isCoach) return;
+          setFlipped((v) => !v);
+        }}
+        onMouseEnter={() => {
+          if (isCoach || isTouchDevice.current) return;
+          setFlipped(true);
+        }}
+        onMouseLeave={() => {
+          if (isTouchDevice.current) return;
+          setFlipped(false);
+        }}
         
       >
         <div
