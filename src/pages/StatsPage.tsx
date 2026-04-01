@@ -1,6 +1,6 @@
 import { usePlayerStats } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
-import { Trophy, Star } from "lucide-react";
+import { Trophy, Star, ShieldCheck } from "lucide-react";
 import { useMemo } from "react";
 
 interface CardStat {
@@ -12,9 +12,10 @@ interface CardStat {
 const StatsPage = () => {
   const { data: rawStats = [], isLoading: loading } = usePlayerStats();
 
-  const { scorers, assisters, cards } = useMemo(() => {
+  const { scorers, assisters, cleanSheets, cards } = useMemo(() => {
     const scorers = rawStats.filter((s: any) => s.stat_type === "goals");
     const assisters = rawStats.filter((s: any) => s.stat_type === "assists");
+    const cleanSheets = rawStats.filter((s: any) => s.stat_type === "clean_sheets");
 
     const yellowCards = rawStats.filter((s: any) => s.stat_type === "yellow_cards");
     const redCards = rawStats.filter((s: any) => s.stat_type === "red_cards");
@@ -30,7 +31,7 @@ const StatsPage = () => {
     });
 
     const cards = Array.from(playerMap.values()).sort((a, b) => (b.yellow + b.red) - (a.yellow + a.red));
-    return { scorers, assisters, cards };
+    return { scorers, assisters, cleanSheets, cards };
   }, [rawStats]);
 
   const renderTable = (title: string, icon: React.ReactNode, data: any[], emptyMsg: string) => (
@@ -50,7 +51,7 @@ const StatsPage = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-16">#</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Zawodnik</th>
                   <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider w-24">
-                    {title === "Strzelcy" ? "Bramki" : "Asysty"}
+                    {title === "Strzelcy" ? "Bramki" : title === "Asystenci" ? "Asysty" : "Czyste konta"}
                   </th>
                 </tr>
               </thead>
@@ -144,6 +145,7 @@ const StatsPage = () => {
         <div className="space-y-8">
           {renderTable("Strzelcy", <Trophy className="w-5 h-5 text-yellow-500" />, scorers, "Brak danych o strzelcach")}
           {renderTable("Asystenci", <Star className="w-5 h-5 text-primary" />, assisters, "Brak danych o asystentach")}
+          {renderTable("Czyste konta", <ShieldCheck className="w-5 h-5 text-emerald-500" />, cleanSheets, "Brak danych o czystych kontach")}
           {renderCardsTable()}
         </div>
       </div>
