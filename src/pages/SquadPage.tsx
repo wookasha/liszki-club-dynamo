@@ -104,18 +104,9 @@ const PaniniCard = ({
   cardBg: string;
 }) => {
   const [flipped, setFlipped] = useState(false);
-  const [holoPos, setHoloPos] = useState({ x: 50, y: 50 });
   const cardRef = useRef<HTMLDivElement>(null);
   const age = getAge(player.birth_year);
   const isCoach = player.position === "coach";
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setHoloPos({ x, y });
-  }, []);
 
   return (
     <motion.div
