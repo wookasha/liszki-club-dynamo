@@ -192,13 +192,6 @@ const PaniniCard = ({
               <h3 className="font-heading font-bold text-[10px] sm:text-xs text-white text-center leading-tight truncate uppercase tracking-wider">
                 {player.full_name}
               </h3>
-              {player.birth_year && !isCoach && (
-                <div className="flex items-center justify-center mt-0.5">
-                  <span className="text-blue-200/70 text-xs font-semibold">
-                    rocznik {player.birth_year}
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Holographic shimmer overlay */}
