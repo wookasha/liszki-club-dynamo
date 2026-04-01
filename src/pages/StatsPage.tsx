@@ -12,9 +12,10 @@ interface CardStat {
 const StatsPage = () => {
   const { data: rawStats = [], isLoading: loading } = usePlayerStats();
 
-  const { scorers, assisters, cards } = useMemo(() => {
+  const { scorers, assisters, cleanSheets, cards } = useMemo(() => {
     const scorers = rawStats.filter((s: any) => s.stat_type === "goals");
     const assisters = rawStats.filter((s: any) => s.stat_type === "assists");
+    const cleanSheets = rawStats.filter((s: any) => s.stat_type === "clean_sheets");
 
     const yellowCards = rawStats.filter((s: any) => s.stat_type === "yellow_cards");
     const redCards = rawStats.filter((s: any) => s.stat_type === "red_cards");
@@ -30,7 +31,7 @@ const StatsPage = () => {
     });
 
     const cards = Array.from(playerMap.values()).sort((a, b) => (b.yellow + b.red) - (a.yellow + a.red));
-    return { scorers, assisters, cards };
+    return { scorers, assisters, cleanSheets, cards };
   }, [rawStats]);
 
   const renderTable = (title: string, icon: React.ReactNode, data: any[], emptyMsg: string) => (
