@@ -12,6 +12,7 @@ interface SquadMember {
   birth_year: number | null;
   is_captain: boolean;
   sort_order: number;
+  role_label: string | null;
 }
 
 const POSITIONS = [
@@ -101,6 +102,7 @@ const AdminSquad = () => {
     shirt_number: "",
     birth_year: "",
     is_captain: false,
+    role_label: "",
   });
 
   useEffect(() => { fetchMembers(); loadCardBg(); }, []);
@@ -165,6 +167,7 @@ const AdminSquad = () => {
         shirt_number: form.shirt_number ? parseInt(form.shirt_number) : null,
         birth_year: form.birth_year ? parseInt(form.birth_year) : null,
         is_captain: form.is_captain,
+        role_label: form.role_label.trim() || null,
       };
       if (photo_url) payload.photo_url = photo_url;
 
@@ -207,6 +210,7 @@ const AdminSquad = () => {
       shirt_number: m.shirt_number?.toString() || "",
       birth_year: m.birth_year?.toString() || "",
       is_captain: m.is_captain,
+      role_label: m.role_label || "",
     });
     setPhotoPreview(m.photo_url);
     setShowForm(true);
@@ -215,7 +219,7 @@ const AdminSquad = () => {
   const cancel = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ full_name: "", position: "midfielder", shirt_number: "", birth_year: "", is_captain: false });
+    setForm({ full_name: "", position: "midfielder", shirt_number: "", birth_year: "", is_captain: false, role_label: "" });
     setPhotoFile(null);
     setPhotoPreview(null);
   };
@@ -310,6 +314,17 @@ const AdminSquad = () => {
               <input type="checkbox" checked={form.is_captain} onChange={(e) => setForm({ ...form, is_captain: e.target.checked })} id="captain-check" className="rounded" />
               <label htmlFor="captain-check" className="text-sm text-foreground flex items-center gap-1"><Star className="w-4 h-4 text-amber-500" /> Kapitan</label>
             </div>
+            {form.position === "coach" && (
+              <div>
+                <label className="block text-xs font-medium text-foreground mb-1">Rola w sztabie</label>
+                <input
+                  value={form.role_label}
+                  onChange={(e) => setForm({ ...form, role_label: e.target.value })}
+                  placeholder="np. Trener, Kierownik, Fizjoterapeuta"
+                  className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-xs font-medium text-foreground mb-1">Zdjęcie</label>
               <label className="flex items-center gap-2 px-3 py-2 bg-muted border border-border rounded-md text-sm cursor-pointer hover:bg-muted/70 transition-colors">

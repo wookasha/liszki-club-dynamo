@@ -96,6 +96,7 @@ const PaniniCard = ({
     photo_url: string | null;
     is_captain: boolean;
     position: string;
+    role_label: string | null;
   };
   stats: { goals: number; assists: number; yellow_cards: number; red_cards: number; clean_sheets: number } | undefined;
   positionShort: string;
@@ -284,9 +285,7 @@ const PaniniCard = ({
                     <div className="flex items-center justify-center gap-2 text-xs">
                       <UserCog className="w-4 h-4 text-blue-300" />
                       <span className="text-white/80 font-heading font-bold uppercase tracking-wider">
-                        {player.full_name.toLowerCase().includes("kierownik") ? "Kierownik" :
-                         player.full_name.toLowerCase().includes("asystent") ? "Asystent trenera" :
-                         "Trener"}
+                        {player.role_label || "Trener"}
                       </span>
                     </div>
                   </div>
