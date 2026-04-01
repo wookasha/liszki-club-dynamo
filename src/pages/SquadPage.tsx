@@ -128,6 +128,7 @@ const PaniniCard = ({
           className="relative w-full h-full transition-transform duration-700 ease-in-out"
           style={{
             transformStyle: "preserve-3d",
+            WebkitTransformStyle: "preserve-3d",
             transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
           }}
         >
