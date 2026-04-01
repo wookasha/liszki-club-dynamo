@@ -102,6 +102,7 @@ const AdminSquad = () => {
     shirt_number: "",
     birth_year: "",
     is_captain: false,
+    role_label: "",
   });
 
   useEffect(() => { fetchMembers(); loadCardBg(); }, []);
