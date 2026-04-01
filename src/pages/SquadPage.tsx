@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
@@ -104,18 +104,9 @@ const PaniniCard = ({
   cardBg: string;
 }) => {
   const [flipped, setFlipped] = useState(false);
-  const [holoPos, setHoloPos] = useState({ x: 50, y: 50 });
   const cardRef = useRef<HTMLDivElement>(null);
   const age = getAge(player.birth_year);
   const isCoach = player.position === "coach";
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setHoloPos({ x, y });
-  }, []);
 
   return (
     <motion.div
@@ -130,8 +121,8 @@ const PaniniCard = ({
         className="relative w-full aspect-[2.5/3.8] cursor-pointer group"
         onClick={() => !isCoach && setFlipped((v) => !v)}
         onMouseEnter={() => !isCoach && setFlipped(true)}
-        onMouseLeave={() => { setFlipped(false); setHoloPos({ x: 50, y: 50 }); }}
-        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setFlipped(false)}
+        
       >
         <div
           className="relative w-full h-full transition-transform duration-700 ease-in-out"
@@ -220,22 +211,21 @@ const PaniniCard = ({
               )}
             </div>
 
-            {/* Holographic overlay */}
+            {/* Holographic shimmer overlay */}
             {!flipped && (
               <div
-                className="absolute inset-0 rounded-xl z-40 pointer-events-none transition-opacity duration-300"
-                style={{
-                  opacity: holoPos.x !== 50 || holoPos.y !== 50 ? 1 : 0,
-                  background: `radial-gradient(circle at ${holoPos.x}% ${holoPos.y}%, 
-                    rgba(255,0,80,0.15) 0%, 
-                    rgba(0,100,255,0.12) 20%, 
-                    rgba(255,255,255,0.15) 35%, 
-                    rgba(0,200,255,0.08) 50%, 
-                    rgba(255,50,100,0.05) 65%, 
-                    transparent 80%)`,
-                  mixBlendMode: "screen",
-                }}
-              />
+                className="absolute inset-0 rounded-xl z-40 pointer-events-none overflow-hidden"
+              >
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(135deg, transparent 20%, rgba(255,0,80,0.13) 30%, rgba(0,100,255,0.12) 40%, rgba(255,255,255,0.18) 50%, rgba(0,200,255,0.10) 60%, rgba(255,50,100,0.08) 70%, transparent 80%)",
+                    backgroundSize: "200% 200%",
+                    animation: "holoShimmer 3.5s ease-in-out infinite",
+                    mixBlendMode: "screen",
+                  }}
+                />
+              </div>
             )}
           </div>
 
@@ -313,18 +303,18 @@ const PaniniCard = ({
               </div>
             </div>
 
-            {/* Holographic overlay on back */}
-            <div
-              className="absolute inset-0 rounded-xl z-20 pointer-events-none transition-opacity duration-300"
-              style={{
-                background: `radial-gradient(circle at ${100 - holoPos.x}% ${holoPos.y}%, 
-                  rgba(0,100,255,0.12) 0%, 
-                  rgba(255,0,80,0.1) 30%, 
-                  rgba(255,255,255,0.08) 50%, 
-                  transparent 80%)`,
-                mixBlendMode: "screen",
-              }}
-            />
+            {/* Holographic shimmer on back */}
+            <div className="absolute inset-0 rounded-xl z-20 pointer-events-none overflow-hidden">
+              <div
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(135deg, transparent 20%, rgba(0,100,255,0.12) 35%, rgba(255,255,255,0.14) 50%, rgba(255,0,80,0.10) 65%, transparent 80%)",
+                  backgroundSize: "200% 200%",
+                  animation: "holoShimmer 3.5s ease-in-out infinite",
+                  mixBlendMode: "screen",
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
