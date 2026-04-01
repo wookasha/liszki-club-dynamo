@@ -97,7 +97,7 @@ const PaniniCard = ({
     is_captain: boolean;
     position: string;
   };
-  stats: { goals: number; assists: number; yellow_cards: number; red_cards: number } | undefined;
+  stats: { goals: number; assists: number; yellow_cards: number; red_cards: number; clean_sheets: number } | undefined;
   positionShort: string;
   delay: number;
   cardBg: string;
