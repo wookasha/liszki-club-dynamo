@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { useSquadMembers, usePlayerStats } from "@/hooks/use-queries";
