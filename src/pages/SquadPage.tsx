@@ -352,7 +352,7 @@ const SquadPage = () => {
       position: pos,
       label: POSITION_LABELS[pos],
       short: POSITION_SHORT[pos],
-      players: members.filter((m) => m.position === pos),
+      players: members.filter((m) => m.position === pos).sort((a, b) => (a.shirt_number ?? 999) - (b.shirt_number ?? 999)),
     }))
     .filter((g) => g.players.length > 0);
 
