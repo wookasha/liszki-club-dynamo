@@ -167,6 +167,7 @@ const AdminSquad = () => {
         shirt_number: form.shirt_number ? parseInt(form.shirt_number) : null,
         birth_year: form.birth_year ? parseInt(form.birth_year) : null,
         is_captain: form.is_captain,
+        role_label: form.role_label.trim() || null,
       };
       if (photo_url) payload.photo_url = photo_url;
 
