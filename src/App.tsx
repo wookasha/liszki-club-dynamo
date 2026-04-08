@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
 import Layout from "./components/Layout";
+import { PWAUpdateBanner } from "./components/PWAUpdateBanner";
 import Index from "./pages/Index";
 import NewsPage from "./pages/NewsPage";
 import SchedulePage from "./pages/SchedulePage";
