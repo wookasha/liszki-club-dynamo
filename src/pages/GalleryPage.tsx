@@ -62,12 +62,12 @@ const GalleryPage = () => {
                 <ScrollAnimation key={album.id} delay={i * 0.05}>
                   <Link
                     to={`/galeria/${album.id}`}
-                    className="glass-card rounded-xl overflow-hidden hover-lift group block"
+                    className="glass-card rounded-xl overflow-hidden hover-lift group block h-full flex flex-col"
                   >
                     <CoverImage url={coverUrl} title={album.title} />
-                    <div className="p-5 flex items-center justify-between">
+                    <div className="p-5 flex items-center justify-between flex-1">
                       <div>
-                        <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                           {album.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">{album.photo_count} zdjęć</p>
