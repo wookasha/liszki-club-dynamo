@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CookieConsent from "./CookieConsent";
+import PWAInstallBanner from "./PWAInstallBanner";
 
 // Launch date: March 6, 2026 at 19:48 CET (UTC+1)
 const LAUNCH_DATE = new Date("2026-03-06T18:48:00Z"); // 19:48 CET = 18:48 UTC
@@ -33,6 +34,7 @@ const Layout = () => {
       </main>
       {!hideChrome && <Footer />}
       {!hideChrome && <CookieConsent />}
+      {!hideChrome && <PWAInstallBanner />}
     </div>
   );
 };
