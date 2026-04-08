@@ -64,14 +64,6 @@ const PWAInstallBanner = () => {
           background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)",
         }}
       >
-        <button
-          onClick={handleDismiss}
-          className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-muted-foreground/10 transition-colors"
-          aria-label="Zamknij"
-        >
-          <X className="w-4 h-4 text-muted-foreground" />
-        </button>
-
         <div className="flex items-center gap-3">
           <div className="shrink-0 w-12 h-12 rounded-xl overflow-hidden bg-background/50 flex items-center justify-center">
             <img src="/favicon.png" alt="Liszczanka" className="w-10 h-10 object-contain" />
@@ -95,6 +87,14 @@ const PWAInstallBanner = () => {
               Instaluj
             </button>
           )}
+
+          <button
+            onClick={handleDismiss}
+            className="shrink-0 p-1.5 rounded-full hover:bg-muted-foreground/10 transition-colors"
+            aria-label="Zamknij"
+          >
+            <X className="w-4 h-4 text-muted-foreground" />
+          </button>
         </div>
       </div>
     </div>
