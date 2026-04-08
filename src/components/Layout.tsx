@@ -34,6 +34,7 @@ const Layout = () => {
       </main>
       {!hideChrome && <Footer />}
       {!hideChrome && <CookieConsent />}
+      {!hideChrome && <PWAInstallBanner />}
     </div>
   );
 };
