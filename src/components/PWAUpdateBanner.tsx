@@ -18,6 +18,7 @@ export const PWAUpdateBanner = () => {
         return;
       }
       if (stored !== data.version) {
+        localStorage.setItem("pwa-pending-version", data.version);
         setUpdateAvailable(true);
       }
     } catch {
