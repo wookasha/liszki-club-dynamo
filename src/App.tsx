@@ -55,6 +55,7 @@ const App = () => (
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <PWAUpdateBanner />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
