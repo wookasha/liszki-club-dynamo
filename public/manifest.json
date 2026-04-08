@@ -19,8 +19,8 @@
       "type": "image/png"
     },
     {
-      "src": "/favicon.png",
-      "sizes": "192x192",
+      "src": "/pwa-icon-maskable.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
