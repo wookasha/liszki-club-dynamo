@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Download } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -10,6 +11,9 @@ const PWAInstallBanner = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showBanner, setShowBanner] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const isMobile = useIsMobile();
+
+  // ...existing useEffect...
 
   useEffect(() => {
     // Don't show if already dismissed or installed
@@ -54,7 +58,7 @@ const PWAInstallBanner = () => {
     localStorage.setItem("pwa-banner-dismissed", "true");
   };
 
-  if (!showBanner) return null;
+  if (!showBanner || !isMobile) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md animate-in slide-in-from-bottom-4 fade-in duration-500">

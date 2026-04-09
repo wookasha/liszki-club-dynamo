@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CHECK_INTERVAL = 5 * 60 * 1000; // 5 min
 const VERSION_URL = "/version.json";
 
 export const PWAUpdateBanner = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const isMobile = useIsMobile();
 
   const checkForUpdate = useCallback(async () => {
     try {
@@ -50,7 +52,7 @@ export const PWAUpdateBanner = () => {
     window.location.reload();
   };
 
-  if (!updateAvailable) return null;
+  if (!updateAvailable || !isMobile) return null;
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-500">
