@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Download } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -10,6 +11,9 @@ const PWAInstallBanner = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showBanner, setShowBanner] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const isMobile = useIsMobile();
+
+  // ...existing useEffect...
 
   useEffect(() => {
     // Don't show if already dismissed or installed

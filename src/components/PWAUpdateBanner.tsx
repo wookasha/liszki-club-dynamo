@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CHECK_INTERVAL = 5 * 60 * 1000; // 5 min
 const VERSION_URL = "/version.json";
