@@ -78,3 +78,6 @@ This project shows how AI can:
 ## 📄 License
 
 MIT License
+
+
+> Built and iterated as a real-world project for a local football club.
