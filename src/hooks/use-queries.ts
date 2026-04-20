@@ -157,7 +157,8 @@ export const useGalleryAlbums = () =>
       const { data } = await supabase
         .from("gallery_albums")
         .select("*")
-        .order("sort_order", { ascending: true });
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
       return data || [];
     },
     staleTime: 10 * 60 * 1000,
