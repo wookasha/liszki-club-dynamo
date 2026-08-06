@@ -46,6 +46,14 @@ function getVenue(homeRaw: string, awayRaw: string): string {
   return isOwnHome ? "dom" : isOwnAway ? "wyjazd" : "dom";
 }
 
+function getSeasonStartYear(regioUrl: string): number {
+  const m = regioUrl.match(/\/(\d{4})\/(\d{4})\//);
+  if (m) return parseInt(m[1]);
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  return month >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+}
+
 function getPolishOffset(monthNum: number, dayNum: number, yearNum: number): string {
   let offset = "+01:00";
   if (monthNum > 3 && monthNum < 10) {
@@ -268,7 +276,7 @@ function parseRegioTableHtml(html: string): TableRow[] {
   return rows;
 }
 
-function parseRegioScheduleHtml(html: string): MatchRow[] {
+function parseRegioScheduleHtml(html: string, seasonStartYear: number): MatchRow[] {
   const matches: MatchRow[] = [];
 
   // Polish month map
@@ -318,9 +326,9 @@ function parseRegioScheduleHtml(html: string): MatchRow[] {
     const time = timeMatch ? timeMatch[1] : null;
     const hasTime = !!time;
 
-    // Year from season
+    // Year from season: Jul-Dec belong to the season's start year, Jan-Jun to the following year
     const mn = parseInt(monthNum);
-    const year = mn >= 7 ? 2025 : 2026;
+    const year = mn >= 7 ? seasonStartYear : seasonStartYear + 1;
     const offset = getPolishOffset(mn, parseInt(day), year);
     const dateStr = `${year}-${monthNum}-${day}T${time || "00:00"}:00${offset}`;
 
@@ -484,7 +492,7 @@ Deno.serve(async (req) => {
       const tryRegioSch = async () => {
         console.log("Fetching schedule from regiowyniki.pl");
         const regioHtml = await fetchPage(REGIO_URL);
-        const rows = parseRegioScheduleHtml(regioHtml);
+        const rows = parseRegioScheduleHtml(regioHtml, getSeasonStartYear(REGIO_URL));
         console.log(`Regiowyniki schedule: ${rows.length} matches`);
         return rows;
       };
