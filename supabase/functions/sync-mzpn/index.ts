@@ -11,7 +11,7 @@ const DEFAULT_TABLE_URL =
 const DEFAULT_SCHEDULE_URL =
   "https://malopolskizpn.pl/rozgrywki/2025-2026/seniorzy/ko2_krakow/?view=schedule";
 
-const REGIO_URL =
+const DEFAULT_REGIO_URL =
   "https://regiowyniki.pl/kalendarz/Pilka_Nozna/2025/2026/Malopolskie/Liga_okregowa/Krakow_II/";
 
 const OWN_TEAM_KEYWORD = "LISZCZANKA";
@@ -390,11 +390,12 @@ Deno.serve(async (req) => {
     const syncType = body.type || "all";
     const preferredSource = body.source || "auto"; // "auto" | "mzpn" | "regiowyniki"
 
-    const { data: settings } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url"]);
+    const { data: settings } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url", "regio_url"]);
     const settingsMap: Record<string, string> = {};
     (settings || []).forEach((s: any) => { settingsMap[s.key] = s.value; });
     const TABLE_URL = settingsMap["mzpn_table_url"] || DEFAULT_TABLE_URL;
     const SCHEDULE_URL = settingsMap["mzpn_schedule_url"] || DEFAULT_SCHEDULE_URL;
+    const REGIO_URL = settingsMap["regio_url"] || DEFAULT_REGIO_URL;
 
     const results: Record<string, unknown> = {};
 

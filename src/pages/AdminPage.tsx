@@ -65,6 +65,7 @@ const AdminPage = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [mzpnTableUrl, setMzpnTableUrl] = useState("");
   const [mzpnScheduleUrl, setMzpnScheduleUrl] = useState("");
+  const [regioUrl, setRegioUrl] = useState("");
   const [savingSettings, setSavingSettings] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [syncSource, setSyncSource] = useState<"auto" | "mzpn" | "regiowyniki">("auto");
@@ -86,10 +87,11 @@ const AdminPage = () => {
   };
 
   const loadSettings = async () => {
-    const { data } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url"]);
+    const { data } = await supabase.from("site_settings").select("key, value").in("key", ["mzpn_table_url", "mzpn_schedule_url", "regio_url"]);
     (data || []).forEach((s: any) => {
       if (s.key === "mzpn_table_url") setMzpnTableUrl(s.value);
       if (s.key === "mzpn_schedule_url") setMzpnScheduleUrl(s.value);
+      if (s.key === "regio_url") setRegioUrl(s.value);
     });
   };
 
@@ -98,9 +100,10 @@ const AdminPage = () => {
     await Promise.all([
       supabase.from("site_settings").upsert({ key: "mzpn_table_url", value: mzpnTableUrl, updated_at: new Date().toISOString() }),
       supabase.from("site_settings").upsert({ key: "mzpn_schedule_url", value: mzpnScheduleUrl, updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "regio_url", value: regioUrl, updated_at: new Date().toISOString() }),
     ]);
     setSavingSettings(false);
-    setSyncResult("✅ Zapisano linki MZPN");
+    setSyncResult("✅ Zapisano linki źródeł danych");
   };
 
   const handleSync = async () => {
@@ -257,16 +260,20 @@ const AdminPage = () => {
 
           {showSettings && (
             <div className="glass-card rounded-xl p-6 mb-6">
-              <h2 className="font-heading text-lg font-bold text-foreground mb-4">Linki MZPN do synchronizacji</h2>
+              <h2 className="font-heading text-lg font-bold text-foreground mb-4">Linki do synchronizacji</h2>
               <p className="text-xs text-muted-foreground mb-4">Zmień te linki gdy rozpocznie się nowy sezon rozgrywkowy.</p>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-foreground mb-1">Link do tabeli</label>
+                  <label className="block text-xs font-medium text-foreground mb-1">MZPN — link do tabeli</label>
                   <input type="url" value={mzpnTableUrl} onChange={(e) => setMzpnTableUrl(e.target.value)} placeholder="https://malopolskizpn.pl/rozgrywki/..." className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-foreground mb-1">Link do terminarza</label>
+                  <label className="block text-xs font-medium text-foreground mb-1">MZPN — link do terminarza</label>
                   <input type="url" value={mzpnScheduleUrl} onChange={(e) => setMzpnScheduleUrl(e.target.value)} placeholder="https://malopolskizpn.pl/rozgrywki/..." className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-foreground mb-1">Regiowyniki — link do kalendarza</label>
+                  <input type="url" value={regioUrl} onChange={(e) => setRegioUrl(e.target.value)} placeholder="https://regiowyniki.pl/kalendarz/..." className="w-full px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
                 </div>
                 <button onClick={saveSettings} disabled={savingSettings} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm uppercase rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
                   <Save className="w-4 h-4" /> {savingSettings ? "Zapisuję..." : "Zapisz linki"}
