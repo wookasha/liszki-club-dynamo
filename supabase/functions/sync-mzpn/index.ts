@@ -246,7 +246,7 @@ function parseRegioTableHtml(html: string): TableRow[] {
     // Team name: <a href="/druzyna/..." class="xhidden-xs">Team Name</a>
     const teamMatch = li.match(/<a[^>]*href="\/druzyna\/[^"]*"[^>]*class="[^"]*xhidden[^"]*"[^>]*>([^<]+)<\/a>/);
     if (!teamMatch) continue;
-    const team = teamMatch[1].trim();
+    const team = normalizeName(teamMatch[1]);
 
     // Stats divs: points (strong), played, won, drawn, lost, goals
     // <div class="col-xs-1"><strong>39</strong></div>
@@ -360,8 +360,8 @@ function parseRegioScheduleHtml(html: string, seasonStartYear: number): MatchRow
     }
 
     if (teams.length >= 2) {
-      const homeTeam = teams[0];
-      const awayTeam = teams[1];
+      const homeTeam = normalizeName(teams[0]);
+      const awayTeam = normalizeName(teams[1]);
       const isPlayed = scores.length >= 2;
 
       matches.push({
