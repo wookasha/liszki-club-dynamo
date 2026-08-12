@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, X, Upload, Pencil, ArrowUp, ArrowDown, Star, Eye } from "lucide-react";
 import clubLogo from "@/assets/club-logo.png";
+import cardBgDefault from "@/assets/card-bg.png";
 
 interface SquadMember {
   id: string;
@@ -23,62 +24,67 @@ const POSITIONS = [
   { value: "coach", label: "Sztab szkoleniowy", short: "SZT" },
 ];
 
-/* Mini Panini card preview (front only) */
-const CardPreviewPattern = () => (
-  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M-30 300 Q30 200 -20 100 Q-50 40 10 -20 L-40 -20 L-40 300Z" fill="#dc2626" opacity="0.65" />
-    <path d="M-10 300 Q40 200 0 100 Q-30 40 30 -20 L10 -20 Q-50 40 -20 100 Q30 200 -30 300Z" fill="#ffffff" opacity="0.6" />
-    <path d="M10 300 Q60 200 20 100 Q-10 40 50 -20 L30 -20 Q-30 40 0 100 Q40 200 -10 300Z" fill="#1e3a8a" opacity="0.6" />
-    <path d="M200 300 Q160 250 200 200 L200 300Z" fill="#dc2626" opacity="0.45" />
-    <path d="M200 300 Q170 260 200 220 L200 300Z" fill="#ffffff" opacity="0.35" />
-    <path d="M200 300 Q180 270 200 240 L200 300Z" fill="#1e3a8a" opacity="0.4" />
-  </svg>
-);
-
-const CardPreview = ({ name, number, position, photoUrl, isCaptain }: {
-  name: string; number: string; position: string; photoUrl: string | null; isCaptain: boolean;
+/* Panini card preview (front only) — mirrors the real card on the public Kadra page */
+const CardPreview = ({ name, number, position, photoUrl, isCaptain, cardBg }: {
+  name: string; number: string; position: string; photoUrl: string | null; isCaptain: boolean; cardBg: string;
 }) => {
   const posShort = POSITIONS.find(p => p.value === position)?.short || "—";
   return (
-    <div className="w-44 aspect-[2.5/3.8] rounded-xl overflow-hidden shadow-xl border-2 border-blue-200/50 relative flex-shrink-0">
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-blue-50" />
-      <CardPreviewPattern />
-      {/* Position badge */}
-      <div className="absolute top-1.5 left-1.5 z-30 px-1.5 py-0.5 bg-blue-900/90 rounded-sm">
-        <span className="font-heading font-bold text-[8px] text-white tracking-widest">{posShort}</span>
+    <div
+      className="w-44 aspect-[2.5/3.8] rounded-xl overflow-hidden relative flex-shrink-0"
+      style={{
+        boxShadow: "0 6px 20px -4px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3)",
+        border: "2px solid rgba(148,163,184,0.25)",
+      }}
+    >
+      <img src={cardBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      <div className="absolute inset-0 bg-black/20" />
+
+      {/* Position badge — top-left */}
+      <div className="absolute top-2 left-2 z-30 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-sm">
+        <span className="font-heading font-bold text-[10px] text-white tracking-widest">{posShort}</span>
       </div>
-      {/* Number */}
+
+      {/* Shirt number — top-left under position */}
       {number && (
-        <div className="absolute top-7 left-1.5 z-30">
-          <span className="font-heading font-black text-lg text-blue-900/80 leading-none">{number}</span>
+        <div className="absolute top-11 left-2 z-30">
+          <span className="font-heading font-black text-2xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-none">{number}</span>
         </div>
       )}
-      {/* Captain */}
+
+      {/* Captain star */}
       {isCaptain && (
-        <div className="absolute top-7 right-1.5 z-30 w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-          <Star className="w-2.5 h-2.5 text-white fill-white" />
+        <div className="absolute top-10 right-2 z-30 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md ring-2 ring-amber-300/60">
+          <span className="font-heading font-black text-xs text-white leading-none">C</span>
         </div>
       )}
-      {/* Club logo */}
-      <div className="absolute top-1.5 right-1 z-30">
-        <img src={clubLogo} alt="Herb" className="w-6 h-6 object-contain drop-shadow" />
+
+      {/* Club logo — top-right corner */}
+      <div className="absolute top-2 right-1.5 z-30">
+        <img src={clubLogo} alt="Herb klubu" className="w-8 h-8 object-contain drop-shadow-md" />
       </div>
-      {/* Photo */}
-      <div className="absolute left-0 right-0 bottom-0 z-20" style={{ top: "5%" }}>
+
+      {/* Player photo */}
+      <div className="absolute left-0 right-0 bottom-0 z-20 pointer-events-none" style={{ top: "5%" }}>
         {photoUrl ? (
-          <img src={photoUrl} alt={name} className="w-full h-full object-cover object-top"
-            style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }} />
+          <img
+            src={photoUrl}
+            alt={name}
+            className="w-full h-full object-cover object-top drop-shadow-lg"
+            style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 85%, transparent 100%)" }}
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-4xl font-heading font-black text-blue-900/10">{number || "?"}</span>
+          <div className="w-full h-[75%] flex items-center justify-center">
+            <span className="text-7xl font-heading font-black text-white/20">{number || "?"}</span>
           </div>
         )}
       </div>
-      {/* Name bar */}
-      <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 px-2 py-1.5">
-        <p className="font-heading font-bold text-[8px] text-white text-center truncate uppercase tracking-wider">
+
+      {/* Bottom name bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 px-3 py-2">
+        <h3 className="font-heading font-bold text-[10px] sm:text-xs text-white text-center leading-tight truncate uppercase tracking-wider">
           {name || "Imię i nazwisko"}
-        </p>
+        </h3>
       </div>
     </div>
   );
@@ -96,6 +102,8 @@ const AdminSquad = () => {
   const [cardBgFile, setCardBgFile] = useState<File | null>(null);
   const [cardBgPreview, setCardBgPreview] = useState<string | null>(null);
   const [savingBg, setSavingBg] = useState(false);
+  const [season, setSeason] = useState("");
+  const [savingSeason, setSavingSeason] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     position: "midfielder",
@@ -105,7 +113,7 @@ const AdminSquad = () => {
     role_label: "",
   });
 
-  useEffect(() => { fetchMembers(); loadCardBg(); }, []);
+  useEffect(() => { fetchMembers(); loadSettings(); }, []);
 
   const fetchMembers = async () => {
     const { data } = await supabase.from("squad_members").select("*").order("sort_order");
@@ -113,9 +121,18 @@ const AdminSquad = () => {
     setLoading(false);
   };
 
-  const loadCardBg = async () => {
-    const { data } = await supabase.from("site_settings").select("value").eq("key", "squad_card_bg").single();
-    if (data?.value) { setCardBgUrl(data.value); setCardBgPreview(data.value); }
+  const loadSettings = async () => {
+    const { data } = await supabase.from("site_settings").select("key, value").in("key", ["squad_card_bg", "squad_season"]);
+    (data || []).forEach((s: any) => {
+      if (s.key === "squad_card_bg" && s.value) { setCardBgUrl(s.value); setCardBgPreview(s.value); }
+      if (s.key === "squad_season") setSeason(s.value || "");
+    });
+  };
+
+  const saveSeason = async () => {
+    setSavingSeason(true);
+    await supabase.from("site_settings").upsert({ key: "squad_season", value: season, updated_at: new Date().toISOString() });
+    setSavingSeason(false);
   };
 
   const handleCardBgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,6 +252,23 @@ const AdminSquad = () => {
 
   return (
     <div>
+      {/* Season setting */}
+      <div className="glass-card rounded-xl p-4 mb-6">
+        <h3 className="font-heading font-bold text-foreground mb-3 text-sm">Sezon</h3>
+        <p className="text-xs text-muted-foreground mb-3">Wyświetlany w nagłówku zakładki Kadra i na odwrocie kart zawodników.</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <input
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+            placeholder="np. 2026/2027"
+            className="w-40 px-3 py-2 bg-muted border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button onClick={saveSeason} disabled={savingSeason || !season.trim()} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-heading font-semibold text-sm rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50">
+            <Save className="w-4 h-4" /> {savingSeason ? "Zapisuję..." : "Zapisz sezon"}
+          </button>
+        </div>
+      </div>
+
       {/* Card background setting */}
       <div className="glass-card rounded-xl p-4 mb-6">
         <h3 className="font-heading font-bold text-foreground mb-3 text-sm">Tło karty zawodnika</h3>
@@ -288,6 +322,7 @@ const AdminSquad = () => {
                 position={form.position}
                 photoUrl={photoPreview || (editingId ? members.find(m => m.id === editingId)?.photo_url ?? null : null)}
                 isCaptain={form.is_captain}
+                cardBg={cardBgPreview || cardBgDefault}
               />
             </div>
             {/* Form fields */}

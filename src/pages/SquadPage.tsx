@@ -87,6 +87,7 @@ const PaniniCard = ({
   positionShort,
   delay,
   cardBg,
+  season,
 }: {
   player: {
     id: string;
@@ -102,6 +103,7 @@ const PaniniCard = ({
   positionShort: string;
   delay: number;
   cardBg: string;
+  season: string;
 }) => {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -306,7 +308,7 @@ const PaniniCard = ({
 
               <div className="px-3 py-2 bg-black/50 backdrop-blur-sm">
                 <p className="font-heading font-bold text-[9px] text-white/50 text-center uppercase tracking-widest">
-                  Sezon 2025/2026
+                  Sezon {season}
                 </p>
               </div>
             </div>
@@ -345,10 +347,14 @@ const SquadPage = () => {
   const { data: rawStats = [] } = usePlayerStats();
   const statsMap = buildStatsMap(rawStats);
   const [cardBg, setCardBg] = useState(cardBgDefault);
+  const [season, setSeason] = useState("2025/2026");
 
   useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", "squad_card_bg").single().then(({ data }) => {
-      if (data?.value) setCardBg(data.value);
+    supabase.from("site_settings").select("key, value").in("key", ["squad_card_bg", "squad_season"]).then(({ data }) => {
+      (data || []).forEach((s: any) => {
+        if (s.key === "squad_card_bg" && s.value) setCardBg(s.value);
+        if (s.key === "squad_season" && s.value) setSeason(s.value);
+      });
     });
   }, []);
 
@@ -386,7 +392,7 @@ const SquadPage = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         <ScrollAnimation>
           <h1 className="section-heading text-4xl text-center mb-2">Kadra</h1>
-          <p className="text-center text-muted-foreground mb-12">Sezon 2025/2026</p>
+          <p className="text-center text-muted-foreground mb-12">Sezon {season}</p>
         </ScrollAnimation>
 
         {grouped.map((group, gi) => (
@@ -407,6 +413,7 @@ const SquadPage = () => {
                     positionShort={group.short}
                     delay={i * 0.12}
                     cardBg={cardBg}
+                    season={season}
                   />
                 </ScrollAnimation>
               ))}
