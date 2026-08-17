@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Save, X, UserPlus, Minus } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, UserPlus, Minus, Upload } from "lucide-react";
 
 interface Scorer {
   player: string;
@@ -52,8 +52,11 @@ const AdminMatches = () => {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...defaultForm });
   const [newsPosts, setNewsPosts] = useState<NewsOption[]>([]);
+  const [extraLogos, setExtraLogos] = useState<Record<string, string>>({});
+  const [logoFiles, setLogoFiles] = useState<{ home?: File; away?: File }>({});
+  const [savingLogo, setSavingLogo] = useState<{ home?: boolean; away?: boolean }>({});
 
-  useEffect(() => { fetchMatches(); fetchTeams(); fetchNews(); }, []);
+  useEffect(() => { fetchMatches(); fetchTeams(); fetchNews(); fetchExtraLogos(); }, []);
 
   const fetchNews = async () => {
     const { data } = await supabase.from("news_posts").select("slug, title").eq("published", true).order("created_at", { ascending: false });
@@ -66,6 +69,34 @@ const AdminMatches = () => {
     const map: Record<string, string> = {};
     (data || []).forEach((r: any) => { if (r.stadium_address) map[r.team] = r.stadium_address; });
     setStadiumMap(map);
+  };
+
+  const fetchExtraLogos = async () => {
+    const { data } = await supabase.from("extra_team_logos").select("team, logo_url");
+    const map: Record<string, string> = {};
+    (data || []).forEach((r: any) => { map[r.team] = r.logo_url; });
+    setExtraLogos(map);
+  };
+
+  const saveExtraLogo = async (side: "home" | "away") => {
+    const team = (side === "home" ? form.home_team : form.away_team).trim();
+    const file = logoFiles[side];
+    if (!team || !file) return;
+    setSavingLogo({ ...savingLogo, [side]: true });
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `team-logos/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from("news-images").upload(path, file, { cacheControl: "31536000", upsert: true });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("news-images").getPublicUrl(path);
+      const { error } = await supabase.from("extra_team_logos").upsert({ team, logo_url: data.publicUrl, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      setExtraLogos({ ...extraLogos, [team]: data.publicUrl });
+      setLogoFiles({ ...logoFiles, [side]: undefined });
+    } catch (err: any) {
+      alert("Błąd zapisu herbu: " + err.message);
+    }
+    setSavingLogo({ ...savingLogo, [side]: false });
   };
 
   const fetchMatches = async () => {
@@ -218,6 +249,29 @@ const AdminMatches = () => {
             <p className="text-xs text-muted-foreground -mt-2">
               Podpowiedzi to drużyny z tabeli ligowej — możesz też wpisać dowolną inną (np. na mecz pucharowy). Aby taki mecz przetrwał synchronizację z ligą, zmień pole "Liga" poniżej (np. na "Puchar Polski").
             </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(["home", "away"] as const).map((side) => {
+                const team = (side === "home" ? form.home_team : form.away_team).trim();
+                if (!team || teams.includes(team)) return null;
+                const hasLogo = !!extraLogos[team];
+                const file = logoFiles[side];
+                return (
+                  <div key={side} className="flex items-center gap-2 -mt-1">
+                    {hasLogo && <img src={extraLogos[team]} alt={team} className="w-8 h-8 object-contain rounded-full border border-border shrink-0" />}
+                    <label className="flex-1 flex items-center gap-2 px-3 py-1.5 bg-muted border border-border rounded-md text-xs cursor-pointer hover:bg-muted/70 transition-colors truncate">
+                      <Upload className="w-3.5 h-3.5 shrink-0" />
+                      {file ? file.name : hasLogo ? `Zmień herb — ${team}` : `Dodaj herb — ${team}`}
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => setLogoFiles({ ...logoFiles, [side]: e.target.files?.[0] })} />
+                    </label>
+                    {file && (
+                      <button onClick={() => saveExtraLogo(side)} disabled={savingLogo[side]} className="p-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 shrink-0">
+                        <Save className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Miejsce</label>

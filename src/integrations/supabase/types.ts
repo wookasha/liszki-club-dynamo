@@ -32,6 +32,24 @@ export type Database = {
         }
         Relationships: []
       }
+      extra_team_logos: {
+        Row: {
+          logo_url: string
+          team: string
+          updated_at: string
+        }
+        Insert: {
+          logo_url: string
+          team: string
+          updated_at?: string
+        }
+        Update: {
+          logo_url?: string
+          team?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_albums: {
         Row: {
           cover_image_url: string | null

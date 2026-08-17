@@ -120,16 +120,33 @@ export const useLeagueTable = () =>
     staleTime: 10 * 60 * 1000,
   });
 
+// Logos for one-off opponents (e.g. Puchar Polski teams) that aren't part
+// of the league and would otherwise be wiped by the league sync.
+export const useExtraTeamLogos = () =>
+  useQuery({
+    queryKey: ["extra_team_logos"],
+    queryFn: async () => {
+      const { data } = await supabase.from("extra_team_logos").select("team, logo_url");
+      const map: Record<string, string> = {};
+      (data || []).forEach((r: any) => { map[r.team] = r.logo_url; });
+      return map;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
 // ── Team Logos (lightweight query for schedule page) ─────────────────
+// Merges league_table logos with extra_team_logos.
 export const useTeamLogos = () =>
   useQuery({
     queryKey: ["league_table", "logos"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("league_table")
-        .select("team, logo_url");
+      const [{ data: leagueData }, { data: extraData }] = await Promise.all([
+        supabase.from("league_table").select("team, logo_url"),
+        supabase.from("extra_team_logos").select("team, logo_url"),
+      ]);
       const map: Record<string, string | null> = {};
-      (data || []).forEach((r: any) => { map[r.team] = r.logo_url; });
+      (leagueData || []).forEach((r: any) => { map[r.team] = r.logo_url; });
+      (extraData || []).forEach((r: any) => { if (!map[r.team]) map[r.team] = r.logo_url; });
       return map;
     },
     staleTime: 10 * 60 * 1000,

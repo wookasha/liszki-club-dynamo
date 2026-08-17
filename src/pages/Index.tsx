@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Trophy, ArrowRight, Facebook, Youtube, MapPin, ChevronRight, ExternalLink, Home, Plane } from "lucide-react";
 import { motion } from "framer-motion";
-import { useHomeNews, useNextMatch, useLastResults, useLeagueTable, useSponsors } from "@/hooks/use-queries";
+import { useHomeNews, useNextMatch, useLastResults, useLeagueTable, useSponsors, useExtraTeamLogos } from "@/hooks/use-queries";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import CountdownTimer from "@/components/CountdownTimer";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -43,6 +43,7 @@ const Index = () => {
   const { data: lastResultsRaw = [] } = useLastResults();
   const { data: allLeagueRows = [] } = useLeagueTable();
   const { data: fetchedSponsors = [] } = useSponsors();
+  const { data: extraLogos = {} } = useExtraTeamLogos();
 
   const news = fetchedNews.length > 0 ? fetchedNews : demoNews;
   const nextMatch = nextMatchRaw ? {
@@ -73,8 +74,9 @@ const Index = () => {
     }
     const logoMap: Record<string, string | null> = {};
     allLeagueRows.forEach((r) => { logoMap[r.team] = r.logo_url; });
+    Object.entries(extraLogos).forEach(([team, url]) => { if (!logoMap[team]) logoMap[team] = url; });
     return { leagueTable: slice, teamLogos: logoMap };
-  }, [allLeagueRows]);
+  }, [allLeagueRows, extraLogos]);
 
   // Fire confetti burst
   const fireConfetti = async () => {
