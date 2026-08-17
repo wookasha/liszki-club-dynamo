@@ -15,6 +15,7 @@ const DEFAULT_REGIO_URL =
   "https://regiowyniki.pl/kalendarz/Pilka_Nozna/2025/2026/Malopolskie/Liga_okregowa/Krakow_II/";
 
 const OWN_TEAM_KEYWORD = "LISZCZANKA";
+const LEAGUE_NAME = "Klasa okręgowa, grupa II";
 
 function normalizeName(raw: string): string {
   return raw.trim().split(/\s+/).map((w) => {
@@ -515,13 +516,15 @@ Deno.serve(async (req) => {
       console.log(`Total: ${matchRows.length} matches, ${ownMatches.length} Liszczanka`);
 
       if (ownMatches.length > 0) {
-        await supabase.from("matches").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+        // Only replace matches from this league sync — manually added matches
+        // (e.g. Puchar Polski, sparingi) use a different `league` value and are left untouched.
+        await supabase.from("matches").delete().eq("league", LEAGUE_NAME);
 
         for (let b = 0; b < ownMatches.length; b += 50) {
           const batch = ownMatches.slice(b, b + 50).map((m) => ({
             match_date: m.match_date, home_team: m.home_team, away_team: m.away_team,
             score_home: m.score_home, score_away: m.score_away, is_played: m.is_played,
-            venue: m.venue, league: "Klasa okręgowa, grupa II",
+            venue: m.venue, league: LEAGUE_NAME,
             stadium_address: stadiumMap[m.home_team] || "", scorers: [],
           }));
           const { error } = await supabase.from("matches").insert(batch);

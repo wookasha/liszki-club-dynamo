@@ -185,28 +185,39 @@ const AdminMatches = () => {
               <label className="block text-sm font-medium text-foreground mb-1">Data i godzina</label>
               <input type="datetime-local" value={form.match_date} onChange={(e) => setForm({ ...form, match_date: e.target.value })} className={inputClass} />
             </div>
+            <datalist id="known-teams">
+              {teams.map((t) => <option key={t} value={t} />)}
+            </datalist>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gospodarz</label>
-                <select value={form.home_team} onChange={(e) => {
-                  const team = e.target.value;
-                  setForm({ ...form, home_team: team, stadium_address: stadiumMap[team] || form.stadium_address });
-                }} className={inputClass}>
-                  {teams.length > 0 ? teams.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  )) : <option value={form.home_team}>{form.home_team}</option>}
-                </select>
+                <input
+                  type="text"
+                  list="known-teams"
+                  placeholder="Nazwa drużyny"
+                  value={form.home_team}
+                  onChange={(e) => {
+                    const team = e.target.value;
+                    setForm({ ...form, home_team: team, stadium_address: stadiumMap[team] || form.stadium_address });
+                  }}
+                  className={inputClass}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Gość</label>
-                <select value={form.away_team} onChange={(e) => setForm({ ...form, away_team: e.target.value })} className={inputClass}>
-                  <option value="">Wybierz drużynę</option>
-                  {teams.filter(t => t !== form.home_team).map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  list="known-teams"
+                  placeholder="Nazwa drużyny"
+                  value={form.away_team}
+                  onChange={(e) => setForm({ ...form, away_team: e.target.value })}
+                  className={inputClass}
+                />
               </div>
             </div>
+            <p className="text-xs text-muted-foreground -mt-2">
+              Podpowiedzi to drużyny z tabeli ligowej — możesz też wpisać dowolną inną (np. na mecz pucharowy). Aby taki mecz przetrwał synchronizację z ligą, zmień pole "Liga" poniżej (np. na "Puchar Polski").
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">Miejsce</label>
