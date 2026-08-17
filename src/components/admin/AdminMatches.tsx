@@ -78,20 +78,25 @@ const AdminMatches = () => {
     setExtraLogos(map);
   };
 
+  const uploadTeamLogo = async (team: string, file: File): Promise<string> => {
+    const ext = file.name.split(".").pop();
+    const path = `team-logos/${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from("news-images").upload(path, file, { cacheControl: "31536000", upsert: true });
+    if (uploadError) throw uploadError;
+    const { data } = supabase.storage.from("news-images").getPublicUrl(path);
+    const { error } = await supabase.from("extra_team_logos").upsert({ team, logo_url: data.publicUrl, updated_at: new Date().toISOString() });
+    if (error) throw error;
+    return data.publicUrl;
+  };
+
   const saveExtraLogo = async (side: "home" | "away") => {
     const team = (side === "home" ? form.home_team : form.away_team).trim();
     const file = logoFiles[side];
     if (!team || !file) return;
     setSavingLogo({ ...savingLogo, [side]: true });
     try {
-      const ext = file.name.split(".").pop();
-      const path = `team-logos/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from("news-images").upload(path, file, { cacheControl: "31536000", upsert: true });
-      if (uploadError) throw uploadError;
-      const { data } = supabase.storage.from("news-images").getPublicUrl(path);
-      const { error } = await supabase.from("extra_team_logos").upsert({ team, logo_url: data.publicUrl, updated_at: new Date().toISOString() });
-      if (error) throw error;
-      setExtraLogos({ ...extraLogos, [team]: data.publicUrl });
+      const url = await uploadTeamLogo(team, file);
+      setExtraLogos({ ...extraLogos, [team]: url });
       setLogoFiles({ ...logoFiles, [side]: undefined });
     } catch (err: any) {
       alert("Błąd zapisu herbu: " + err.message);
@@ -141,9 +146,23 @@ const AdminMatches = () => {
       console.error("Save match error:", error);
       alert("Błąd zapisu: " + error.message);
     }
+
+    // Save any picked but not-yet-uploaded team logos together with the match
+    for (const side of ["home", "away"] as const) {
+      const file = logoFiles[side];
+      const team = (side === "home" ? form.home_team : form.away_team).trim();
+      if (!file || !team) continue;
+      try {
+        await uploadTeamLogo(team, file);
+      } catch (err: any) {
+        alert(`Błąd zapisu herbu (${team}): ` + err.message);
+      }
+    }
+
     setSaving(false);
     cancel();
     fetchMatches();
+    fetchExtraLogos();
   };
 
   const handleDelete = async (id: string) => {

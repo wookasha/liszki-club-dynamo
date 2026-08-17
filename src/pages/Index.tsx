@@ -52,6 +52,7 @@ const Index = () => {
     away: nextMatchRaw.away_team,
     isHome: nextMatchRaw.venue === "dom",
     stadium_address: nextMatchRaw.stadium_address || "",
+    league: nextMatchRaw.league || "Klasa okręgowa, grupa II",
   } : null;
   const lastResults = lastResultsRaw.map((m: any) => ({
     home: m.home_team, away: m.away_team, score_home: m.score_home, score_away: m.score_away, match_date: m.match_date,
@@ -319,7 +320,7 @@ const Index = () => {
           <ScrollAnimation>
             <div className="glass-card p-6 md:p-8 rounded-xl max-w-3xl mx-auto text-center">
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                Klasa okręgowa, grupa II
+                {nextMatch.league}
               </p>
               <div className="flex items-center justify-center gap-4 md:gap-8 my-6">
                 <div className="text-center">

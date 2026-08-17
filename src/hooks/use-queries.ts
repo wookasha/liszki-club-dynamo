@@ -66,7 +66,7 @@ export const useNextMatch = () =>
     queryFn: async () => {
       const { data } = await supabase
         .from("matches")
-        .select("match_date, home_team, away_team, venue, stadium_address")
+        .select("match_date, home_team, away_team, venue, stadium_address, league")
         .eq("is_played", false)
         .order("match_date", { ascending: true })
         .limit(1);
